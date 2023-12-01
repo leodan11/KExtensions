@@ -55,7 +55,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.leodan11'
                 artifactId = 'KExtensions'
-                version = '1.0.2'
+                version = '1.0.4'
 
                 pom {
                     name = "KExtensions"
