@@ -3,6 +3,16 @@ package com.github.leodan11.k_extensions.core
 import android.util.Base64
 import java.util.Locale
 
+
+/**
+ * Convert a string as consecutive code
+ *
+ * @param length default 5
+ * @param char default 0
+ * @return [String] code, e.g: 00002
+ */
+fun String.asConsecutiveCode(length: Int = 5, char: Char = '0'): String = this.padStart(length, char)
+
 /**
  * String to Base64
  *
@@ -23,7 +33,7 @@ fun String.toBoolean(): Boolean {
 }
 
 /**
- * Get the first 2 initial letters of a first and last name if it exists
+ * Get the first two initial letters of a first and last name if it exists
  */
 val String.initials: String
     get() {
