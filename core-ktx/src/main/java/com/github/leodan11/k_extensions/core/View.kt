@@ -26,7 +26,7 @@ fun ImageView.startAnimatedVectorDrawable() {
 }
 
 /**
- * On animated vector drawable loop
+ * On animated vector-drawable loop
  *
  */
 fun ImageView.startAnimatedVectorDrawableLoop() {

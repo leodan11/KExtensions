@@ -6,8 +6,23 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.os.Build
+import android.util.TypedValue
+import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+
+/**
+ * Get resource id
+ *
+ * @param idAttrRes ID attr Resource, e.g: [android.R.attr.colorAccent]
+ * @return [Int] - Resource Id
+ */
+fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
+    val typedValue = TypedValue()
+    this.theme.resolveAttribute(idAttrRes, typedValue, true)
+    return typedValue.resourceId
+}
+
 
 /**
  * Convert dp to px
@@ -17,6 +32,7 @@ import androidx.core.content.ContextCompat
  */
 fun Context.convertDpToPx(dp: Float): Float = (this.resources.displayMetrics.density * dp)
 
+
 /**
  * Convert px to dp
  *
@@ -24,6 +40,7 @@ fun Context.convertDpToPx(dp: Float): Float = (this.resources.displayMetrics.den
  * @return [Float]
  */
 fun Context.convertPxToDp(px: Float): Float = (px / this.resources.displayMetrics.density)
+
 
 /**
  * Determine if dark mode is currently active
@@ -38,6 +55,7 @@ fun Context.isNightModeActive(): Boolean {
         darkModeFlag == Configuration.UI_MODE_NIGHT_YES
     }
 }
+
 
 /**
  * Merge bitmaps

@@ -23,7 +23,7 @@ fun Double.toNumberFormat(locale: Locale = Locale.getDefault()): String {
 }
 
 /**
- * Convert numbers to human readable format.
+ * Convert numbers to human-readable format.
  *
  * @return [String]  e.g: 1024 ~ 1K
  */
@@ -53,7 +53,7 @@ fun Long.toNumberFormat(locale: Locale = Locale.getDefault()): String {
 
 
 /**
- * Convert a natural number to a real number with 2 decimals
+ * Convert a natural number to a real number with two decimals
  *
  * @return [String]
  */
@@ -67,7 +67,7 @@ fun Number.to2Decimal(locale: Locale = Locale.getDefault()): String {
 }
 
 /**
- * Convert a natural number to a real number with 3 decimals
+ * Convert a natural number to a real number with three decimals
  *
  * @return [String]
  */
@@ -82,7 +82,7 @@ fun Number.to3Decimal(locale: Locale = Locale.getDefault()): String {
 
 
 /**
- * Convert a natural number to a real number with 4 decimals
+ * Convert a natural number to a real number with four decimals
  *
  * @return [String]
  */
@@ -96,7 +96,7 @@ fun Number.to4Decimal(locale: Locale = Locale.getDefault()): String {
 }
 
 /**
- * Convert a natural number to a real number with 2 decimals
+ * Convert a natural number to a real number with two decimals
  *
  * @return [Float]
  */
@@ -107,7 +107,7 @@ fun Number.to2decimalResFloat(locale: Locale = Locale.getDefault()): Float {
 }
 
 /**
- * Convert a natural number to a real number with 3 decimals
+ * Convert a natural number to a real number with three decimals
  *
  * @return [Float]
  */
@@ -118,7 +118,7 @@ fun Number.to3decimalResFloat(locale: Locale = Locale.getDefault()): Float {
 }
 
 /**
- * Convert a natural number to a real number with 4 decimals
+ * Convert a natural number to a real number with four decimals
  *
  * @return [Float]
  */
