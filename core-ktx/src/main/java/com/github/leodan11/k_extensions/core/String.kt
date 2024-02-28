@@ -1,6 +1,8 @@
 package com.github.leodan11.k_extensions.core
 
 import android.util.Base64
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -11,7 +13,9 @@ import java.util.Locale
  * @param char default 0
  * @return [String] code, e.g: 00002
  */
-fun String.asConsecutiveCode(length: Int = 5, char: Char = '0'): String = this.padStart(length, char)
+fun String.asConsecutiveCode(length: Int = 5, char: Char = '0'): String =
+    this.padStart(length, char)
+
 
 /**
  * String to Base64
@@ -21,10 +25,10 @@ fun String.asConsecutiveCode(length: Int = 5, char: Char = '0'): String = this.p
  */
 fun String.toBase64Decode(flags: Int = Base64.DEFAULT): ByteArray = Base64.decode(this, flags)
 
+
 /**
  * Converts a string to boolean such as 'Y', 'yes', 'TRUE'
  */
-
 fun String.toBoolean(): Boolean {
     return this != "" &&
             (this.equals("TRUE", ignoreCase = true)
@@ -32,19 +36,39 @@ fun String.toBoolean(): Boolean {
                     || this.equals("YES", ignoreCase = true))
 }
 
+
+/**
+ * Convert a text to a calendar
+ *
+ * @param pattern [String] by default yyyy-MM-dd
+ * @return [Calendar]
+ */
+fun String.toCalendar(pattern: String = "yyyy-MM-dd"): Calendar = synchronized(this) {
+    if (this.isEmpty()) throw Exception("Empty string, not date found")
+    val format = SimpleDateFormat(pattern, Locale.getDefault())
+    val date = format.parse(this) ?: throw Exception("Wrong date")
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    calendar
+}
+
+
 /**
  * Get the first two initial letters of a first and last name if it exists
  */
-val String.initials: String
-    get() {
-        return if (this.isNotBlank() && this.length < 3) this.uppercase()
-        else {
-            val sorts = this.split(' ')
-            when (sorts.size) {
-                1 -> sorts.first().substring(0, 2).uppercase()
-                2 -> "${sorts.first().substring(0, 1).uppercase()}${sorts.last().substring(0, 1).uppercase()}"
-                else -> "${sorts.first().substring(0, 1).uppercase()}${sorts[2].substring(0, 1).uppercase()}"
-            }
+fun String.initials(): String =
+    if (this.isNotBlank() && this.length < 3) this.uppercase()
+    else {
+        val sorts = this.split(' ')
+        when (sorts.size) {
+            1 -> sorts.first().substring(0, 2).uppercase()
+            2 -> "${sorts.first().substring(0, 1).uppercase()}${
+                sorts.last().substring(0, 1).uppercase()
+            }"
+
+            else -> "${sorts.first().substring(0, 1).uppercase()}${
+                sorts[2].substring(0, 1).uppercase()
+            }"
         }
     }
 
@@ -62,6 +86,7 @@ fun String.toCapitalize(): String {
         this
     }
 }
+
 
 /**
  * Write or print each word with a capital letter
