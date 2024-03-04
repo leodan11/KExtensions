@@ -11,7 +11,11 @@ import androidx.annotation.AttrRes
  */
 fun Context.backgroundColor(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.backgroundColor, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.backgroundColor,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -23,7 +27,11 @@ fun Context.backgroundColor(): Int {
  */
 fun Context.colorOnBackground(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnBackground, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnBackground,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -72,7 +80,11 @@ fun Context.colorOnError(): Int {
  */
 fun Context.colorErrorContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorErrorContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorErrorContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -84,7 +96,11 @@ fun Context.colorErrorContainer(): Int {
  */
 fun Context.colorOnErrorContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnErrorContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnErrorContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -108,7 +124,11 @@ fun Context.colorOutline(): Int {
  */
 fun Context.colorOutlineVariant(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOutlineVariant, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOutlineVariant,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -144,7 +164,11 @@ fun Context.colorOnPrimary(): Int {
  */
 fun Context.colorPrimaryContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimaryContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorPrimaryContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -156,7 +180,11 @@ fun Context.colorPrimaryContainer(): Int {
  */
 fun Context.colorOnPrimaryContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimaryContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnPrimaryContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -180,7 +208,11 @@ fun Context.colorSecondary(): Int {
  */
 fun Context.colorOnSecondary(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSecondary, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnSecondary,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -192,7 +224,11 @@ fun Context.colorOnSecondary(): Int {
  */
 fun Context.colorSecondaryContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorSecondaryContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorSecondaryContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -204,7 +240,11 @@ fun Context.colorSecondaryContainer(): Int {
  */
 fun Context.colorOnSecondaryContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSecondaryContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnSecondaryContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -240,7 +280,11 @@ fun Context.colorOnSurface(): Int {
  */
 fun Context.colorSurfaceVariant(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorSurfaceVariant,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -252,7 +296,11 @@ fun Context.colorSurfaceVariant(): Int {
  */
 fun Context.colorOnSurfaceVariant(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurfaceVariant, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnSurfaceVariant,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -276,7 +324,11 @@ fun Context.colorTertiary(): Int {
  */
 fun Context.colorOnTertiary(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnTertiary, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnTertiary,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -288,7 +340,11 @@ fun Context.colorOnTertiary(): Int {
  */
 fun Context.colorTertiaryContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorTertiaryContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorTertiaryContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }
 
@@ -300,6 +356,10 @@ fun Context.colorTertiaryContainer(): Int {
  */
 fun Context.colorOnTertiaryContainer(): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnTertiaryContainer, typedValue, true)
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnTertiaryContainer,
+        typedValue,
+        true
+    )
     return typedValue.data
 }

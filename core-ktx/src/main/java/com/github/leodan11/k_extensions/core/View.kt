@@ -58,7 +58,11 @@ fun ImageView.startAnimatedVectorDrawableLoop() {
  * @return [Bitmap]
  */
 fun View.createBitmap(): Bitmap {
-    val bitmap = Bitmap.createBitmap(this.layoutParams.width, this.layoutParams.height, Bitmap.Config.ARGB_8888)
+    val bitmap = Bitmap.createBitmap(
+        this.layoutParams.width,
+        this.layoutParams.height,
+        Bitmap.Config.ARGB_8888
+    )
     val canvas = Canvas(bitmap)
     this.draw(canvas)
     return bitmap

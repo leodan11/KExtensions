@@ -88,9 +88,14 @@ fun Bitmap.mergeBitmaps(bitmap: Bitmap): Bitmap {
  * @return [Bitmap]
  */
 fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
-    val drawable = ContextCompat.getDrawable(this, drawableIdRes) ?: throw Exception("Invalid drawable")
+    val drawable =
+        ContextCompat.getDrawable(this, drawableIdRes) ?: throw Exception("Invalid drawable")
     val canvas = Canvas()
-    val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val bitmap = Bitmap.createBitmap(
+        drawable.intrinsicWidth,
+        drawable.intrinsicHeight,
+        Bitmap.Config.ARGB_8888
+    )
     canvas.setBitmap(bitmap)
     drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
     drawable.draw(canvas)

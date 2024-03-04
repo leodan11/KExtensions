@@ -16,7 +16,7 @@ fun Double.toNumberFormat(locale: Locale = Locale.getDefault()): String {
     return try {
         val contentValue = NumberFormat.getCurrencyInstance(locale)
         contentValue.format(this)
-    }catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         this.toString()
     }
@@ -45,7 +45,7 @@ fun Long.toNumberFormat(locale: Locale = Locale.getDefault()): String {
     return try {
         val contentValue = NumberFormat.getCurrencyInstance(locale)
         contentValue.format(this)
-    }catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         this.toString()
     }

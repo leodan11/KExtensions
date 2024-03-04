@@ -1,9 +1,69 @@
 package com.github.leodan11.k_extensions.core
 
 import android.util.Base64
+import jahirfiquitiva.libs.textdrawable.TextDrawable
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
+
+/**
+ * Generate avatars with initials from names.
+ *
+ * @param generator [ColorGenerator] default [ColorGenerator.MATERIAL]
+ * @param config [TextDrawable.Builder] default [Unit]
+ * @return [TextDrawable]
+ */
+fun String.asAvatar(
+    generator: ColorGenerator = ColorGenerator.MATERIAL,
+    config: TextDrawable.Builder.() -> Unit = {},
+) = run {
+    TextDrawable.build(this, generator.getColorBasedOnKey(this), config)
+}
+
+
+/**
+ * Generate avatars with initials from names.
+ *
+ * @param generator [ColorGenerator] default [ColorGenerator.MATERIAL]
+ * @param config [TextDrawable.Builder] default [Unit]
+ * @return [TextDrawable]
+ */
+fun String.asAvatarRect(
+    generator: ColorGenerator = ColorGenerator.MATERIAL,
+    config: TextDrawable.Builder.() -> Unit = {},
+) =
+    run { TextDrawable.buildRect(this, generator.getColorBasedOnKey(this), config) }
+
+
+/**
+ * Generate avatars with initials from names.
+ *
+ * @param generator [ColorGenerator] default [ColorGenerator.MATERIAL]
+ * @param config [TextDrawable.Builder] default [Unit]
+ * @return [TextDrawable]
+ */
+fun String.asAvatarRound(
+    generator: ColorGenerator = ColorGenerator.MATERIAL,
+    config: TextDrawable.Builder.() -> Unit = {},
+) =
+    run { TextDrawable.buildRound(this, generator.getColorBasedOnKey(this), config) }
+
+
+/**
+ * Generate avatars with initials from names.
+ *
+ * @param radius [Int]
+ * @param generator [ColorGenerator] default [ColorGenerator.MATERIAL]
+ * @param config [TextDrawable.Builder] default [Unit]
+ * @return [TextDrawable]
+ */
+fun String.asAvatarRoundRect(
+    radius: Int,
+    generator: ColorGenerator = ColorGenerator.MATERIAL,
+    config: TextDrawable.Builder.() -> Unit = {},
+) =
+    run { TextDrawable.buildRoundRect(this, generator.getColorBasedOnKey(this), radius, config) }
 
 
 /**
