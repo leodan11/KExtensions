@@ -1,5 +1,7 @@
 package com.github.leodan11.k_extensions.core
 
+import android.content.res.Resources
+import android.util.TypedValue
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -21,6 +23,58 @@ fun Double.toNumberFormat(locale: Locale = Locale.getDefault()): String {
         this.toString()
     }
 }
+
+/**
+ * Float to DP
+ *
+ * @return [Float]
+ */
+val Float.DP
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this,
+        Resources.getSystem().displayMetrics
+    )
+
+
+/**
+ * Float to SP
+ *
+ * @return [Float]
+ */
+val Float.SP
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        this,
+        Resources.getSystem().displayMetrics
+    )
+
+
+/**
+ * Int to DP
+ *
+ * @return [Int]
+ */
+val Int.DP
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    ).toInt()
+
+
+/**
+ * Int to SP
+ *
+ * @return [Int]
+ */
+val Int.SP
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    )
+
 
 /**
  * Convert numbers to human-readable format.

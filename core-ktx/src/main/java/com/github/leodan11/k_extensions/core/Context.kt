@@ -4,24 +4,19 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Matrix
+import android.net.ConnectivityManager
 import android.os.Build
 import android.util.TypedValue
+import android.view.WindowManager
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 
 /**
- * Get resource id
- *
- * @param idAttrRes ID attr Resource, e.g: [android.R.attr.colorAccent]
- * @return [Int] - Resource Id
+ * Get Connectivity manager
  */
-fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(idAttrRes, typedValue, true)
-    return typedValue.resourceId
-}
+val Context.connectivityManager
+    get() = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
 
 /**
@@ -41,6 +36,18 @@ fun Context.convertDpToPx(dp: Float): Float = (this.resources.displayMetrics.den
  */
 fun Context.convertPxToDp(px: Float): Float = (px / this.resources.displayMetrics.density)
 
+/**
+ * Get resource id
+ *
+ * @param idAttrRes ID attr Resource, e.g: [android.R.attr.colorAccent]
+ * @return [Int] - Resource Id
+ */
+fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
+    val typedValue = TypedValue()
+    this.theme.resolveAttribute(idAttrRes, typedValue, true)
+    return typedValue.resourceId
+}
+
 
 /**
  * Determine if dark mode is currently active
@@ -58,27 +65,10 @@ fun Context.isNightModeActive(): Boolean {
 
 
 /**
- * Merge bitmaps
- *
- * @param bitmap
- * @return [Bitmap]
+ * Get Window manager
  */
-fun Bitmap.mergeBitmaps(bitmap: Bitmap): Bitmap {
-    val height = bitmap.height
-    val width = bitmap.width
-
-    val combined = Bitmap.createBitmap(width, height, bitmap.config)
-    val canvas = Canvas(combined)
-    val canvasW = canvas.width
-    val canvasH = canvas.height
-    canvas.drawBitmap(bitmap, Matrix(), null)
-
-    val centreX = ((canvasW - this.width) / 2).toFloat()
-    val centreY = ((canvasH - this.height) / 2).toFloat()
-    canvas.drawBitmap(this, centreX, centreY, null)
-
-    return combined
-}
+val Context.windowManager
+    get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
 
 /**

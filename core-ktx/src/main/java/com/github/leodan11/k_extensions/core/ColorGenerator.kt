@@ -7,6 +7,9 @@ class ColorGenerator private constructor(private val mColors: List<Int>) {
 
     private val mRandom: Random = Random(System.currentTimeMillis())
 
+    val listColors: List<Int>
+        get() = mColors
+
     val randomColor: Int
         get() = mColors[mRandom.nextInt(mColors.size)]
 

@@ -1,5 +1,8 @@
 package com.github.leodan11.k_extensions.core
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
 import android.util.Base64
 import android.util.Log
 import java.io.FileInputStream
@@ -9,6 +12,29 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
+/**
+ * Merge bitmaps
+ *
+ * @param bitmap
+ * @return [Bitmap]
+ */
+fun Bitmap.mergeBitmaps(bitmap: Bitmap): Bitmap {
+    val height = bitmap.height
+    val width = bitmap.width
+
+    val combined = Bitmap.createBitmap(width, height, bitmap.config)
+    val canvas = Canvas(combined)
+    val canvasW = canvas.width
+    val canvasH = canvas.height
+    canvas.drawBitmap(bitmap, Matrix(), null)
+
+    val centreX = ((canvasW - this.width) / 2).toFloat()
+    val centreY = ((canvasH - this.height) / 2).toFloat()
+    canvas.drawBitmap(this, centreX, centreY, null)
+
+    return combined
+}
 
 
 /**
