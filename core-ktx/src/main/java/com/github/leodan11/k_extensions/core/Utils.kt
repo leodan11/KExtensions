@@ -4,10 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.util.Base64
-import android.util.Log
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.nio.channels.FileChannel
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -101,34 +97,4 @@ fun Calendar.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized
  */
 fun Calendar.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
     SimpleDateFormat(pattern, Locale.getDefault()).format(this.time)
-}
-
-
-/**
- * Copy file
- *
- * @param toFile [FileOutputStream]
- */
-fun FileInputStream.copyFile(toFile: FileOutputStream) {
-    try {
-        var fromChannel: FileChannel? = null
-        var toChannel: FileChannel? = null
-
-        try {
-            fromChannel = this.channel
-            toChannel = toFile.channel
-
-            fromChannel.transferTo(0, fromChannel.size(), toChannel)
-        } finally {
-            try {
-                fromChannel?.close()
-            } finally {
-                toChannel?.close()
-            }
-        }
-        Log.i("Copy File", "Completed")
-    } catch (exception: Exception) {
-        exception.printStackTrace()
-        throw Exception("Exception copy File")
-    }
 }

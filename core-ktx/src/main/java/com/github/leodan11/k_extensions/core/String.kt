@@ -1,6 +1,7 @@
 package com.github.leodan11.k_extensions.core
 
 import android.util.Base64
+import com.github.leodan11.k_extensions.core.content.ColorGenerator
 import jahirfiquitiva.libs.textdrawable.TextDrawable
 import java.text.SimpleDateFormat
 import java.util.Calendar

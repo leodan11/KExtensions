@@ -91,3 +91,36 @@ fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
     drawable.draw(canvas)
     return bitmap
 }
+
+
+/**
+ * Get application file directory
+ *
+ * Application file directory ("/data/data/<package name>/files")
+ */
+val Context.fileDirPath: String
+    get() = filesDir.absolutePath
+
+/**
+ * Get application cache directory
+ *
+ * Application cache directory ("/data/data/<package name>/cache")
+ */
+val Context.cacheDirPath: String
+    get() = cacheDir.absolutePath
+
+/**
+ * Get the application external file directory
+ *
+ * Application file directory ("/Android/data/<package name>/files")
+ */
+val Context.externalFileDirPath: String
+    get() = getExternalFilesDir("")?.absolutePath ?: ""
+
+/**
+ * Get the application external cache directory
+ *
+ * Application cache directory ("/Android/data/<package name>/cache")
+ */
+val Context.externalCacheDirPath: String
+    get() = externalCacheDir?.absolutePath ?: ""
