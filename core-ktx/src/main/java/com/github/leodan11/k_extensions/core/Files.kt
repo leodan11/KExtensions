@@ -1,5 +1,6 @@
 package com.github.leodan11.k_extensions.core
 
+import android.annotation.SuppressLint
 import android.os.Environment
 import android.util.Log
 import java.io.BufferedOutputStream
@@ -262,6 +263,7 @@ fun getFileLength(filePath: String): Long {
  * @param byteNum Number of bytes
  * @return Suitable memory size
  */
+@SuppressLint("DefaultLocale")
 private fun byte2FitMemorySize(byteNum: Long): String = when {
     byteNum < 0 -> "shouldn't be less than zero!"
     byteNum < 1024 -> String.format("%.3fB", byteNum.toDouble() + 0.0005)

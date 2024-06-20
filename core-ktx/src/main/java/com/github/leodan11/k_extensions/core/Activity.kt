@@ -26,6 +26,8 @@ fun Activity.onHideSoftKeyboard() {
 
 /**
  * Returns display density as ...DPI
+ *
+ * @return [String]
  */
 fun AppCompatActivity.getDisplayDensity(): String {
     val metrics = DisplayMetrics()

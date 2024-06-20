@@ -9,20 +9,6 @@ import java.util.Locale
 import kotlin.math.log10
 import kotlin.math.pow
 
-/**
- * Set the format of a double number
- *
- * @return [String] number converted to a set format, Default has [Locale.getDefault]
- */
-fun Double.toNumberFormat(locale: Locale = Locale.getDefault()): String {
-    return try {
-        val contentValue = NumberFormat.getCurrencyInstance(locale)
-        contentValue.format(this)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        this.toString()
-    }
-}
 
 /**
  * Float to DP
@@ -90,25 +76,11 @@ val Long.formatHumanReadable: String
         String.format("%.${precision}f ${suffix[it]}", toDouble() / 10.0.pow(it * 3))
     }
 
-/**
- * Set the format of a double number
- *
- * @return [String] number converted to a set format, Default has [Locale.getDefault]
- */
-fun Long.toNumberFormat(locale: Locale = Locale.getDefault()): String {
-    return try {
-        val contentValue = NumberFormat.getCurrencyInstance(locale)
-        contentValue.format(this)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        this.toString()
-    }
-}
-
 
 /**
  * Convert a natural number to a real number with two decimals
  *
+ * @param locale [Locale] Default has [Locale.getDefault]
  * @return [String]
  */
 fun Number.to2Decimal(locale: Locale = Locale.getDefault()): String {
@@ -123,6 +95,7 @@ fun Number.to2Decimal(locale: Locale = Locale.getDefault()): String {
 /**
  * Convert a natural number to a real number with three decimals
  *
+ * @param locale [Locale] Default has [Locale.getDefault]
  * @return [String]
  */
 fun Number.to3Decimal(locale: Locale = Locale.getDefault()): String {
@@ -138,6 +111,7 @@ fun Number.to3Decimal(locale: Locale = Locale.getDefault()): String {
 /**
  * Convert a natural number to a real number with four decimals
  *
+ * @param locale [Locale] Default has [Locale.getDefault]
  * @return [String]
  */
 fun Number.to4Decimal(locale: Locale = Locale.getDefault()): String {
@@ -152,6 +126,7 @@ fun Number.to4Decimal(locale: Locale = Locale.getDefault()): String {
 /**
  * Convert a natural number to a real number with two decimals
  *
+ * @param locale [Locale] Default has [Locale.getDefault]
  * @return [Float]
  */
 fun Number.to2decimalResFloat(locale: Locale = Locale.getDefault()): Float {
@@ -163,6 +138,7 @@ fun Number.to2decimalResFloat(locale: Locale = Locale.getDefault()): Float {
 /**
  * Convert a natural number to a real number with three decimals
  *
+ * @param locale [Locale] Default has [Locale.getDefault]
  * @return [Float]
  */
 fun Number.to3decimalResFloat(locale: Locale = Locale.getDefault()): Float {
@@ -174,10 +150,75 @@ fun Number.to3decimalResFloat(locale: Locale = Locale.getDefault()): Float {
 /**
  * Convert a natural number to a real number with four decimals
  *
+ * @param locale [Locale] Default has [Locale.getDefault]
  * @return [Float]
  */
 fun Number.to4decimalResFloat(locale: Locale = Locale.getDefault()): Float {
     val res = "%.4f".format(this, locale)
     val decimalFormatter = DecimalFormat("###,###,###,###.##")
     return decimalFormatter.parse(res)?.toFloat() ?: 0.0f
+}
+
+/**
+ * Set the format of a number.
+ *
+ * @param locale [Locale] Default has [Locale.getDefault]
+ * @return [String]
+ */
+fun Number.toNumberFormat(locale: Locale = Locale.getDefault()): String {
+    return try {
+        val contentValue = NumberFormat.getNumberInstance(locale)
+        contentValue.format(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        this.toString()
+    }
+}
+
+/**
+ * Set the format of a number.
+ *
+ * @param locale [Locale] Default has [Locale.getDefault]
+ * @return [String] e.g: 250 to $250.00
+ */
+fun Number.toNumberFormatCurrency(locale: Locale = Locale.getDefault()): String {
+    return try {
+        val contentValue = NumberFormat.getCurrencyInstance(locale)
+        contentValue.format(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        this.toString()
+    }
+}
+
+/**
+ * Set the format of a number.
+ *
+ * @param locale [Locale] Default has [Locale.getDefault]
+ * @return [String] e.g: 250.10 to 250
+ */
+fun Number.toNumberFormatInt(locale: Locale = Locale.getDefault()): String {
+    return try {
+        val contentValue = NumberFormat.getIntegerInstance(locale)
+        contentValue.format(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        this.toString()
+    }
+}
+
+/**
+ * Set the format of a number.
+ *
+ * @param locale [Locale] Default has [Locale.getDefault]
+ * @return [String] e.g: 250 to 250.000 %
+ */
+fun Number.toNumberFormatPercent(locale: Locale = Locale.getDefault()): String {
+    return try {
+        val contentValue = NumberFormat.getPercentInstance(locale)
+        contentValue.format(this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        this.toString()
+    }
 }

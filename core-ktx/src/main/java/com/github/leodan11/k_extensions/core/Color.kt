@@ -144,6 +144,21 @@ fun Context.colorPrimary(): Int {
     return typedValue.data
 }
 
+/**
+ * Get PrimaryInverse Color Only Theme Material Design 3
+ *
+ * @return [Int] - Color value
+ */
+fun Context.colorPrimaryInverse(): Int {
+    val typedValue = TypedValue()
+    this.theme.resolveAttribute(
+        com.google.android.material.R.attr.colorPrimaryInverse,
+        typedValue,
+        true
+    )
+    return typedValue.data
+}
+
 
 /**
  * Get OnPrimary Color Only Theme Material Design 3

@@ -89,6 +89,7 @@ fun String.toBase64Decode(flags: Int = Base64.DEFAULT): ByteArray = Base64.decod
 
 /**
  * Converts a string to boolean such as 'Y', 'yes', 'TRUE'
+ * @return [Boolean]
  */
 fun String.toBoolean(): Boolean {
     return this != "" &&
@@ -116,20 +117,18 @@ fun String.toCalendar(pattern: String = "yyyy-MM-dd"): Calendar = synchronized(t
 
 /**
  * Get the first two initial letters of a first and last name if it exists
+ * @param containLastName default false
+ * @return [String]
  */
-fun String.initials(): String =
+fun String.initials(containLastName: Boolean = false): String =
     if (this.isNotBlank() && this.length < 3) this.uppercase()
     else {
         val sorts = this.split(' ')
         when (sorts.size) {
             1 -> sorts.first().substring(0, 2).uppercase()
-            2 -> "${sorts.first().substring(0, 1).uppercase()}${
-                sorts.last().substring(0, 1).uppercase()
-            }"
-
-            else -> "${sorts.first().substring(0, 1).uppercase()}${
-                sorts[2].substring(0, 1).uppercase()
-            }"
+            2 -> "${sorts.first().substring(0, 1).uppercase()}${sorts.last().substring(0, 1).uppercase()}"
+            3 -> if (containLastName) "${sorts.first().substring(0, 1).uppercase()}${sorts.last().substring(0, 1).uppercase()}" else "${sorts.first().substring(0, 1).uppercase()}${sorts[1].substring(0, 1).uppercase()}"
+            else -> "${sorts.first().substring(0, 1).uppercase()}${sorts[2].substring(0, 1).uppercase()}"
         }
     }
 
@@ -163,7 +162,7 @@ fun String.toCapitalizePerWord(): String {
             result.append(item.toCapitalize())
             result.append(" ")
         }
-        result.toString()
+        result.toString().trimEnd()
     } catch (e: java.lang.Exception) {
         e.printStackTrace()
         this
