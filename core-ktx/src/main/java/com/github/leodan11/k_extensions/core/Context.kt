@@ -1,6 +1,9 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.leodan11.k_extensions.core
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -46,6 +49,40 @@ fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
     val typedValue = TypedValue()
     this.theme.resolveAttribute(idAttrRes, typedValue, true)
     return typedValue.resourceId
+}
+
+/**
+ * Get the application version code
+ *
+ * @param pkgName [String] - Package name
+ * @return [Long] - Version code
+ *
+ */
+fun Context.getVersionCode(pkgName: String = packageName): Long {
+    if (pkgName.isBlank()) return -1
+    return try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageManager.getPackageInfo(pkgName, 0).longVersionCode
+            else packageManager.getPackageInfo(pkgName, 0).versionCode.toLong()
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+        -1
+    }
+}
+
+/**
+ * Get the application version name
+ *
+ * @param pkgName [String] - Package name
+ * @return [String] - Version name
+ */
+fun Context.getVersionName(pkgName: String = packageName): String {
+    if (pkgName.isBlank()) return ""
+    return try {
+        packageManager.getPackageInfo(pkgName, 0).versionName
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+        ""
+    }
 }
 
 

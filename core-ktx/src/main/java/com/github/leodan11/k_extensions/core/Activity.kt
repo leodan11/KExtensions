@@ -8,7 +8,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
-
+import com.github.leodan11.k_extensions.core.content.DisplayDensity
 
 /**
  * Hide input keyboard view
@@ -27,18 +27,18 @@ fun Activity.onHideSoftKeyboard() {
 /**
  * Returns display density as ...DPI
  *
- * @return [String]
+ * @return [DisplayDensity]
  */
-fun AppCompatActivity.getDisplayDensity(): String {
+fun AppCompatActivity.getDisplayDensity(): DisplayDensity {
     val metrics = DisplayMetrics()
     this.windowManager.defaultDisplay.getMetrics(metrics)
     return when (metrics.densityDpi) {
-        DisplayMetrics.DENSITY_LOW -> "LDPI"
-        DisplayMetrics.DENSITY_MEDIUM -> "MDPI"
-        DisplayMetrics.DENSITY_HIGH -> "HDPI"
-        DisplayMetrics.DENSITY_XHIGH -> "XHDPI"
-        DisplayMetrics.DENSITY_XXHIGH -> "XXHDPI"
-        DisplayMetrics.DENSITY_XXXHIGH -> "XXXHDPI"
-        else -> "XXHDPI"
+        DisplayMetrics.DENSITY_LOW -> DisplayDensity.LDPI
+        DisplayMetrics.DENSITY_MEDIUM -> DisplayDensity.MDPI
+        DisplayMetrics.DENSITY_HIGH -> DisplayDensity.HDPI
+        DisplayMetrics.DENSITY_XHIGH -> DisplayDensity.XHDPI
+        DisplayMetrics.DENSITY_XXHIGH -> DisplayDensity.XXHDPI
+        DisplayMetrics.DENSITY_XXXHIGH -> DisplayDensity.XXXHDPI
+        else -> DisplayDensity.XXHDPI
     }
 }
