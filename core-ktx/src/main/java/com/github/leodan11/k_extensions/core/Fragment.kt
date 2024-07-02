@@ -41,7 +41,8 @@ val Fragment.externalCacheDirPath: String
  * @return [Long] - Version code
  *
  */
-fun Fragment.getVersionCode(pkgName: String = requireActivity().packageName.toString()): Long = requireActivity().getVersionCode(pkgName)
+fun Fragment.getVersionCode(pkgName: String = requireActivity().packageName.toString()): Long =
+    requireActivity().getVersionCode(pkgName)
 
 
 /**
@@ -50,4 +51,5 @@ fun Fragment.getVersionCode(pkgName: String = requireActivity().packageName.toSt
  * @param pkgName [String] - Package name
  * @return [String] - Version name
  */
-fun Fragment.getVersionName(pkgName: String = requireActivity().packageName.toString()): String = requireActivity().getVersionName(pkgName)
+fun Fragment.getVersionName(pkgName: String = requireActivity().packageName.toString()): String =
+    requireActivity().getVersionName(pkgName)

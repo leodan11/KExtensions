@@ -7,6 +7,11 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Build
 import android.util.TypedValue
@@ -52,6 +57,41 @@ fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
 }
 
 /**
+ * Utils method to create drawable containing text
+ * @param text [String] - Text
+ * @param typeface [Typeface] - Typeface
+ * @param color [Int] - Color
+ * @param size [Int] - Size
+ * @return [Drawable]
+ */
+fun Context.getDrawableText(
+    text: String,
+    typeface: Typeface? = null,
+    color: Int,
+    size: Int
+): Drawable {
+    val bitmap = Bitmap.createBitmap(48, 48, Bitmap.Config.ARGB_8888)
+
+    val canvas = Canvas(bitmap)
+    val scale = this.resources.displayMetrics.density
+
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.typeface = typeface ?: Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        this.color = ContextCompat.getColor(this@getDrawableText, color)
+        this.textSize = (size * scale).toInt().toFloat()
+    }
+
+    val bounds = Rect()
+    paint.getTextBounds(text, 0, text.length, bounds)
+    val x = (bitmap.width - bounds.width()) / 2
+    val y = (bitmap.height + bounds.height()) / 2
+    canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
+
+    return BitmapDrawable(this.resources, bitmap)
+}
+
+
+/**
  * Get the application version code
  *
  * @param pkgName [String] - Package name
@@ -61,8 +101,11 @@ fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
 fun Context.getVersionCode(pkgName: String = packageName): Long {
     if (pkgName.isBlank()) return -1
     return try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageManager.getPackageInfo(pkgName, 0).longVersionCode
-            else packageManager.getPackageInfo(pkgName, 0).versionCode.toLong()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageManager.getPackageInfo(
+            pkgName,
+            0
+        ).longVersionCode
+        else packageManager.getPackageInfo(pkgName, 0).versionCode.toLong()
     } catch (e: PackageManager.NameNotFoundException) {
         e.printStackTrace()
         -1

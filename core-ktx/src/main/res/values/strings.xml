@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_value_january">January</string>
+    <string name="text_value_february">February</string>
+    <string name="text_value_march">March</string>
+    <string name="text_value_april">April</string>
+    <string name="text_value_may">May</string>
+    <string name="text_value_june">June</string>
+    <string name="text_value_july">July</string>
+    <string name="text_value_august">August</string>
+    <string name="text_value_september">September</string>
+    <string name="text_value_october">October</string>
+    <string name="text_value_november">November</string>
+    <string name="text_value_december">December</string>
+</resources>

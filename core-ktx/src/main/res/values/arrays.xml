@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="calendar_months_array_kt">
+        <item>@string/text_value_january</item>
+        <item>@string/text_value_february</item>
+        <item>@string/text_value_march</item>
+        <item>@string/text_value_april</item>
+        <item>@string/text_value_may</item>
+        <item>@string/text_value_june</item>
+        <item>@string/text_value_july</item>
+        <item>@string/text_value_august</item>
+        <item>@string/text_value_september</item>
+        <item>@string/text_value_october</item>
+        <item>@string/text_value_november</item>
+        <item>@string/text_value_december</item>
+    </array>
+</resources>

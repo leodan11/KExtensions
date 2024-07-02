@@ -126,9 +126,19 @@ fun String.initials(containLastName: Boolean = false): String =
         val sorts = this.split(' ')
         when (sorts.size) {
             1 -> sorts.first().substring(0, 2).uppercase()
-            2 -> "${sorts.first().substring(0, 1).uppercase()}${sorts.last().substring(0, 1).uppercase()}"
-            3 -> if (containLastName) "${sorts.first().substring(0, 1).uppercase()}${sorts.last().substring(0, 1).uppercase()}" else "${sorts.first().substring(0, 1).uppercase()}${sorts[1].substring(0, 1).uppercase()}"
-            else -> "${sorts.first().substring(0, 1).uppercase()}${sorts[2].substring(0, 1).uppercase()}"
+            2 -> "${sorts.first().substring(0, 1).uppercase()}${
+                sorts.last().substring(0, 1).uppercase()
+            }"
+
+            3 -> if (containLastName) "${sorts.first().substring(0, 1).uppercase()}${
+                sorts.last().substring(0, 1).uppercase()
+            }" else "${sorts.first().substring(0, 1).uppercase()}${
+                sorts[1].substring(0, 1).uppercase()
+            }"
+
+            else -> "${sorts.first().substring(0, 1).uppercase()}${
+                sorts[2].substring(0, 1).uppercase()
+            }"
         }
     }
 
