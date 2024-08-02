@@ -6,6 +6,7 @@ import jahirfiquitiva.libs.textdrawable.TextDrawable
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.regex.Pattern
 
 
 /**
@@ -92,7 +93,7 @@ fun String.toBase64Decode(flags: Int = Base64.DEFAULT): ByteArray = Base64.decod
  * @return [Boolean]
  */
 fun String.toBoolean(): Boolean {
-    return this != "" &&
+    return this.isNotEmpty() &&
             (this.equals("TRUE", ignoreCase = true)
                     || this.equals("Y", ignoreCase = true)
                     || this.equals("YES", ignoreCase = true))
@@ -102,13 +103,36 @@ fun String.toBoolean(): Boolean {
 /**
  * Convert a text to a calendar
  *
- * @param pattern [String] by default yyyy-MM-dd
+ * @param pattern [String] pattern default `^\\d{4}-\\d{2}-\\d{2}$`
+ *
  * @return [Calendar]
+ *
+ * @throws IllegalArgumentException
+ *
  */
-fun String.toCalendar(pattern: String = "yyyy-MM-dd"): Calendar = synchronized(this) {
+fun String.toCalendar(pattern: String = "^\\d{4}-\\d{2}-\\d{2}$"): Calendar {
     if (this.isEmpty()) throw Exception("Empty string, not date found")
+    val matcher: Pattern = Pattern.compile(pattern)
+    return when {
+        matcher.matcher(this).matches() -> this.toCalendarSimpleFormat()
+        else -> throw IllegalArgumentException()
+    }
+}
+
+/**
+ * Convert a text to a calendar
+ *
+ * @param pattern [String] default `yyyy-MM-dd`
+ *
+ * @return [Calendar]
+ *
+ * @throws IllegalArgumentException
+ *
+ */
+fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd"): Calendar = synchronized(this) {
+    if (this.isEmpty()) throw IllegalArgumentException("Empty string, not date found")
     val format = SimpleDateFormat(pattern, Locale.getDefault())
-    val date = format.parse(this) ?: throw Exception("Wrong date")
+    val date = format.parse(this) ?: throw IllegalArgumentException("Wrong date")
     val calendar = Calendar.getInstance()
     calendar.time = date
     calendar
