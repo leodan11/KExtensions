@@ -8,17 +8,22 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Build
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.WindowManager
+import android.widget.EditText
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * Get Connectivity manager
@@ -43,6 +48,34 @@ fun Context.convertDpToPx(dp: Float): Float = (this.resources.displayMetrics.den
  * @return [Float]
  */
 fun Context.convertPxToDp(px: Float): Float = (px / this.resources.displayMetrics.density)
+
+/**
+ * Creates a bitmap from a specific color and size.
+ *
+ * @param width Defines the width of the bitmap
+ * @param height Defines the height of the bitmap
+ * @param backgroundColor Defines the color of the bitmap
+ * @param config [Bitmap.Config] Default [Bitmap.Config.ARGB_8888]
+ *
+ * @return [Bitmap]
+ *
+ * @throws IllegalArgumentException
+ *
+ */
+fun Context.createBitmap(width: Float, height: Float, backgroundColor: Int, config: Bitmap.Config = Bitmap.Config.ARGB_8888): Bitmap {
+    val bitmap = Bitmap.createBitmap(width.toInt(), height.toInt(), config)
+    val canvas = Canvas(bitmap)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    paint.setColor(backgroundColor)
+    val path = Path()
+    path.moveTo(0f, 0f)
+    path.lineTo(width, 0f)
+    path.lineTo(width / 2, height)
+    path.close()
+    canvas.drawPath(path, paint)
+    return bitmap
+}
+
 
 /**
  * Get resource id
@@ -204,3 +237,32 @@ val Context.externalFileDirPath: String
  */
 val Context.externalCacheDirPath: String
     get() = externalCacheDir?.absolutePath ?: ""
+
+
+/**
+ * Validate Text field has data
+ *
+ * @param textInputLayout Parent element [TextInputLayout].
+ * @param textInputEditText Text field [EditText].
+ * @param errorMessage [String] Error to be displayed on the element. Default NULL
+ * @param errorResource [Int] Error to be displayed on the element. Default NULL
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Context.validateTextField(
+    textInputLayout: TextInputLayout,
+    textInputEditText: EditText,
+    errorMessage: String? = null,
+    @StringRes errorResource: Int? = null,
+): Boolean {
+    if (TextUtils.isEmpty(textInputEditText.text.toString().trim())) {
+        textInputLayout.isErrorEnabled = true
+        if (errorMessage.isNullOrEmpty()){
+            if (errorResource != null) {
+                textInputLayout.error = this.getString(errorResource)
+            }
+        } else textInputLayout.error = errorMessage
+        return false
+    } else textInputLayout.isErrorEnabled = false
+    return true
+}

@@ -47,4 +47,3 @@ fun ByteArray.toBase64Encode(flags: Int = Base64.DEFAULT): String =
  */
 fun ByteArray.toHexString(separator: String = ""): String =
     joinToString(separator) { "%02x".format(it) }
-
