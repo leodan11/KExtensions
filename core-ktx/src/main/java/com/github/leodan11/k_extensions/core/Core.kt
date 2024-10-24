@@ -5,31 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import java.io.Serializable
 
-/**
- * Extension method to check if the current API is below a specific version
- *
- * @param api [Int] - API version
- * @param included [Boolean] - Whether to include the specified version
- * @param block [() -> Unit] - Block of code to execute
- */
-fun belowApi(api: Int, included: Boolean = false, block: () -> Unit) {
-    if (Build.VERSION.SDK_INT < if (included) api + 1 else api) {
-        block()
-    }
-}
-
-/**
- * Extension method to check if the current API is above a specific version
- *
- * @param api [Int] - API version
- * @param included [Boolean] - Whether to include the specified version
- * @param block [() -> Unit] - Block of code to execute
- */
-fun aboveApi(api: Int, included: Boolean = false, block: () -> Unit) {
-    if (Build.VERSION.SDK_INT > if (included) api - 1 else api) {
-        block()
-    }
-}
 
 /**
  * Extension method to get a specific type from a Bundle
@@ -61,7 +36,7 @@ inline fun <reified T : Serializable> Intent.serializable(key: String): T? = whe
 /**
  * Extension method to get the TAG name for all object
  */
-fun <T : Any> T.TAG() = this::class.simpleName
+fun <T : Any> T.tag() = this::class.simpleName
 
 
 /**

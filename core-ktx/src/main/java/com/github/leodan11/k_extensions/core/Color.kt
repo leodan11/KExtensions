@@ -1,8 +1,13 @@
 package com.github.leodan11.k_extensions.core
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.util.Log
 import android.util.TypedValue
 import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
+import kotlin.math.roundToInt
 
 /**
  * Get Background Color Default Theme Material Design
@@ -377,4 +382,38 @@ fun Context.colorOnTertiaryContainer(): Int {
         true
     )
     return typedValue.data
+}
+
+
+/**
+ * Adjust the alpha of a color
+ *
+ * @param factor [Float] - Factor to adjust the alpha
+ * @return [Int] - Color value
+ */
+@ColorInt
+fun Int.adjustAlpha(factor: Float): Int {
+    val alpha = (Color.alpha(this) * factor).roundToInt()
+    return Color.argb(alpha, Color.red(this), Color.green(this), Color.blue(this))
+}
+
+
+/**
+ * Get ColorStateList
+ *
+ * @param color [Int] - Color value
+ * @return [ColorStateList] - ColorStateList
+ */
+fun Context.colorStateList(@ColorInt color: Int): ColorStateList {
+    val disabledColor = color.adjustAlpha(0.3f)
+    Log.i(this.tag(), "colorStateList")
+    return ColorStateList(
+        arrayOf(
+            intArrayOf(android.R.attr.state_enabled, -android.R.attr.state_checked),
+            intArrayOf(android.R.attr.state_enabled, android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_enabled, -android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked)
+        ),
+        intArrayOf(color.adjustAlpha(0.8f), color, disabledColor, disabledColor)
+    )
 }

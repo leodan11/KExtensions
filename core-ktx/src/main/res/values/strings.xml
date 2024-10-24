@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="text_label_this_field_cannot_be_left_empty">This field cannot be left empty</string>
     <string name="text_value_january">January</string>
     <string name="text_value_february">February</string>
     <string name="text_value_march">March</string>

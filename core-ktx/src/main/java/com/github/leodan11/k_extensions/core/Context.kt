@@ -2,7 +2,14 @@
 
 package com.github.leodan11.k_extensions.core
 
+import android.app.ActivityManager
+import android.app.Service
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothProfile
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -13,11 +20,13 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.WindowManager
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
@@ -26,10 +35,53 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 
 /**
+ * Get application cache directory
+ *
+ * Application cache directory ("/data/data/<package name>/cache")
+ */
+val Context.cacheDirPath: String
+    get() = cacheDir.absolutePath
+
+
+/**
  * Get Connectivity manager
  */
 val Context.connectivityManager
     get() = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+
+/**
+ * Get the application external cache directory
+ *
+ * Application cache directory ("/Android/data/<package name>/cache")
+ */
+val Context.externalCacheDirPath: String
+    get() = externalCacheDir?.absolutePath ?: ""
+
+
+/**
+ * Get the application external file directory
+ *
+ * Application file directory ("/Android/data/<package name>/files")
+ */
+val Context.externalFileDirPath: String
+    get() = getExternalFilesDir("")?.absolutePath ?: ""
+
+
+/**
+ * Get application file directory
+ *
+ * Application file directory ("/data/data/<package name>/files")
+ */
+val Context.fileDirPath: String
+    get() = filesDir.absolutePath
+
+
+/**
+ * Get Window manager
+ */
+val Context.windowManager
+    get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
 
 /**
@@ -49,6 +101,7 @@ fun Context.convertDpToPx(dp: Float): Float = (this.resources.displayMetrics.den
  */
 fun Context.convertPxToDp(px: Float): Float = (px / this.resources.displayMetrics.density)
 
+
 /**
  * Creates a bitmap from a specific color and size.
  *
@@ -62,7 +115,12 @@ fun Context.convertPxToDp(px: Float): Float = (px / this.resources.displayMetric
  * @throws IllegalArgumentException
  *
  */
-fun Context.createBitmap(width: Float, height: Float, backgroundColor: Int, config: Bitmap.Config = Bitmap.Config.ARGB_8888): Bitmap {
+fun Context.createBitmap(
+    width: Float,
+    height: Float,
+    backgroundColor: Int,
+    config: Bitmap.Config = Bitmap.Config.ARGB_8888
+): Bitmap {
     val bitmap = Bitmap.createBitmap(width.toInt(), height.toInt(), config)
     val canvas = Canvas(bitmap)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -88,6 +146,7 @@ fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
     this.theme.resolveAttribute(idAttrRes, typedValue, true)
     return typedValue.resourceId
 }
+
 
 /**
  * Utils method to create drawable containing text
@@ -145,6 +204,7 @@ fun Context.getVersionCode(pkgName: String = packageName): Long {
     }
 }
 
+
 /**
  * Get the application version name
  *
@@ -178,10 +238,121 @@ fun Context.isNightModeActive(): Boolean {
 
 
 /**
- * Get Window manager
+ * Check if a service is running
+ *
+ * @return [Boolean] - `true` or `false`
  */
-val Context.windowManager
-    get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+inline fun <reified T : Service> Context.isServiceRunning(): Boolean {
+    (this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?)?.run {
+        for (service in getRunningServices(Integer.MAX_VALUE)) {
+            if (T::class.java.name == service.service.className) return true //service.foreground
+        }
+    }
+    return false
+}
+
+
+/**
+ * Register a receiver to listen to bluetooth changes
+ *
+ * @param connectionStateChanged [(Intent, Int) -> Unit] - Bluetooth connection state changed callback
+ * @return [BroadcastReceiver] - Broadcast receiver
+ */
+inline fun Context.registerBluetoothChange(crossinline connectionStateChanged: (Intent, Int) -> Unit): BroadcastReceiver {
+    return object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action ?: return
+            if (action == BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) {
+                connectionStateChanged(intent, intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1))
+            }
+        }
+    }.apply {
+        val intent =
+            IntentFilter().apply { addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) }
+        this@registerBluetoothChange.registerReceiver(this, intent)
+    }
+}
+
+
+/**
+ * Register a receiver to listen to volume changes
+ *
+ * @param block [(Int) -> Unit] - Volume changed callback
+ * @return [BroadcastReceiver] - Broadcast receiver
+ */
+inline fun Context.registerVolumeChange(crossinline block: (Int) -> Unit): BroadcastReceiver {
+    return object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action ?: return
+            if (action == "android.media.VOLUME_CHANGED_ACTION") {
+                val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                val currVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                block(currVolume)
+            }
+        }
+    }.apply {
+        val intent = IntentFilter().apply { addAction("android.media.VOLUME_CHANGED_ACTION") }
+        this@registerVolumeChange.registerReceiver(this, intent)
+    }
+}
+
+
+/**
+ * Register a receiver to listen to wifi state changes
+ *
+ * @param callback [(Intent) -> Unit] - Wifi state changed callback
+ * @return [BroadcastReceiver] - Broadcast receiver
+ */
+inline fun Context.registerWifiStateChanged(crossinline callback: (Intent) -> Unit): BroadcastReceiver {
+    val action = "android.net.wifi.WIFI_STATE_CHANGED"
+    return object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == action) {
+                callback(intent)
+            }
+        }
+    }.apply {
+        val intent = IntentFilter().apply { addAction(action) }
+        this@registerWifiStateChanged.registerReceiver(this, intent)
+    }
+}
+
+
+/**
+ * Start a foreground service
+ *
+ * @param predicate [Intent.() -> Unit] - Predicate to set the service intent
+ */
+inline fun <reified T : Service> Context.startForegroundService(predicate: Intent.() -> Unit = {}) {
+    val intent = Intent(this, T::class.java)
+    predicate(intent)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        startForegroundService(intent)
+    } else {
+        startService(intent)
+    }
+}
+
+
+/**
+ * Start a service unless it is already running
+ *
+ * @param predicate [Intent.() -> Unit] - Predicate to set the service intent
+ */
+inline fun <reified T : Service> Context.startServiceUnlessRunning(predicate: Intent.() -> Unit = {}) {
+    if (!this.isServiceRunning<T>()) this.startForegroundService<T>(predicate)
+}
+
+
+/**
+ * Stop a service
+ *
+ * @return [Boolean] - `true` or `false`
+ */
+inline fun <reified T : Service> Context.stopService(): Boolean {
+    val intent = Intent(this, T::class.java)
+    return stopService(intent)
+}
 
 
 /**
@@ -207,62 +378,79 @@ fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
 
 
 /**
- * Get application file directory
- *
- * Application file directory ("/data/data/<package name>/files")
- */
-val Context.fileDirPath: String
-    get() = filesDir.absolutePath
-
-/**
- * Get application cache directory
- *
- * Application cache directory ("/data/data/<package name>/cache")
- */
-val Context.cacheDirPath: String
-    get() = cacheDir.absolutePath
-
-/**
- * Get the application external file directory
- *
- * Application file directory ("/Android/data/<package name>/files")
- */
-val Context.externalFileDirPath: String
-    get() = getExternalFilesDir("")?.absolutePath ?: ""
-
-/**
- * Get the application external cache directory
- *
- * Application cache directory ("/Android/data/<package name>/cache")
- */
-val Context.externalCacheDirPath: String
-    get() = externalCacheDir?.absolutePath ?: ""
-
-
-/**
  * Validate Text field has data
  *
- * @param textInputLayout Parent element [TextInputLayout].
- * @param textInputEditText Text field [EditText].
- * @param errorMessage [String] Error to be displayed on the element. Default NULL
- * @param errorResource [Int] Error to be displayed on the element. Default NULL
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [String] Error to be displayed on the element. Default NULL
  *
  * @return [Boolean] `true` or `false`.
  */
 fun Context.validateTextField(
-    textInputLayout: TextInputLayout,
-    textInputEditText: EditText,
-    errorMessage: String? = null,
-    @StringRes errorResource: Int? = null,
+    inputLayout: TextInputLayout,
+    inputEditText: EditText? = null,
+    inputAutoComplete: AutoCompleteTextView? = null,
+    message: String? = null,
 ): Boolean {
-    if (TextUtils.isEmpty(textInputEditText.text.toString().trim())) {
-        textInputLayout.isErrorEnabled = true
-        if (errorMessage.isNullOrEmpty()){
-            if (errorResource != null) {
-                textInputLayout.error = this.getString(errorResource)
-            }
-        } else textInputLayout.error = errorMessage
-        return false
-    } else textInputLayout.isErrorEnabled = false
-    return true
+    if (inputEditText != null) {
+        inputEditText.let {
+            if (TextUtils.isEmpty(it.text.toString().trim())) {
+                inputLayout.isErrorEnabled = true
+                if (message.isNullOrEmpty()) inputLayout.error =
+                    this.getString(R.string.text_label_this_field_cannot_be_left_empty)
+                else inputLayout.error = message
+                return false
+            } else inputLayout.isErrorEnabled = false
+            return true
+        }
+    } else if (inputAutoComplete != null) {
+        inputAutoComplete.let {
+            if (TextUtils.isEmpty(it.text.toString().trim())) {
+                inputLayout.isErrorEnabled = true
+                if (message.isNullOrEmpty()) inputLayout.error =
+                    this.getString(R.string.text_label_this_field_cannot_be_left_empty)
+                else inputLayout.error = message
+                return false
+            } else inputLayout.isErrorEnabled = false
+            return true
+        }
+    } else return false
+}
+
+/**
+ * Validate Text field has data
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [Int] Error to be displayed on the element. Default `R.string.text_label_this_field_cannot_be_left_empty`
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Context.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText? = null,
+    inputAutoComplete: AutoCompleteTextView? = null,
+    @StringRes message: Int = R.string.text_label_this_field_cannot_be_left_empty
+): Boolean {
+    if (inputEditText != null) {
+        inputEditText.let {
+            if (TextUtils.isEmpty(it.text.toString().trim())) {
+                inputLayout.isErrorEnabled = true
+                inputLayout.error = this.getString(message)
+                return false
+            } else inputLayout.isErrorEnabled = false
+            return true
+        }
+    } else if (inputAutoComplete != null) {
+        inputAutoComplete.let {
+            if (TextUtils.isEmpty(it.text.toString().trim())) {
+                inputLayout.isErrorEnabled = true
+                inputLayout.error = this.getString(message)
+                return false
+            } else inputLayout.isErrorEnabled = false
+            return true
+        }
+    } else return false
 }
