@@ -18,4 +18,13 @@ dependencyResolutionManagement {
 
 rootProject.name = "Sample"
 include ':app'
-include ':core-ktx'
+include ':core'
+include ':base'
+include ':activity'
+include ':fragment'
+include ':context'
+include ':color'
+include ':string'
+include ':calendar'
+include ':views'
+include ':number'

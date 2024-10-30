@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.github.leodan11.k_extensions.core.colorError
+import com.github.leodan11.k_extensions.color.colorError
 import com.github.leodan11.sample.databinding.FragmentFirstBinding
 
 /**
