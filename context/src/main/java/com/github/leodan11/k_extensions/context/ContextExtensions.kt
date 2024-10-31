@@ -394,47 +394,79 @@ fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
  *
  * @param inputLayout Parent element [TextInputLayout].
  * @param inputEditText Text field [EditText].
- * @param inputAutoComplete Text field [AutoCompleteTextView].
- * @param message [String] Error to be displayed on the element. Default NULL
+ * @param message [String] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
  *
  * @return [Boolean] `true` or `false`.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
-    inputEditText: EditText? = null,
-    inputAutoComplete: AutoCompleteTextView? = null,
-    message: String? = null,
+    inputEditText: EditText,
+    message: String = this.getString(R.string.label_this_field_cannot_be_left_empty),
 ): Boolean {
-    if (inputEditText != null) {
-        inputEditText.let {
-            if (TextUtils.isEmpty(it.text.toString().trim())) {
-                inputLayout.isErrorEnabled = true
-                if (message.isNullOrEmpty()) inputLayout.error =
-                    this.getString(R.string.label_this_field_cannot_be_left_empty)
-                else inputLayout.error = message
-                return false
-            } else inputLayout.isErrorEnabled = false
-            return true
-        }
-    } else if (inputAutoComplete != null) {
-        inputAutoComplete.let {
-            if (TextUtils.isEmpty(it.text.toString().trim())) {
-                inputLayout.isErrorEnabled = true
-                if (message.isNullOrEmpty()) inputLayout.error =
-                    this.getString(R.string.label_this_field_cannot_be_left_empty)
-                else inputLayout.error = message
-                return false
-            } else inputLayout.isErrorEnabled = false
-            return true
-        }
-    } else return false
+    inputEditText.let {
+        if (TextUtils.isEmpty(it.text.toString().trim())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = message
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
 }
+
+
+/**
+ * Validate Text field has data
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [String] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Context.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView,
+    message: String = this.getString(R.string.label_this_field_cannot_be_left_empty),
+): Boolean {
+    inputAutoComplete.let {
+        if (TextUtils.isEmpty(it.text.toString().trim())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = message
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
 
 /**
  * Validate Text field has data
  *
  * @param inputLayout Parent element [TextInputLayout].
  * @param inputEditText Text field [EditText].
+ * @param message [Int] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Context.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText,
+    @StringRes message: Int = R.string.label_this_field_cannot_be_left_empty
+): Boolean {
+    inputEditText.let {
+        if (TextUtils.isEmpty(it.text.toString().trim())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = this.getString(message)
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
+/**
+ * Validate Text field has data
+ *
+ * @param inputLayout Parent element [TextInputLayout].
  * @param inputAutoComplete Text field [AutoCompleteTextView].
  * @param message [Int] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
  *
@@ -442,27 +474,15 @@ fun Context.validateTextField(
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
-    inputEditText: EditText? = null,
-    inputAutoComplete: AutoCompleteTextView? = null,
+    inputAutoComplete: AutoCompleteTextView,
     @StringRes message: Int = R.string.label_this_field_cannot_be_left_empty
 ): Boolean {
-    if (inputEditText != null) {
-        inputEditText.let {
-            if (TextUtils.isEmpty(it.text.toString().trim())) {
-                inputLayout.isErrorEnabled = true
-                inputLayout.error = this.getString(message)
-                return false
-            } else inputLayout.isErrorEnabled = false
-            return true
-        }
-    } else if (inputAutoComplete != null) {
-        inputAutoComplete.let {
-            if (TextUtils.isEmpty(it.text.toString().trim())) {
-                inputLayout.isErrorEnabled = true
-                inputLayout.error = this.getString(message)
-                return false
-            } else inputLayout.isErrorEnabled = false
-            return true
-        }
-    } else return false
+    inputAutoComplete.let {
+        if (TextUtils.isEmpty(it.text.toString().trim())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = this.getString(message)
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
 }
