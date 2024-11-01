@@ -24,7 +24,7 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.leodan11:KExtensions:{latest_version}'
+    implementation 'com.github.leodan11.KExtensions:{latest_version}'
 }
 ```
 
@@ -42,29 +42,6 @@ repositories {
 
 ```kotlin
 dependencies {
-  implementation("com.github.leodan11:KExtensions:${latest_version}")
+  implementation("com.github.leodan11.KExtensions:${latest_version}")
 }
-```
-
-#### Moven
-
-- Step 1. Add the JitPack repository
-
-```xml
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-  </repositories>
-```
-
-- Step 2. Add the dependency
-
-```xml
-  <dependency>
-    <groupId>com.github.leodan11</groupId>
-      <artifactId>KExtensions</artifactId>
-      <version>latest_version</version>
-   </dependency>
 ```
