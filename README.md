@@ -24,7 +24,7 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.leodan11.KExtensions:{latest_version}'
+    implementation 'com.github.leodan11.KExtensions:{module}:{latest_version}'
 }
 ```
 
@@ -42,6 +42,6 @@ repositories {
 
 ```kotlin
 dependencies {
-  implementation("com.github.leodan11.KExtensions:${latest_version}")
+  implementation("com.github.leodan11.KExtensions:${module}:${latest_version}")
 }
 ```
