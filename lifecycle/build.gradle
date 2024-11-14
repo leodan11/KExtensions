@@ -7,7 +7,7 @@ plugins {
 apply from: "$rootDir/dependencies.gradle"
 
 ext.module_group = "com.github.leodan11.k_extensions"
-ext.module_name = "calendar"
+ext.module_name = "lifecycle"
 
 android {
 
@@ -57,6 +57,7 @@ dependencies {
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
+    implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.material
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
