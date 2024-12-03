@@ -24,7 +24,10 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.leodan11.KExtensions:{module}:{latest_version}'
+    def k_extensions_version = "x.x.x"
+
+    implementation "com.github.leodan11.KExtensions:core:$k_extensions_version" // Mandatory
+    implementation 'com.github.leodan11.KExtensions:{module}:{k_extensions_version}'
 }
 ```
 
@@ -42,6 +45,9 @@ repositories {
 
 ```kotlin
 dependencies {
-  implementation("com.github.leodan11.KExtensions:${module}:${latest_version}")
+  val k_extensions_version = "x.x.x"
+
+  implementation("com.github.leodan11.KExtensions:core:${k_extensions_version}") // Mandatory
+  implementation("com.github.leodan11.KExtensions:${module}:${k_extensions_version}")
 }
 ```
