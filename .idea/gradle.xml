@@ -18,7 +18,10 @@
             <option value="$PROJECT_DIR$/context" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/fragment" />
+            <option value="$PROJECT_DIR$/lifecycle" />
+            <option value="$PROJECT_DIR$/number" />
             <option value="$PROJECT_DIR$/string" />
+            <option value="$PROJECT_DIR$/views" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

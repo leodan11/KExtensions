@@ -25,12 +25,15 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.text.TextUtils
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 
@@ -115,6 +118,24 @@ fun Context.convertPxToDp(px: Float): Float = (px / this.resources.displayMetric
 
 
 /**
+ * Get color from resources
+ */
+fun Context.compatColor(@ColorRes colorInt: Int): Int =
+    ContextCompat.getColor(this, colorInt)
+
+
+/**
+ * Get drawable from resources
+ */
+fun Context.compatDrawable(@DrawableRes drawableRes: Int): Drawable? =
+    try {
+        ContextCompat.getDrawable(this, drawableRes)
+    } catch (e: Exception) {
+        AppCompatResources.getDrawable(this, drawableRes)
+    }
+
+
+/**
  * Creates a bitmap from a specific color and size.
  *
  * @param width Defines the width of the bitmap
@@ -193,6 +214,12 @@ fun Context.getDrawableText(
 
     return BitmapDrawable(this.resources, bitmap)
 }
+
+/**
+ * Extension method to provide quicker access to the [LayoutInflater] from [Context].
+ */
+fun Context.getLayoutInflater() =
+    getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
 
 /**
@@ -401,12 +428,13 @@ fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputEditText: EditText,
-    message: String = this.getString(R.string.label_this_field_cannot_be_left_empty),
+    message: String? = null
 ): Boolean {
+    val errorDefault = message ?: this.getString(R.string.label_this_field_cannot_be_left_empty)
     inputEditText.let {
         if (TextUtils.isEmpty(it.text.toString().trim())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = message
+            inputLayout.error = errorDefault
             return false
         } else inputLayout.isErrorEnabled = false
         return true
@@ -426,12 +454,13 @@ fun Context.validateTextField(
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView,
-    message: String = this.getString(R.string.label_this_field_cannot_be_left_empty),
+    message: String? = null
 ): Boolean {
+    val errorDefault = message ?: this.getString(R.string.label_this_field_cannot_be_left_empty)
     inputAutoComplete.let {
         if (TextUtils.isEmpty(it.text.toString().trim())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = message
+            inputLayout.error = errorDefault
             return false
         } else inputLayout.isErrorEnabled = false
         return true
@@ -451,12 +480,13 @@ fun Context.validateTextField(
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputEditText: EditText,
-    @StringRes message: Int = R.string.label_this_field_cannot_be_left_empty
+    @StringRes message: Int? = null
 ): Boolean {
+    val errorDefault = message ?: R.string.label_this_field_cannot_be_left_empty
     inputEditText.let {
         if (TextUtils.isEmpty(it.text.toString().trim())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = this.getString(message)
+            inputLayout.error = this.getString(errorDefault)
             return false
         } else inputLayout.isErrorEnabled = false
         return true
@@ -475,12 +505,13 @@ fun Context.validateTextField(
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView,
-    @StringRes message: Int = R.string.label_this_field_cannot_be_left_empty
+    @StringRes message: Int? = null
 ): Boolean {
+    val errorDefault = message ?: R.string.label_this_field_cannot_be_left_empty
     inputAutoComplete.let {
         if (TextUtils.isEmpty(it.text.toString().trim())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = this.getString(message)
+            inputLayout.error = this.getString(errorDefault)
             return false
         } else inputLayout.isErrorEnabled = false
         return true

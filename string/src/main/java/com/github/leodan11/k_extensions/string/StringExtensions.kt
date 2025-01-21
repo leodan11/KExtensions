@@ -12,60 +12,71 @@ import java.util.regex.Pattern
 /**
  * Generate avatars with initials from names.
  *
+ * For more information about [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable).
+ *
  * @param color [Int]
  * @param config [TextDrawable.Builder] default [Unit]
+ *
  * @return [TextDrawable]
+ *
  */
 fun String.asAvatar(
     @ColorInt color: Int,
     config: TextDrawable.Builder.() -> Unit = {},
-) = run {
-    TextDrawable.build(this, color, config)
-}
+) = TextDrawable.build(this, color, config)
 
 
 /**
  * Generate avatars with initials from names.
  *
+ * For more information about [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable).
+ *
  * @param color [Int]
  * @param config [TextDrawable.Builder] default [Unit]
+ *
  * @return [TextDrawable]
+ *
  */
 fun String.asAvatarRect(
     @ColorInt color: Int,
     config: TextDrawable.Builder.() -> Unit = {},
-) =
-    run { TextDrawable.buildRect(this, color, config) }
+) = TextDrawable.buildRect(this, color, config)
 
 
 /**
  * Generate avatars with initials from names.
  *
+ * For more information about [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable).
+ *
  * @param color [Int]
  * @param config [TextDrawable.Builder] default [Unit]
+ *
  * @return [TextDrawable]
+ *
  */
 fun String.asAvatarRound(
     @ColorInt color: Int,
     config: TextDrawable.Builder.() -> Unit = {},
-) =
-    run { TextDrawable.buildRound(this, color, config) }
+) = TextDrawable.buildRound(this, color, config)
 
 
 /**
  * Generate avatars with initials from names.
  *
+ * For more information about [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable).
+ *
  * @param radius [Int]
  * @param color [Int]
  * @param config [TextDrawable.Builder] default [Unit]
+ *
  * @return [TextDrawable]
+ *
  */
 fun String.asAvatarRoundRect(
     radius: Int,
     @ColorInt color: Int,
     config: TextDrawable.Builder.() -> Unit = {},
-) =
-    run { TextDrawable.buildRoundRect(this, color, radius, config) }
+) = TextDrawable.buildRoundRect(this, color, radius, config)
 
 
 /**
@@ -73,7 +84,9 @@ fun String.asAvatarRoundRect(
  *
  * @param length default 5
  * @param char default 0
+ *
  * @return [String] code, e.g: 00002
+ *
  */
 fun String.asConsecutiveCode(length: Int = 5, char: Char = '0'): String =
     this.padStart(length, char)
@@ -83,14 +96,18 @@ fun String.asConsecutiveCode(length: Int = 5, char: Char = '0'): String =
  * String to Base64
  *
  * @param flags By default [Base64.DEFAULT]
+ *
  * @return [ByteArray]
+ *
  */
 fun String.toBase64Decode(flags: Int = Base64.DEFAULT): ByteArray = Base64.decode(this, flags)
 
 
 /**
  * Converts a string to boolean such as 'Y', 'yes', 'TRUE'
+ *
  * @return [Boolean]
+ *
  */
 fun String.toBoolean(): Boolean {
     return this.isNotEmpty() &&
@@ -142,8 +159,11 @@ fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd"): Calendar = sy
 
 /**
  * Get the first two initial letters of a first and last name if it exists
+ *
  * @param containLastName default false
+ *
  * @return [String]
+ *
  */
 fun String.initials(containLastName: Boolean = false): String =
     if (this.isNotBlank() && this.length < 3) this.uppercase()
@@ -172,6 +192,7 @@ fun String.initials(containLastName: Boolean = false): String =
  * To write or print with an initial capital
  *
  * @return [String] Converted string or unchanged value if it generates an error
+ *
  */
 fun String.toCapitalize(): String {
     return try {
@@ -187,6 +208,7 @@ fun String.toCapitalize(): String {
  * Write or print each word with a capital letter
  *
  * @return [String] Converted string or unchanged value if it generates an error
+ *
  */
 fun String.toCapitalizePerWord(): String {
     return try {
@@ -209,6 +231,7 @@ fun String.toCapitalizePerWord(): String {
  * Check if a string is alphanumeric
  *
  * @return [Boolean] - `true` or `false`
+ *
  */
 val String.isAlphanumeric get() = matches("^[a-zA-Z0-9]*$".toRegex())
 
@@ -217,6 +240,7 @@ val String.isAlphanumeric get() = matches("^[a-zA-Z0-9]*$".toRegex())
  * Check if a string is alphabetic
  *
  * @return [Boolean] - `true` or `false`
+ *
  */
 val String.isAlphabetic get() = matches("^[a-zA-Z]*$".toRegex())
 
