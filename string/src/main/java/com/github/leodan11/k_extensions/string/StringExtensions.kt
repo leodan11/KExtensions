@@ -261,3 +261,13 @@ val String.mostCommonCharacter: Char?
         for (entry in map) maxEntry = if (entry.value > maxEntry.value) entry else maxEntry
         return maxEntry.key
     }
+
+
+/**
+ * Removes duplicates words from a string. Words are separated by one of more space characters.
+ * @return String with duplicate words removed
+ */
+fun String.uniquifyWords(): String {
+    val multipleSpacesRegex = " +".toRegex()
+    return this.split(multipleSpacesRegex).distinct().joinToString(" ")
+}

@@ -2,6 +2,7 @@
 
 package com.github.leodan11.k_extensions.context
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
@@ -24,6 +25,7 @@ import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.WindowManager
@@ -35,6 +37,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import com.github.leodan11.k_extensions.core.tag
 import com.google.android.material.textfield.TextInputLayout
 
 /**
@@ -154,6 +157,7 @@ fun Context.createBitmap(
     backgroundColor: Int,
     config: Bitmap.Config = Bitmap.Config.ARGB_8888
 ): Bitmap {
+    Log.i(this.tag(), "createBitmap")
     val bitmap = Bitmap.createBitmap(width.toInt(), height.toInt(), config)
     val canvas = Canvas(bitmap)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -292,6 +296,23 @@ inline fun <reified T : Service> Context.isServiceRunning(): Boolean {
 
 
 /**
+ * Reboot the application
+ *
+ * @param[restartIntent] optional, desired activity to show after the reboot
+ */
+fun Context.reboot(restartIntent: Intent? = this.packageManager.getLaunchIntentForPackage(this.packageName)) {
+    restartIntent?.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+    if (this is Activity) {
+        this.startActivity(restartIntent)
+        finishAffinity()
+    } else {
+        restartIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        this.startActivity(restartIntent)
+    }
+}
+
+
+/**
  * Register a receiver to listen to bluetooth changes
  *
  * @param connectionStateChanged [(Intent, Int) -> Unit] - Bluetooth connection state changed callback
@@ -417,24 +438,46 @@ fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
 
 
 /**
- * Validate Text field has data
+ * Validate Text field has data. Default error message [R.string.label_this_field_cannot_be_left_empty]
+ *
+ * @receiver [Context] required current context
  *
  * @param inputLayout Parent element [TextInputLayout].
  * @param inputEditText Text field [EditText].
- * @param message [String] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
+ *
+ * @return [Boolean] `true` or `false`.
+ *
+ */
+fun Context.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText
+): Boolean {
+    val errorDefault = this.getString(R.string.label_this_field_cannot_be_left_empty)
+    return this.validateTextField(inputLayout, inputEditText, errorDefault)
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ * @param message [String] Error to be displayed on the element.
  *
  * @return [Boolean] `true` or `false`.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputEditText: EditText,
-    message: String? = null
+    message: String
 ): Boolean {
-    val errorDefault = message ?: this.getString(R.string.label_this_field_cannot_be_left_empty)
+    Log.i(this.tag(), "validateTextField")
     inputEditText.let {
-        if (TextUtils.isEmpty(it.text.toString().trim())) {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = errorDefault
+            inputLayout.error = message
             return false
         } else inputLayout.isErrorEnabled = false
         return true
@@ -443,24 +486,45 @@ fun Context.validateTextField(
 
 
 /**
- * Validate Text field has data
+ * Validate Text field has data. Default error message [R.string.label_this_field_cannot_be_left_empty]
+ *
+ * @receiver [Context] required current context
  *
  * @param inputLayout Parent element [TextInputLayout].
  * @param inputAutoComplete Text field [AutoCompleteTextView].
- * @param message [String] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Context.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView
+): Boolean {
+    val errorDefault = this.getString(R.string.label_this_field_cannot_be_left_empty)
+    return this.validateTextField(inputLayout, inputAutoComplete, errorDefault)
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [String] Error to be displayed on the element.
  *
  * @return [Boolean] `true` or `false`.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView,
-    message: String? = null
+    message: String
 ): Boolean {
-    val errorDefault = message ?: this.getString(R.string.label_this_field_cannot_be_left_empty)
+    Log.i(this.tag(), "validateTextField")
     inputAutoComplete.let {
-        if (TextUtils.isEmpty(it.text.toString().trim())) {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = errorDefault
+            inputLayout.error = message
             return false
         } else inputLayout.isErrorEnabled = false
         return true
@@ -471,47 +535,50 @@ fun Context.validateTextField(
 /**
  * Validate Text field has data
  *
+ * @receiver [Context] required current context
+ *
  * @param inputLayout Parent element [TextInputLayout].
  * @param inputEditText Text field [EditText].
- * @param message [Int] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
+ * @param message [Int] Error to be displayed on the element.
  *
  * @return [Boolean] `true` or `false`.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputEditText: EditText,
-    @StringRes message: Int? = null
+    @StringRes message: Int
 ): Boolean {
-    val errorDefault = message ?: R.string.label_this_field_cannot_be_left_empty
     inputEditText.let {
-        if (TextUtils.isEmpty(it.text.toString().trim())) {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = this.getString(errorDefault)
+            inputLayout.error = this.getString(message)
             return false
         } else inputLayout.isErrorEnabled = false
         return true
     }
 }
 
+
 /**
  * Validate Text field has data
  *
+ * @receiver [Context] required current context
+ *
  * @param inputLayout Parent element [TextInputLayout].
  * @param inputAutoComplete Text field [AutoCompleteTextView].
- * @param message [Int] Error to be displayed on the element. Default [R.string.label_this_field_cannot_be_left_empty]
+ * @param message [Int] Error to be displayed on the element.
  *
  * @return [Boolean] `true` or `false`.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView,
-    @StringRes message: Int? = null
+    @StringRes message: Int
 ): Boolean {
-    val errorDefault = message ?: R.string.label_this_field_cannot_be_left_empty
     inputAutoComplete.let {
-        if (TextUtils.isEmpty(it.text.toString().trim())) {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true
-            inputLayout.error = this.getString(errorDefault)
+            inputLayout.error = this.getString(message)
             return false
         } else inputLayout.isErrorEnabled = false
         return true

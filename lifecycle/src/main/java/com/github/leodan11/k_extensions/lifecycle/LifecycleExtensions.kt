@@ -1,5 +1,6 @@
 package com.github.leodan11.k_extensions.lifecycle
 
+import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -124,8 +125,14 @@ fun AppCompatActivity.repeatingJobOnResumed(block: suspend CoroutineScope.() -> 
 
 
 /**
- * add a [LifecycleEventObserver] that will be invoked on the given [state] of the [Lifecycle] of
- * this [Fragment].
+ * Add a [LifecycleEventObserver] that will be invoked on the given [Lifecycle.Event] of the [Lifecycle] of this [Fragment].
+ *
+ * @receiver [Lifecycle]
+ *
+ * @param which [Lifecycle.Event] to listen
+ *
+ * @param block [() -> Unit] to be invoked
+ *
  */
 fun Lifecycle.doOnEvent(which: Lifecycle.Event, block: () -> Unit) {
     val observer = object : LifecycleEventObserver {
@@ -144,3 +151,24 @@ fun Lifecycle.doOnEvent(which: Lifecycle.Event, block: () -> Unit) {
  * Returns the [CoroutineScope] for the [Lifecycle] of this [Fragment].
  */
 val Fragment.viewCoroutineScope get() = viewLifecycleOwner.lifecycle.coroutineScope
+
+
+/**
+ * True if the lifecycles current state is at least [Lifecycle.State.CREATED].
+ */
+@get:CheckResult
+inline val Lifecycle.isAtLeastCreated get() = currentState.isAtLeast(Lifecycle.State.CREATED)
+
+
+/**
+ * True if the lifecycles current state is at least [Lifecycle.State.STARTED].
+ */
+@get:CheckResult
+inline val Lifecycle.isAtLeastStarted get() = currentState.isAtLeast(Lifecycle.State.STARTED)
+
+
+/**
+ * True if the lifecycles current state is [Lifecycle.State.RESUMED].
+ */
+@get:CheckResult
+inline val Lifecycle.isResumed get() = currentState === Lifecycle.State.RESUMED
