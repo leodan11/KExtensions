@@ -7,9 +7,8 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 lifecycleRuntimeKtx = "2.8.7"
 material = "1.12.0"
-navigationFragmentKtx = "2.8.6"
+navigationFragmentKtx = "2.8.7"
 swiperefreshlayout = "1.1.0"
-textdrawable = "1.0.3"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -24,5 +23,3 @@ androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx",
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 junit = { module = "junit:junit", version.ref = "junit" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-textdrawable = { module = "com.github.jahirfiquitiva:TextDrawable", version.ref = "textdrawable" }
-

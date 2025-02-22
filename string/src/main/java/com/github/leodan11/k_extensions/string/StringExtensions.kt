@@ -2,7 +2,7 @@ package com.github.leodan11.k_extensions.string
 
 import android.util.Base64
 import androidx.annotation.ColorInt
-import jahirfiquitiva.libs.textdrawable.TextDrawable
+import com.github.leodan11.k_extensions.base.ShapeTextDrawable
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -15,15 +15,15 @@ import java.util.regex.Pattern
  * For more information about [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable).
  *
  * @param color [Int]
- * @param config [TextDrawable.Builder] default [Unit]
+ * @param config [ShapeTextDrawable.Builder] default [Unit]
  *
- * @return [TextDrawable]
+ * @return [ShapeTextDrawable]
  *
  */
 fun String.asAvatar(
     @ColorInt color: Int,
-    config: TextDrawable.Builder.() -> Unit = {},
-) = TextDrawable.build(this, color, config)
+    config: ShapeTextDrawable.Builder.() -> Unit = {},
+) = ShapeTextDrawable.build(this, color, config)
 
 
 /**
@@ -32,15 +32,15 @@ fun String.asAvatar(
  * For more information about [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable).
  *
  * @param color [Int]
- * @param config [TextDrawable.Builder] default [Unit]
+ * @param config [ShapeTextDrawable.Builder] default [Unit]
  *
- * @return [TextDrawable]
+ * @return [ShapeTextDrawable]
  *
  */
 fun String.asAvatarRect(
     @ColorInt color: Int,
-    config: TextDrawable.Builder.() -> Unit = {},
-) = TextDrawable.buildRect(this, color, config)
+    config: ShapeTextDrawable.Builder.() -> Unit = {},
+) = ShapeTextDrawable.buildRect(this, color, config)
 
 
 /**
@@ -49,15 +49,15 @@ fun String.asAvatarRect(
  * For more information about [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable).
  *
  * @param color [Int]
- * @param config [TextDrawable.Builder] default [Unit]
+ * @param config [ShapeTextDrawable.Builder] default [Unit]
  *
- * @return [TextDrawable]
+ * @return [ShapeTextDrawable]
  *
  */
 fun String.asAvatarRound(
     @ColorInt color: Int,
-    config: TextDrawable.Builder.() -> Unit = {},
-) = TextDrawable.buildRound(this, color, config)
+    config: ShapeTextDrawable.Builder.() -> Unit = {},
+) = ShapeTextDrawable.buildRound(this, color, config)
 
 
 /**
@@ -67,16 +67,16 @@ fun String.asAvatarRound(
  *
  * @param radius [Int]
  * @param color [Int]
- * @param config [TextDrawable.Builder] default [Unit]
+ * @param config [ShapeTextDrawable.Builder] default [Unit]
  *
- * @return [TextDrawable]
+ * @return [ShapeTextDrawable]
  *
  */
 fun String.asAvatarRoundRect(
     radius: Int,
     @ColorInt color: Int,
-    config: TextDrawable.Builder.() -> Unit = {},
-) = TextDrawable.buildRoundRect(this, color, radius, config)
+    config: ShapeTextDrawable.Builder.() -> Unit = {},
+) = ShapeTextDrawable.buildRoundRect(this, color, radius, config)
 
 
 /**

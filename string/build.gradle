@@ -54,10 +54,10 @@ android {
 dependencies {
 
     api project(":core")
+    api project(":base")
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
-    implementation libs.textdrawable
     implementation libs.material
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
