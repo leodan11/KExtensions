@@ -1,6 +1,6 @@
 package com.github.leodan11.k_extensions.base;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresPermission;
 import androidx.lifecycle.LiveData;
 
 public class NetworkConnectivityManager extends LiveData<Boolean> {
@@ -51,6 +52,7 @@ public class NetworkConnectivityManager extends LiveData<Boolean> {
         };
     }
 
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     @Override
     protected void onActive() {
         super.onActive();
@@ -64,7 +66,7 @@ public class NetworkConnectivityManager extends LiveData<Boolean> {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @SuppressLint("MissingPermission")
+    @RequiresPermission(value = "android.permission.ACCESS_NETWORK_STATE")
     public boolean isManagerEnabled() {
         boolean isEnabled = false;
         ConnectivityManager connectivityManager =
@@ -85,7 +87,8 @@ public class NetworkConnectivityManager extends LiveData<Boolean> {
         return isEnabled;
     }
 
-    @SuppressLint("MissingPermission")
+
+    @RequiresPermission(value = "android.permission.ACCESS_NETWORK_STATE")
     private void registerNetworkCallback() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);

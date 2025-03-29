@@ -2,9 +2,17 @@
 
 package com.github.leodan11.k_extensions.fragment
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.text.TextUtils
+import android.util.Log
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import com.github.leodan11.k_extensions.core.tag
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * Get the application file directory
@@ -85,5 +93,155 @@ fun Fragment.getVersionName(pkgName: String = requireActivity().packageName.toSt
     } catch (e: PackageManager.NameNotFoundException) {
         e.printStackTrace()
         ""
+    }
+}
+
+/**
+ * Validate Text field has data. Default error message
+ *  - `This field cannot be left empty`
+ *
+ * @receiver [Fragment] required current fragment
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ *
+ * @return [Boolean] `true` or `false`.
+ *
+ */
+fun Fragment.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText
+): Boolean {
+    val errorDefault = this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
+    return this.validateTextField(inputLayout, inputEditText, errorDefault)
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Fragment] required current fragment
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ * @param message [String] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Fragment.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText,
+    message: String
+): Boolean {
+    Log.i(this.tag(), "Fragment::validateTextField()")
+    inputEditText.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = message
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
+
+/**
+ * Validate Text field has data. Default error message
+ *  *  - `This field cannot be left empty`
+ *
+ * @receiver [Fragment] required current fragment
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Fragment.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView
+): Boolean {
+    val errorDefault = this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
+    return this.validateTextField(inputLayout, inputAutoComplete, errorDefault)
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Fragment] required current fragment
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [String] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Fragment.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView,
+    message: String
+): Boolean {
+    Log.i(this.tag(), "Fragment::validateTextField()")
+    inputAutoComplete.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = message
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Fragment] required current fragment
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ * @param message [Int] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Fragment.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText,
+    @StringRes message: Int
+): Boolean {
+    inputEditText.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = this.getString(message)
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Fragment] required current fragment
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [Int] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Fragment.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView,
+    @StringRes message: Int
+): Boolean {
+    inputAutoComplete.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = this.getString(message)
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
     }
 }

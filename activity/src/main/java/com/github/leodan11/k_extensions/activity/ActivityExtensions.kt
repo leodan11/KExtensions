@@ -21,6 +21,7 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.github.leodan11.k_extensions.core.DisplayDensity
+import androidx.core.graphics.createBitmap
 
 /**
  * Enable fullscreen mode
@@ -195,7 +196,7 @@ fun Activity.screenShot(removeStatusBar: Boolean = false): Bitmap {
     val dm = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(dm)
 
-    val bmp = Bitmap.createBitmap(dm.widthPixels, dm.heightPixels, Bitmap.Config.RGB_565)
+    val bmp = createBitmap(dm.widthPixels, dm.heightPixels, Bitmap.Config.RGB_565)
     val canvas = Canvas(bmp)
     window.decorView.draw(canvas)
 
@@ -232,7 +233,7 @@ fun Activity.screenShot(removeStatusBar: Boolean = false, listener: (Int, Bitmap
 
         rect.set(rect.left, rect.top + statusBarHeight, rect.right, rect.bottom)
     }
-    val bitmap = Bitmap.createBitmap(rect.width(), rect.height(), Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(rect.width(), rect.height())
 
     PixelCopy.request(this.window, rect, bitmap, {
         listener(it, bitmap)

@@ -19,7 +19,6 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.Typeface
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.net.ConnectivityManager
@@ -37,6 +36,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.github.leodan11.k_extensions.core.tag
 import com.google.android.material.textfield.TextInputLayout
 
@@ -216,7 +216,7 @@ fun Context.getDrawableText(
     val y = (bitmap.height + bounds.height()) / 2
     canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
 
-    return BitmapDrawable(this.resources, bitmap)
+    return bitmap.toDrawable(this.resources)
 }
 
 /**
@@ -438,7 +438,8 @@ fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
 
 
 /**
- * Validate Text field has data. Default error message [R.string.label_this_field_cannot_be_left_empty]
+ * Validate Text field has data. Default error message is
+ * - `This field cannot be left empty`
  *
  * @receiver [Context] required current context
  *
@@ -452,7 +453,8 @@ fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputEditText: EditText
 ): Boolean {
-    val errorDefault = this.getString(R.string.label_this_field_cannot_be_left_empty)
+    val errorDefault =
+        this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
     return this.validateTextField(inputLayout, inputEditText, errorDefault)
 }
 
@@ -473,7 +475,7 @@ fun Context.validateTextField(
     inputEditText: EditText,
     message: String
 ): Boolean {
-    Log.i(this.tag(), "validateTextField")
+    Log.i(this.tag(), "Context::validateTextField()")
     inputEditText.let {
         if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true
@@ -486,7 +488,8 @@ fun Context.validateTextField(
 
 
 /**
- * Validate Text field has data. Default error message [R.string.label_this_field_cannot_be_left_empty]
+ * Validate Text field has data. Default error message is
+ *  - `This field cannot be left empty`
  *
  * @receiver [Context] required current context
  *
@@ -499,7 +502,8 @@ fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView
 ): Boolean {
-    val errorDefault = this.getString(R.string.label_this_field_cannot_be_left_empty)
+    val errorDefault =
+        this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
     return this.validateTextField(inputLayout, inputAutoComplete, errorDefault)
 }
 
@@ -520,7 +524,7 @@ fun Context.validateTextField(
     inputAutoComplete: AutoCompleteTextView,
     message: String
 ): Boolean {
-    Log.i(this.tag(), "validateTextField")
+    Log.i(this.tag(), "Context::validateTextField()")
     inputAutoComplete.let {
         if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true

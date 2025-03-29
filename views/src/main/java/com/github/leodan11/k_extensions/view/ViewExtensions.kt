@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.ViewAnimationUtils
 import androidx.annotation.ColorRes
+import androidx.annotation.IdRes
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -81,6 +82,17 @@ fun View.createCircularReveal(
     }
     return animator
 }
+
+/**
+ * Find a view by id
+ *
+ * @receiver [View]
+ *
+ * @param id [Int] id of the view
+ *
+ * @return [View]
+ */
+inline fun <reified T> View.findById(@IdRes id: Int): T where T : View = findViewById(id)
 
 
 /**

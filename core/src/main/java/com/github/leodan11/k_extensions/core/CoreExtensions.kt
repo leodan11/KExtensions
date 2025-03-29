@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Base64
 import java.io.Serializable
 import java.nio.charset.Charset
+import androidx.core.graphics.createBitmap
 
 
 /**
@@ -119,7 +120,7 @@ fun Bitmap.mergeBitmaps(bitmap: Bitmap): Bitmap {
     val height = bitmap.height
     val width = bitmap.width
 
-    val combined = Bitmap.createBitmap(width, height, bitmap.config)
+    val combined = createBitmap(width, height, bitmap.config)
     val canvas = Canvas(combined)
     val canvasW = canvas.width
     val canvasH = canvas.height

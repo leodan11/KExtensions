@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <public name="label_this_field_cannot_be_left_empty" type="string" />
+</resources>

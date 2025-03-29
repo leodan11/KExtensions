@@ -20,6 +20,7 @@ import androidx.annotation.ColorInt
 import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.min
+import androidx.core.graphics.withSave
 
 /**
  *
@@ -115,32 +116,32 @@ open class ShapeTextDrawable private constructor(builder: Builder) : ShapeDrawab
             drawBorder(canvas)
         }
 
-        val count = canvas.save()
-        if (bitmap == null)
-            canvas.translate(r.left.toFloat(), r.top.toFloat())
+        canvas.withSave {
+            if (bitmap == null)
+                canvas.translate(r.left.toFloat(), r.top.toFloat())
 
-        val width = if (this.width < 0) r.width() else this.width
-        val height = if (this.height < 0) r.height() else this.height
+            val width = if (this@ShapeTextDrawable.width < 0) r.width() else this@ShapeTextDrawable.width
+            val height = if (this@ShapeTextDrawable.height < 0) r.height() else this@ShapeTextDrawable.height
 
-        if (bitmap == null) {
-            // draw text
-            val fontSize = if (this.fontSize < 0) min(width, height) / 2 else this.fontSize
-            textPaint.textSize = fontSize.toFloat()
+            if (bitmap == null) {
+                // draw text
+                val fontSize = if (this@ShapeTextDrawable.fontSize < 0) min(width, height) / 2 else this@ShapeTextDrawable.fontSize
+                textPaint.textSize = fontSize.toFloat()
 
-            val textBounds = Rect()
-            textPaint.getTextBounds(text, 0, text?.length ?: 0, textBounds)
-            canvas.drawText(
-                text.orEmpty(), (width / 2).toFloat(), height / 2 - textBounds.exactCenterY(),
-                textPaint
-            )
-        } else {
-            canvas.drawBitmap(
-                bitmap, ((width - bitmap.width) / 2).toFloat(),
-                ((height - bitmap.height) / 2).toFloat(), null
-            )
+                val textBounds = Rect()
+                textPaint.getTextBounds(text, 0, text?.length ?: 0, textBounds)
+                canvas.drawText(
+                    text.orEmpty(), (width / 2).toFloat(), height / 2 - textBounds.exactCenterY(),
+                    textPaint
+                )
+            } else {
+                canvas.drawBitmap(
+                    bitmap, ((width - bitmap.width) / 2).toFloat(),
+                    ((height - bitmap.height) / 2).toFloat(), null
+                )
+            }
+
         }
-
-        canvas.restoreToCount(count)
     }
 
     private fun drawBorder(canvas: Canvas) {
