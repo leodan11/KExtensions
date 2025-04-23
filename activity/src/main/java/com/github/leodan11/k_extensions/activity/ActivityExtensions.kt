@@ -11,17 +11,24 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
+import android.text.TextUtils
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.PixelCopy
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.github.leodan11.k_extensions.core.DisplayDensity
 import androidx.core.graphics.createBitmap
+import com.github.leodan11.k_extensions.core.tag
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * Enable fullscreen mode
@@ -240,6 +247,158 @@ fun Activity.screenShot(removeStatusBar: Boolean = false, listener: (Int, Bitmap
     }, Handler(this.mainLooper))
 }
 
+
+/**
+ * Validate Text field has data. Default error message is
+ * - `This field cannot be left empty`
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ *
+ * @return [Boolean] `true` or `false`.
+ *
+ */
+fun Activity.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText
+): Boolean {
+    val errorDefault =
+        this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
+    return this.validateTextField(inputLayout, inputEditText, errorDefault)
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ * @param message [String] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Activity.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText,
+    message: String
+): Boolean {
+    Log.i(this.tag(), "Activity::validateTextField()")
+    inputEditText.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = message
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
+
+/**
+ * Validate Text field has data. Default error message is
+ *  - `This field cannot be left empty`
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Activity.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView
+): Boolean {
+    val errorDefault =
+        this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
+    return this.validateTextField(inputLayout, inputAutoComplete, errorDefault)
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [String] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Activity.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView,
+    message: String
+): Boolean {
+    Log.i(this.tag(), "Activity::validateTextField()")
+    inputAutoComplete.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = message
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputEditText Text field [EditText].
+ * @param message [Int] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Activity.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText,
+    @StringRes message: Int
+): Boolean {
+    inputEditText.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = this.getString(message)
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
+
+
+/**
+ * Validate Text field has data
+ *
+ * @receiver [Context] required current context
+ *
+ * @param inputLayout Parent element [TextInputLayout].
+ * @param inputAutoComplete Text field [AutoCompleteTextView].
+ * @param message [Int] Error to be displayed on the element.
+ *
+ * @return [Boolean] `true` or `false`.
+ */
+fun Activity.validateTextField(
+    inputLayout: TextInputLayout,
+    inputAutoComplete: AutoCompleteTextView,
+    @StringRes message: Int
+): Boolean {
+    inputAutoComplete.let {
+        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
+            inputLayout.isErrorEnabled = true
+            inputLayout.error = this.getString(message)
+            return false
+        } else inputLayout.isErrorEnabled = false
+        return true
+    }
+}
 
 
 private val Activity.statusBarHeight: Int
