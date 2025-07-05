@@ -24,7 +24,6 @@ import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.os.Build
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.WindowManager
@@ -37,119 +36,91 @@ import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
-import com.github.leodan11.k_extensions.core.tag
 import com.google.android.material.textfield.TextInputLayout
 
 /**
- * Get application cache directory
+ * Returns the absolute path of the application cache directory.
  *
- * Application cache directory ("/data/data/<package name>/cache")
- *
- * @return [String] - Cache directory
- *
+ * @receiver Context - The context of the current state of the application.
+ * @return String - Absolute path of cache directory.
  */
 val Context.cacheDirPath: String
     get() = cacheDir.absolutePath
 
-
 /**
- * Get Connectivity manager
+ * Returns the ConnectivityManager system service.
+ *
+ * @receiver Context
+ * @return ConnectivityManager - The connectivity manager.
  */
-val Context.connectivityManager
+val Context.connectivityManager: ConnectivityManager
     get() = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-
 /**
- * Get the application external cache directory
+ * Returns the absolute path of the external cache directory.
  *
- * Application cache directory ("/Android/data/<package name>/cache")
- *
- * @return [String] - External cache directory
- *
+ * @receiver Context
+ * @return String - External cache directory path or empty string if null.
  */
 val Context.externalCacheDirPath: String
     get() = externalCacheDir?.absolutePath ?: ""
 
-
 /**
- * Get the application external file directory
+ * Returns the absolute path of the external files directory.
  *
- * Application file directory ("/Android/data/<package name>/files")
- *
- * @return [String] - External file directory
- *
+ * @receiver Context
+ * @return String - External file directory path or empty string if null.
  */
 val Context.externalFileDirPath: String
     get() = getExternalFilesDir("")?.absolutePath ?: ""
 
-
 /**
- * Get application file directory
+ * Returns the absolute path of the internal files directory.
  *
- * Application file directory ("/data/data/<package name>/files")
- *
- * @return [String] - File directory
- *
+ * @receiver Context
+ * @return String - Internal files directory path.
  */
 val Context.fileDirPath: String
     get() = filesDir.absolutePath
 
-
 /**
- * Get Window manager
+ * Returns the WindowManager system service.
+ *
+ * @receiver Context
+ * @return WindowManager - The window manager.
  */
-val Context.windowManager
+val Context.windowManager: WindowManager
     get() = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
 
 /**
- * Convert dp to px
+ * Converts dp (density-independent pixels) to pixels.
  *
- * @param dp
- * @return [Float]
+ * @receiver Context
+ * @param dp Float - Value in dp to convert.
+ * @return Float - Converted value in pixels.
  */
-fun Context.convertDpToPx(dp: Float): Float = (this.resources.displayMetrics.density * dp)
-
+fun Context.convertDpToPx(dp: Float): Float = resources.displayMetrics.density * dp
 
 /**
- * Convert px to dp
+ * Converts pixels to dp (density-independent pixels).
  *
- * @param px
- * @return [Float]
+ * @receiver Context
+ * @param px Float - Value in pixels to convert.
+ * @return Float - Converted value in dp.
  */
-fun Context.convertPxToDp(px: Float): Float = (px / this.resources.displayMetrics.density)
-
+fun Context.convertPxToDp(px: Float): Float = px / resources.displayMetrics.density
 
 /**
- * Get color from resources
- */
-fun Context.compatColor(@ColorRes colorInt: Int): Int =
-    ContextCompat.getColor(this, colorInt)
-
-
-/**
- * Get drawable from resources
- */
-fun Context.compatDrawable(@DrawableRes drawableRes: Int): Drawable? =
-    try {
-        ContextCompat.getDrawable(this, drawableRes)
-    } catch (e: Exception) {
-        AppCompatResources.getDrawable(this, drawableRes)
-    }
-
-
-/**
- * Creates a bitmap from a specific color and size.
+ * Creates a bitmap of a custom shape with the specified width, height, and background color.
  *
- * @param width Defines the width of the bitmap
- * @param height Defines the height of the bitmap
- * @param backgroundColor Defines the color of the bitmap
- * @param config [Bitmap.Config] Default [Bitmap.Config.ARGB_8888]
- *
- * @return [Bitmap]
- *
- * @throws IllegalArgumentException
- *
+ * @receiver Context
+ * @param width Float - Width of the bitmap.
+ * @param height Float - Height of the bitmap.
+ * @param backgroundColor Int - Color to fill the bitmap.
+ * @param config Bitmap.Config - Bitmap configuration (default ARGB_8888).
+ * @return Bitmap - The generated bitmap.
+ * @throws IllegalArgumentException If width or height is invalid.
  */
 fun Context.createBitmap(
     width: Float,
@@ -157,191 +128,213 @@ fun Context.createBitmap(
     backgroundColor: Int,
     config: Bitmap.Config = Bitmap.Config.ARGB_8888
 ): Bitmap {
-    Log.i(this.tag(), "createBitmap")
     val bitmap = Bitmap.createBitmap(width.toInt(), height.toInt(), config)
     val canvas = Canvas(bitmap)
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    paint.setColor(backgroundColor)
-    val path = Path()
-    path.moveTo(0f, 0f)
-    path.lineTo(width, 0f)
-    path.lineTo(width / 2, height)
-    path.close()
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = backgroundColor
+    }
+    val path = Path().apply {
+        moveTo(0f, 0f)
+        lineTo(width, 0f)
+        lineTo(width / 2, height)
+        close()
+    }
     canvas.drawPath(path, paint)
     return bitmap
 }
 
+/**
+ * Retrieves a color from resources in a backward compatible way.
+ *
+ * @receiver Context
+ * @param colorResId Int - Resource ID of the color.
+ * @return Int - The resolved color integer.
+ */
+fun Context.compatColor(@ColorRes colorResId: Int): Int = ContextCompat.getColor(this, colorResId)
 
 /**
- * Get resource id
+ * Retrieves a drawable from resources in a backward compatible way.
  *
- * @param idAttrRes ID attr Resource, e.g: [android.R.attr.colorAccent]
- * @return [Int] - Resource Id
+ * @receiver Context
+ * @param drawableResId Int - Resource ID of the drawable.
+ * @return Drawable? - The resolved drawable or null if not found.
+ */
+fun Context.compatDrawable(@DrawableRes drawableResId: Int): Drawable? = try {
+    ContextCompat.getDrawable(this, drawableResId)
+} catch (e: Exception) {
+    AppCompatResources.getDrawable(this, drawableResId)
+}
+
+/**
+ * Retrieves the resource ID associated with a given attribute resource.
+ *
+ * @receiver Context
+ * @param idAttrRes Int - Attribute resource ID (e.g., android.R.attr.colorAccent).
+ * @return Int - The resolved resource ID.
  */
 fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
     val typedValue = TypedValue()
-    this.theme.resolveAttribute(idAttrRes, typedValue, true)
+    theme.resolveAttribute(idAttrRes, typedValue, true)
     return typedValue.resourceId
 }
 
-
 /**
- * Utils method to create drawable containing text
- * @param text [String] - Text
- * @param typeface [Typeface] - Typeface
- * @param color [Int] - Color
- * @param size [Int] - Size
- * @return [Drawable]
+ * Returns a drawable that contains the specified text.
+ *
+ * @receiver Context
+ * @param text String - The text to display.
+ * @param typeface Typeface? - Optional typeface (default is bold default).
+ * @param color Int - Color resource ID of the text color.
+ * @param size Int - Text size in sp.
+ * @return Drawable - Drawable containing the text.
  */
 fun Context.getDrawableText(
     text: String,
     typeface: Typeface? = null,
-    color: Int,
+    @ColorRes color: Int,
     size: Int
 ): Drawable {
     val bitmap = Bitmap.createBitmap(48, 48, Bitmap.Config.ARGB_8888)
-
     val canvas = Canvas(bitmap)
-    val scale = this.resources.displayMetrics.density
-
+    val scale = resources.displayMetrics.density
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         this.typeface = typeface ?: Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         this.color = ContextCompat.getColor(this@getDrawableText, color)
         this.textSize = (size * scale).toInt().toFloat()
     }
-
     val bounds = Rect()
     paint.getTextBounds(text, 0, text.length, bounds)
     val x = (bitmap.width - bounds.width()) / 2
     val y = (bitmap.height + bounds.height()) / 2
     canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
-
-    return bitmap.toDrawable(this.resources)
+    return bitmap.toDrawable(resources)
 }
 
 /**
- * Extension method to provide quicker access to the [LayoutInflater] from [Context].
- */
-fun Context.getLayoutInflater() =
-    getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-
-/**
- * Get the application version code
+ * Returns the version code of the application package.
  *
- * @param pkgName [String] - Package name
- * @return [Long] - Version code
- *
+ * @receiver Context
+ * @param pkgName String - Package name (defaults to current package).
+ * @return Long - Version code or -1 if not found.
  */
 fun Context.getVersionCode(pkgName: String = packageName): Long {
     if (pkgName.isBlank()) return -1
     return try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) packageManager.getPackageInfo(
-            pkgName,
-            0
-        ).longVersionCode
-        else packageManager.getPackageInfo(pkgName, 0).versionCode.toLong()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            packageManager.getPackageInfo(pkgName, 0).longVersionCode
+        } else {
+            packageManager.getPackageInfo(pkgName, 0).versionCode.toLong()
+        }
     } catch (e: PackageManager.NameNotFoundException) {
         e.printStackTrace()
         -1
     }
 }
 
-
 /**
- * Get the application version name
+ * Returns the version name of the application package.
  *
- * @param pkgName [String] - Package name
- * @return [String] - Version name
+ * @receiver Context
+ * @param pkgName String - Package name (defaults to current package).
+ * @return String - Version name or empty string if not found.
  */
 fun Context.getVersionName(pkgName: String = packageName): String {
     if (pkgName.isBlank()) return ""
     return try {
-        packageManager.getPackageInfo(pkgName, 0).versionName
+        packageManager.getPackageInfo(pkgName, 0).versionName ?: ""
     } catch (e: PackageManager.NameNotFoundException) {
         e.printStackTrace()
         ""
     }
 }
 
+/**
+ * Provides quick access to the LayoutInflater from the Context.
+ *
+ * @receiver Context
+ * @return LayoutInflater - The layout inflater.
+ */
+fun Context.onLayoutInflater(): LayoutInflater =
+    getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
 /**
- * Determine if dark mode is currently active
+ * Returns whether the device is currently in night mode.
  *
- * @return [Boolean] - It is active
+ * @receiver Context
+ * @return Boolean - True if night mode is active, false otherwise.
  */
 fun Context.isNightModeActive(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        this.resources.configuration.isNightModeActive
+        resources.configuration.isNightModeActive
     } else {
-        val darkModeFlag = this.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val darkModeFlag = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         darkModeFlag == Configuration.UI_MODE_NIGHT_YES
     }
 }
 
-
 /**
- * Check if a service is running
+ * Checks if a service of type T is currently running.
  *
- * @return [Boolean] - `true` or `false`
+ * @receiver Context
+ * @return Boolean - True if service is running, false otherwise.
  */
 inline fun <reified T : Service> Context.isServiceRunning(): Boolean {
-    (this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?)?.run {
-        for (service in getRunningServices(Integer.MAX_VALUE)) {
-            if (T::class.java.name == service.service.className) return true //service.foreground
-        }
+    val activityManager =
+        getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return false
+    for (service in activityManager.getRunningServices(Int.MAX_VALUE)) {
+        if (service.service.className == T::class.java.name) return true
     }
     return false
 }
 
-
 /**
- * Reboot the application
+ * Reboots the application by restarting the specified activity or the main launcher activity by default.
  *
- * @param[restartIntent] optional, desired activity to show after the reboot
+ * @receiver Context
+ * @param restartIntent Intent? - Optional Intent to launch after reboot.
  */
-fun Context.reboot(restartIntent: Intent? = this.packageManager.getLaunchIntentForPackage(this.packageName)) {
+fun Context.reboot(restartIntent: Intent? = packageManager.getLaunchIntentForPackage(packageName)) {
     restartIntent?.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
     if (this is Activity) {
-        this.startActivity(restartIntent)
+        startActivity(restartIntent)
         finishAffinity()
     } else {
         restartIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        this.startActivity(restartIntent)
+        startActivity(restartIntent)
     }
 }
 
-
 /**
- * Register a receiver to listen to bluetooth changes
+ * Registers a BroadcastReceiver to listen for Bluetooth connection state changes.
  *
- * @param connectionStateChanged [(Intent, Int) -> Unit] - Bluetooth connection state changed callback
- * @return [BroadcastReceiver] - Broadcast receiver
+ * @receiver Context
+ * @param connectionStateChanged (Intent, Int) -> Unit - Callback with Intent and connection state.
+ * @return BroadcastReceiver - The registered receiver.
  */
 inline fun Context.registerBluetoothChange(crossinline connectionStateChanged: (Intent, Int) -> Unit): BroadcastReceiver {
-    return object : BroadcastReceiver() {
+    val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action ?: return
             if (action == BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) {
-                connectionStateChanged(intent, intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1))
+                val state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1)
+                connectionStateChanged(intent, state)
             }
         }
-    }.apply {
-        val intent =
-            IntentFilter().apply { addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED) }
-        this@registerBluetoothChange.registerReceiver(this, intent)
     }
+    val filter = IntentFilter(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+    registerReceiver(receiver, filter)
+    return receiver
 }
 
-
 /**
- * Register a receiver to listen to volume changes
+ * Registers a BroadcastReceiver to listen for volume changes.
  *
- * @param block [Int] - Volume changed callback
- * @return [BroadcastReceiver] - Broadcast receiver
+ * @receiver Context
+ * @param block (Int) -> Unit - Callback with the current volume level.
+ * @return BroadcastReceiver - The registered receiver.
  */
 inline fun Context.registerVolumeChange(crossinline block: (Int) -> Unit): BroadcastReceiver {
-    return object : BroadcastReceiver() {
+    val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action ?: return
             if (action == "android.media.VOLUME_CHANGED_ACTION") {
@@ -350,42 +343,41 @@ inline fun Context.registerVolumeChange(crossinline block: (Int) -> Unit): Broad
                 block(currVolume)
             }
         }
-    }.apply {
-        val intent = IntentFilter().apply { addAction("android.media.VOLUME_CHANGED_ACTION") }
-        this@registerVolumeChange.registerReceiver(this, intent)
     }
+    val filter = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
+    registerReceiver(receiver, filter)
+    return receiver
 }
 
-
 /**
- * Register a receiver to listen to wifi state changes
+ * Registers a BroadcastReceiver to listen for WiFi state changes.
  *
- * @param callback [Intent] - Wifi state changed callback
- * @return [BroadcastReceiver] - Broadcast receiver
+ * @receiver Context
+ * @param callback (Intent) -> Unit - Callback when WiFi state changes.
+ * @return BroadcastReceiver - The registered receiver.
  */
 inline fun Context.registerWifiStateChanged(crossinline callback: (Intent) -> Unit): BroadcastReceiver {
     val action = "android.net.wifi.WIFI_STATE_CHANGED"
-    return object : BroadcastReceiver() {
+    val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == action) {
                 callback(intent)
             }
         }
-    }.apply {
-        val intent = IntentFilter().apply { addAction(action) }
-        this@registerWifiStateChanged.registerReceiver(this, intent)
     }
+    val filter = IntentFilter(action)
+    registerReceiver(receiver, filter)
+    return receiver
 }
 
-
 /**
- * Start a foreground service
+ * Starts a foreground service of type T with optional intent customization.
  *
- * @param predicate [Intent] - Predicate to set the service intent
+ * @receiver Context
+ * @param predicate Intent.() -> Unit - Lambda to customize the intent.
  */
 inline fun <reified T : Service> Context.startForegroundService(predicate: Intent.() -> Unit = {}) {
-    val intent = Intent(this, T::class.java)
-    predicate(intent)
+    val intent = Intent(this, T::class.java).apply(predicate)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         startForegroundService(intent)
     } else {
@@ -393,198 +385,163 @@ inline fun <reified T : Service> Context.startForegroundService(predicate: Inten
     }
 }
 
-
 /**
- * Start a service unless it is already running
+ * Starts a service of type T only if it is not already running.
  *
- * @param predicate [Intent] - Predicate to set the service intent
+ * @receiver Context
+ * @param predicate Intent.() -> Unit - Lambda to customize the intent.
  */
 inline fun <reified T : Service> Context.startServiceUnlessRunning(predicate: Intent.() -> Unit = {}) {
-    if (!this.isServiceRunning<T>()) this.startForegroundService<T>(predicate)
+    if (!isServiceRunning<T>()) startForegroundService<T>(predicate)
 }
 
-
 /**
- * Stop a service
+ * Stops a service of type T.
  *
- * @return [Boolean] - `true` or `false`
+ * @receiver Context
+ * @return Boolean - True if service was stopped, false otherwise.
  */
 inline fun <reified T : Service> Context.stopService(): Boolean {
     val intent = Intent(this, T::class.java)
     return stopService(intent)
 }
 
-
 /**
- * Get bitmap from drawable
+ * Converts a drawable resource to a Bitmap.
  *
- * @param drawableIdRes ID drawable resource
- * @return [Bitmap]
+ * @receiver Context
+ * @param drawableIdRes Int - Drawable resource ID.
+ * @return Bitmap - The bitmap representation.
+ * @throws Exception if drawable resource is invalid.
  */
 fun Context.toDrawableAsBitmap(@DrawableRes drawableIdRes: Int): Bitmap {
-    val drawable =
-        ContextCompat.getDrawable(this, drawableIdRes) ?: throw Exception("Invalid drawable")
-    val canvas = Canvas()
+    val drawable = ContextCompat.getDrawable(this, drawableIdRes)
+        ?: throw Exception("Invalid drawable resource")
     val bitmap = Bitmap.createBitmap(
         drawable.intrinsicWidth,
         drawable.intrinsicHeight,
         Bitmap.Config.ARGB_8888
     )
-    canvas.setBitmap(bitmap)
+    val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
     drawable.draw(canvas)
     return bitmap
 }
 
-
 /**
- * Validate Text field has data. Default error message is
- * - `This field cannot be left empty`
+ * Validates that a TextInputLayout's EditText has non-empty input.
  *
- * @receiver [Context] required current context
- *
- * @param inputLayout Parent element [TextInputLayout].
- * @param inputEditText Text field [EditText].
- *
- * @return [Boolean] `true` or `false`.
- *
+ * @receiver Context
+ * @param inputLayout TextInputLayout - Parent layout of the EditText.
+ * @param inputEditText EditText - The text input field.
+ * @return Boolean - True if input is valid, false otherwise.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputEditText: EditText
 ): Boolean {
     val errorDefault =
-        this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
-    return this.validateTextField(inputLayout, inputEditText, errorDefault)
+        getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
+    return validateTextField(inputLayout, inputEditText, errorDefault)
 }
 
-
 /**
- * Validate Text field has data
+ * Validates that a TextInputLayout's EditText has non-empty input, with custom error message string.
  *
- * @receiver [Context] required current context
- *
- * @param inputLayout Parent element [TextInputLayout].
- * @param inputEditText Text field [EditText].
- * @param message [String] Error to be displayed on the element.
- *
- * @return [Boolean] `true` or `false`.
+ * @receiver Context
+ * @param inputLayout TextInputLayout - Parent layout.
+ * @param inputEditText EditText - Text field.
+ * @param message String - Custom error message.
+ * @return Boolean - True if input is valid.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputEditText: EditText,
     message: String
 ): Boolean {
-    Log.i(this.tag(), "Context::validateTextField()")
     inputEditText.let {
         if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true
             inputLayout.error = message
             return false
-        } else inputLayout.isErrorEnabled = false
+        }
+        inputLayout.isErrorEnabled = false
         return true
     }
 }
 
+/**
+ * Validates that a TextInputLayout's EditText has non-empty input, with custom error message resource.
+ *
+ * @receiver Context
+ * @param inputLayout TextInputLayout - Parent layout.
+ * @param inputEditText EditText - Text field.
+ * @param message Int - String resource for the error message.
+ * @return Boolean - True if input is valid.
+ */
+fun Context.validateTextField(
+    inputLayout: TextInputLayout,
+    inputEditText: EditText,
+    @StringRes message: Int
+): Boolean {
+    return validateTextField(inputLayout, inputEditText, getString(message))
+}
 
 /**
- * Validate Text field has data. Default error message is
- *  - `This field cannot be left empty`
+ * Validates that a TextInputLayout's AutoCompleteTextView has non-empty input.
  *
- * @receiver [Context] required current context
- *
- * @param inputLayout Parent element [TextInputLayout].
- * @param inputAutoComplete Text field [AutoCompleteTextView].
- *
- * @return [Boolean] `true` or `false`.
+ * @receiver Context
+ * @param inputLayout TextInputLayout - Parent layout.
+ * @param inputAutoComplete AutoCompleteTextView - The input field.
+ * @return Boolean - True if input is valid.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView
 ): Boolean {
     val errorDefault =
-        this.getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
-    return this.validateTextField(inputLayout, inputAutoComplete, errorDefault)
+        getString(com.github.leodan11.k_extensions.core.R.string.label_this_field_cannot_be_left_empty)
+    return validateTextField(inputLayout, inputAutoComplete, errorDefault)
 }
 
-
 /**
- * Validate Text field has data
+ * Validates that a TextInputLayout's AutoCompleteTextView has non-empty input, with custom error message string.
  *
- * @receiver [Context] required current context
- *
- * @param inputLayout Parent element [TextInputLayout].
- * @param inputAutoComplete Text field [AutoCompleteTextView].
- * @param message [String] Error to be displayed on the element.
- *
- * @return [Boolean] `true` or `false`.
+ * @receiver Context
+ * @param inputLayout TextInputLayout - Parent layout.
+ * @param inputAutoComplete AutoCompleteTextView - Input field.
+ * @param message String - Custom error message.
+ * @return Boolean - True if input is valid.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView,
     message: String
 ): Boolean {
-    Log.i(this.tag(), "Context::validateTextField()")
     inputAutoComplete.let {
         if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
             inputLayout.isErrorEnabled = true
             inputLayout.error = message
             return false
-        } else inputLayout.isErrorEnabled = false
+        }
+        inputLayout.isErrorEnabled = false
         return true
     }
 }
 
-
 /**
- * Validate Text field has data
+ * Validates that a TextInputLayout's AutoCompleteTextView has non-empty input, with custom error message resource.
  *
- * @receiver [Context] required current context
- *
- * @param inputLayout Parent element [TextInputLayout].
- * @param inputEditText Text field [EditText].
- * @param message [Int] Error to be displayed on the element.
- *
- * @return [Boolean] `true` or `false`.
- */
-fun Context.validateTextField(
-    inputLayout: TextInputLayout,
-    inputEditText: EditText,
-    @StringRes message: Int
-): Boolean {
-    inputEditText.let {
-        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
-            inputLayout.isErrorEnabled = true
-            inputLayout.error = this.getString(message)
-            return false
-        } else inputLayout.isErrorEnabled = false
-        return true
-    }
-}
-
-
-/**
- * Validate Text field has data
- *
- * @receiver [Context] required current context
- *
- * @param inputLayout Parent element [TextInputLayout].
- * @param inputAutoComplete Text field [AutoCompleteTextView].
- * @param message [Int] Error to be displayed on the element.
- *
- * @return [Boolean] `true` or `false`.
+ * @receiver Context
+ * @param inputLayout TextInputLayout - Parent layout.
+ * @param inputAutoComplete AutoCompleteTextView - Input field.
+ * @param message Int - String resource for the error message.
+ * @return Boolean - True if input is valid.
  */
 fun Context.validateTextField(
     inputLayout: TextInputLayout,
     inputAutoComplete: AutoCompleteTextView,
     @StringRes message: Int
 ): Boolean {
-    inputAutoComplete.let {
-        if (TextUtils.isEmpty(it.text.toString().trimEnd())) {
-            inputLayout.isErrorEnabled = true
-            inputLayout.error = this.getString(message)
-            return false
-        } else inputLayout.isErrorEnabled = false
-        return true
-    }
+    return validateTextField(inputLayout, inputAutoComplete, getString(message))
 }

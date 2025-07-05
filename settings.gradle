@@ -20,8 +20,6 @@ rootProject.name = "Sample"
 include ':app'
 include ':core'
 include ':base'
-include ':activity'
-include ':fragment'
 include ':context'
 include ':color'
 include ':string'

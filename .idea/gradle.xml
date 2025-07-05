@@ -10,21 +10,18 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/activity" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/base" />
             <option value="$PROJECT_DIR$/calendar" />
             <option value="$PROJECT_DIR$/color" />
             <option value="$PROJECT_DIR$/context" />
             <option value="$PROJECT_DIR$/core" />
-            <option value="$PROJECT_DIR$/fragment" />
             <option value="$PROJECT_DIR$/lifecycle" />
             <option value="$PROJECT_DIR$/number" />
             <option value="$PROJECT_DIR$/string" />
             <option value="$PROJECT_DIR$/views" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

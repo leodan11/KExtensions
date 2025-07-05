@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.github.leodan11.sample'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.github.leodan11.sample"
         minSdk 21
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -48,12 +48,10 @@ dependencies {
     androidTestImplementation libs.androidx.espresso.core
 
     implementation project(":core")
-    implementation project(":activity")
     implementation project(":base")
     implementation project(":calendar")
     implementation project(":color")
     implementation project(":context")
-    implementation project(":fragment")
     implementation project(":lifecycle")
     implementation project(":number")
     implementation project(":string")
