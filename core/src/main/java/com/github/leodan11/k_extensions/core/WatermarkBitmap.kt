@@ -16,7 +16,8 @@ fun addWatermarkToBitmap(
     watermarkText: String,
     options: WatermarkOptions = WatermarkOptions()
 ): Bitmap? {
-    val result = bitmap.config.let { bitmap.copy(it, true) } ?: return null
+    val config = bitmap.config ?: Bitmap.Config.ARGB_8888
+    val result = config.let { bitmap.copy(it, true) } ?: return null
     val canvas = Canvas(result)
     val paint = Paint(ANTI_ALIAS_FLAG or DITHER_FLAG)
     paint.textAlign = when (options.corner) {
@@ -46,6 +47,7 @@ fun Bitmap.addWatermark(
     watermarkText: String,
     options: WatermarkOptions = WatermarkOptions()
 ): Bitmap? {
+    val config = config ?: Bitmap.Config.ARGB_8888
     val result = copy(config, true) ?: return null
     val canvas = Canvas(result)
     val paint = Paint(ANTI_ALIAS_FLAG or DITHER_FLAG)

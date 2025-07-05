@@ -120,7 +120,7 @@ fun Bitmap.mergeBitmaps(bitmap: Bitmap): Bitmap {
     val height = bitmap.height
     val width = bitmap.width
 
-    val combined = createBitmap(width, height, bitmap.config)
+    val combined = createBitmap(width, height, bitmap.config ?: Bitmap.Config.ARGB_8888)
     val canvas = Canvas(combined)
     val canvasW = canvas.width
     val canvasH = canvas.height
