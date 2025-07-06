@@ -16,12 +16,14 @@ import android.view.PixelCopy
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.github.leodan11.k_extensions.core.DisplayDensity
 import androidx.core.graphics.createBitmap
+import androidx.fragment.app.FragmentActivity
 
 /**
  * Enables fullscreen mode for the Activity.
@@ -293,6 +295,27 @@ fun AppCompatActivity.getDisplayDensity(): DisplayDensity {
         DisplayMetrics.DENSITY_XXXHIGH -> DisplayDensity.XXXHDPI
         else -> DisplayDensity.XXHDPI
     }
+}
+
+/**
+ * Registers a custom [OnBackPressedCallback] for this [FragmentActivity].
+ *
+ * This allows handling the system back button with custom behavior in activities.
+ *
+ * @receiver FragmentActivity where the back press callback is registered.
+ * @param callback The [OnBackPressedCallback] instance that defines the back press logic.
+ *
+ * ```kotlin
+ * /** MainActivity::class */
+ * addOnBackPressedCallback(object : OnBackPressedCallback(true) {
+ *        override fun handleOnBackPressed() {
+ *            // Handle back press in activity
+ *       }
+ * })
+ * ```
+ */
+fun FragmentActivity.addOnBackPressedCallback(callback: OnBackPressedCallback) {
+    onBackPressedDispatcher.addCallback(this, callback)
 }
 
 /**

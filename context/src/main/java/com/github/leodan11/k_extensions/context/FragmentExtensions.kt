@@ -3,6 +3,7 @@ package com.github.leodan11.k_extensions.context
 import android.content.Intent
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputLayout
@@ -15,8 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
  * @receiver Fragment instance.
  * @return Absolute cache directory path as [String].
  *
- * @sample
- * ```
+ * ```kotlin
  * val cachePath = fragment.cacheDirPath
  * ```
  */
@@ -31,8 +31,7 @@ val Fragment.cacheDirPath: String
  * @receiver Fragment instance.
  * @return Absolute files directory path as [String].
  *
- * @sample
- * ```
+ * ```kotlin
  * val filePath = fragment.fileDirPath
  * ```
  */
@@ -47,8 +46,7 @@ val Fragment.fileDirPath: String
  * @receiver Fragment instance.
  * @return External cache directory path or empty string if unavailable.
  *
- * @sample
- * ```
+ * ```kotlin
  * val externalCache = fragment.externalCacheDirPath
  * ```
  */
@@ -63,8 +61,7 @@ val Fragment.externalCacheDirPath: String
  * @receiver Fragment instance.
  * @return External files directory path or empty string if unavailable.
  *
- * @sample
- * ```
+ * ```kotlin
  * val externalFiles = fragment.externalFileDirPath
  * ```
  */
@@ -78,8 +75,7 @@ val Fragment.externalFileDirPath: String
  * @param pkgName Optional package name. Defaults to the current app package.
  * @return Version code as [Long].
  *
- * @sample
- * ```
+ * ```kotlin
  * val versionCode = fragment.getVersionCode()
  * ```
  */
@@ -94,13 +90,36 @@ fun Fragment.getVersionCode(pkgName: String = requireActivity().packageName): Lo
  * @param pkgName Optional package name. Defaults to the current app package.
  * @return Version name as [String].
  *
- * @sample
- * ```
+ * ```kotlin
  * val versionName = fragment.getVersionName()
  * ```
  */
 fun Fragment.getVersionName(pkgName: String = requireActivity().packageName): String {
     return requireActivity().getVersionName(pkgName)
+}
+
+/**
+ * Registers a custom [OnBackPressedCallback] for this [Fragment], bound to its view lifecycle.
+ *
+ * Useful for handling back button events within fragments safely, as the callback
+ * is automatically removed when the fragment’s view is destroyed.
+ *
+ * @receiver Fragment where the callback is registered.
+ * @param callback The [OnBackPressedCallback] instance that defines the back press logic.
+ *
+ * @throws IllegalStateException if the fragment is not currently attached to an activity.
+ *
+ * ```kotlin
+ *  /** BlackFragment::class */
+ *  addOnBackPressedCallback(object : OnBackPressedCallback(true) {
+ *          override fun handleOnBackPressed() {
+ *               // Handle back press in activity
+ *          }
+ *   })
+ * ```
+ */
+fun Fragment.addOnBackPressedCallback(callback: OnBackPressedCallback) {
+    requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 }
 
 /**
@@ -111,8 +130,8 @@ fun Fragment.getVersionName(pkgName: String = requireActivity().packageName): St
  * @param finishCurrent Whether to finish the current Activity. Default is true.
  * @param block Lambda to configure the [Intent] before launching.
  *
- * @sample
- * ```
+ *
+ * ```kotlin
  * fragment.startNewPage(DetailActivity::class.java) {
  *     putExtra("id", 123)
  * }
