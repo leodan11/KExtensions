@@ -1,6 +1,7 @@
 package com.github.leodan11.k_extensions.view
 
 import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -104,3 +105,35 @@ inline fun <reified T> View.findById(@IdRes id: Int): T where T : View = findVie
  *
  */
 fun View.isRtl() = layoutDirection == View.LAYOUT_DIRECTION_RTL
+
+
+fun View.xAnimator(values: FloatArray, duration: Long = 300, repeatCount: Int = 0, repeatMode: Int = 0): Animator {
+    val animator = ObjectAnimator.ofFloat(this, View.X, *values)
+    animator.repeatCount = repeatCount
+    animator.duration = duration
+    if (repeatMode == ObjectAnimator.REVERSE || repeatMode == ObjectAnimator.RESTART) {
+        animator.repeatMode = repeatMode
+    }
+    return animator
+}
+
+fun View.yAnimator(values: FloatArray, duration: Long = 300, repeatCount: Int = 0, repeatMode: Int = 0): Animator {
+    val animator = ObjectAnimator.ofFloat(this, View.Y, *values)
+    animator.repeatCount = repeatCount
+    animator.duration = duration
+    if (repeatMode == ObjectAnimator.REVERSE || repeatMode == ObjectAnimator.RESTART) {
+        animator.repeatMode = repeatMode
+    }
+    return animator
+}
+
+
+fun View.zAnimator(values: FloatArray, duration: Long = 300, repeatCount: Int = 0, repeatMode: Int = 0): Animator {
+    val animator = ObjectAnimator.ofFloat(this, View.Z, *values)
+    animator.repeatCount = repeatCount
+    animator.duration = duration
+    if (repeatMode == ObjectAnimator.REVERSE || repeatMode == ObjectAnimator.RESTART) {
+        animator.repeatMode = repeatMode
+    }
+    return animator
+}
