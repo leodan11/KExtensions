@@ -251,7 +251,7 @@ fun Calendar.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(thi
  * @return A list of [Calendar] objects between the two given dates.
  */
 fun Date.getCalendarsBetweenDates(dateTo: Date): List<Calendar> {
-    return getCalendarsBetweenDates(this, dateTo)
+    return onGetCalendarsBetweenDates(this, dateTo)
 }
 
 /**
@@ -308,7 +308,7 @@ fun Date.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
  * @param dateTo The ending [Date].
  * @return A list of [Calendar] objects between the two given dates.
  */
-fun getCalendarsBetweenDates(dateFrom: Date, dateTo: Date): List<Calendar> {
+private fun onGetCalendarsBetweenDates(dateFrom: Date, dateTo: Date): List<Calendar> {
     val calendars = mutableListOf<Calendar>()
 
     val calendarFrom = Calendar.getInstance().apply {

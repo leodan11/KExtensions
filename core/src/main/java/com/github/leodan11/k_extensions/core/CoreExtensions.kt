@@ -3,13 +3,18 @@ package com.github.leodan11.k_extensions.core
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Matrix
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import java.io.Serializable
 import java.nio.charset.Charset
 import androidx.core.graphics.createBitmap
+import kotlin.math.abs
+import androidx.core.graphics.set
+import androidx.core.graphics.get
 
 
 /**
@@ -131,4 +136,67 @@ fun Bitmap.mergeBitmaps(bitmap: Bitmap): Bitmap {
     canvas.drawBitmap(this, centreX, centreY, null)
 
     return combined
+}
+
+/**
+ * Creates a copy of the bitmap with all pixels matching a specified color (within a given tolerance)
+ * made transparent.
+ *
+ * This is useful for removing solid backgrounds like white or any flat color.
+ *
+ * @receiver The source [Bitmap] to process.
+ * @param colorToRemove The target color to remove from the bitmap.
+ * @param tolerance The allowed deviation per color channel when comparing with [colorToRemove].
+ *                  Defaults to `10`. Must be in the range 0..255.
+ * @return A new [Bitmap] with the background pixels made transparent.
+ *
+ * @see Color.TRANSPARENT
+ */
+fun Bitmap.removeBackground(colorToRemove: Int, tolerance: Int = 10): Bitmap {
+    val output = copy(Bitmap.Config.ARGB_8888, true)
+
+    for (x in 0 until width) {
+        for (y in 0 until height) {
+            val pixel = this[x, y]
+            if (isSimilarColor(pixel, colorToRemove, tolerance)) {
+                output[x, y] = Color.TRANSPARENT
+            }
+        }
+    }
+    return output
+}
+
+/**
+ * Safely converts a [Drawable] to a [Bitmap].
+ *
+ * This handles cases where the drawable has no intrinsic width or height by falling back to
+ * a minimum size of 1x1 pixel to prevent crashes.
+ *
+ * @receiver The [Drawable] to convert.
+ * @return A [Bitmap] representation of the drawable.
+ *
+ * @throws IllegalStateException if the drawable cannot be drawn.
+ */
+fun Drawable.toBitmapSafe(): Bitmap {
+    val bitmap = createBitmap(
+        intrinsicWidth.takeIf { it > 0 } ?: 1,
+        intrinsicHeight.takeIf { it > 0 } ?: 1
+    )
+    val canvas = Canvas(bitmap)
+    setBounds(0, 0, canvas.width, canvas.height)
+    draw(canvas)
+    return bitmap
+}
+
+
+private fun isSimilarColor(color1: Int, color2: Int, tolerance: Int): Boolean {
+    val r1 = Color.red(color1)
+    val g1 = Color.green(color1)
+    val b1 = Color.blue(color1)
+
+    val r2 = Color.red(color2)
+    val g2 = Color.green(color2)
+    val b2 = Color.blue(color2)
+
+    return (abs(r1 - r2) <= tolerance && abs(g1 - g2) <= tolerance && abs(b1 - b2) <= tolerance)
 }
