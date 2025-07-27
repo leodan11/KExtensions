@@ -26,6 +26,27 @@ import androidx.core.graphics.createBitmap
 import androidx.fragment.app.FragmentActivity
 
 /**
+ * Registers a custom [OnBackPressedCallback] for this [FragmentActivity].
+ *
+ * This allows handling the system back button with custom behavior in activities.
+ *
+ * @receiver FragmentActivity where the back press callback is registered.
+ * @param callback The [OnBackPressedCallback] instance that defines the back press logic.
+ *
+ * ```kotlin
+ * /** MainActivity::class */
+ * addOnBackPressedCallback(object : OnBackPressedCallback(true) {
+ *        override fun handleOnBackPressed() {
+ *            // Handle back press in activity
+ *       }
+ * })
+ * ```
+ */
+fun FragmentActivity.addOnBackPressedCallback(callback: OnBackPressedCallback) {
+    onBackPressedDispatcher.addCallback(this, callback)
+}
+
+/**
  * Enables fullscreen mode for the Activity.
  *
  * @receiver Activity on which fullscreen mode will be enabled.
@@ -295,27 +316,6 @@ fun AppCompatActivity.getDisplayDensity(): DisplayDensity {
         DisplayMetrics.DENSITY_XXXHIGH -> DisplayDensity.XXXHDPI
         else -> DisplayDensity.XXHDPI
     }
-}
-
-/**
- * Registers a custom [OnBackPressedCallback] for this [FragmentActivity].
- *
- * This allows handling the system back button with custom behavior in activities.
- *
- * @receiver FragmentActivity where the back press callback is registered.
- * @param callback The [OnBackPressedCallback] instance that defines the back press logic.
- *
- * ```kotlin
- * /** MainActivity::class */
- * addOnBackPressedCallback(object : OnBackPressedCallback(true) {
- *        override fun handleOnBackPressed() {
- *            // Handle back press in activity
- *       }
- * })
- * ```
- */
-fun FragmentActivity.addOnBackPressedCallback(callback: OnBackPressedCallback) {
-    onBackPressedDispatcher.addCallback(this, callback)
 }
 
 /**

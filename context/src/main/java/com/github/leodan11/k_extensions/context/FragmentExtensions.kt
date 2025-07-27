@@ -69,6 +69,40 @@ val Fragment.externalFileDirPath: String
     get() = requireActivity().getExternalFilesDir("")?.absolutePath ?: ""
 
 /**
+ * Registers a custom [OnBackPressedCallback] for this [Fragment], bound to its view lifecycle.
+ *
+ * Useful for handling back button events within fragments safely, as the callback
+ * is automatically removed when the fragment’s view is destroyed.
+ *
+ * @receiver Fragment where the callback is registered.
+ * @param callback The [OnBackPressedCallback] instance that defines the back press logic.
+ *
+ * @throws IllegalStateException if the fragment is not currently attached to an activity.
+ *
+ * ```kotlin
+ *  /** BlackFragment::class */
+ *  addOnBackPressedCallback(object : OnBackPressedCallback(true) {
+ *          override fun handleOnBackPressed() {
+ *               // Handle back press in activity
+ *          }
+ *   })
+ * ```
+ */
+fun Fragment.addOnBackPressedCallback(callback: OnBackPressedCallback) {
+    requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+}
+
+/**
+ * Hides the soft keyboard if any view in the Activity currently has focus.
+ *
+ * @receiver Fragment where keyboard will be hidden.
+ *
+ */
+fun Fragment.hideSoftKeyboard() {
+    requireActivity().hideSoftKeyboard()
+}
+
+/**
  * Gets the version code of the application.
  *
  * @receiver Fragment instance.
@@ -96,30 +130,6 @@ fun Fragment.getVersionCode(pkgName: String = requireActivity().packageName): Lo
  */
 fun Fragment.getVersionName(pkgName: String = requireActivity().packageName): String {
     return requireActivity().getVersionName(pkgName)
-}
-
-/**
- * Registers a custom [OnBackPressedCallback] for this [Fragment], bound to its view lifecycle.
- *
- * Useful for handling back button events within fragments safely, as the callback
- * is automatically removed when the fragment’s view is destroyed.
- *
- * @receiver Fragment where the callback is registered.
- * @param callback The [OnBackPressedCallback] instance that defines the back press logic.
- *
- * @throws IllegalStateException if the fragment is not currently attached to an activity.
- *
- * ```kotlin
- *  /** BlackFragment::class */
- *  addOnBackPressedCallback(object : OnBackPressedCallback(true) {
- *          override fun handleOnBackPressed() {
- *               // Handle back press in activity
- *          }
- *   })
- * ```
- */
-fun Fragment.addOnBackPressedCallback(callback: OnBackPressedCallback) {
-    requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 }
 
 /**

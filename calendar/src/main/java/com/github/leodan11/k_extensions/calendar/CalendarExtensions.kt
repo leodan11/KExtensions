@@ -10,40 +10,37 @@ import java.util.concurrent.TimeUnit
 
 
 /**
+ * Extension property that returns a [Calendar] instance set to midnight (00:00:00:000).
  *
- * @return An instance of the [Calendar] object with hour set to 00:00:00:00
- *
+ * @receiver The [Calendar] object.
+ * @return A [Calendar] object with the time set to 00:00:00:000.
  */
 val midnightCalendar: Calendar
     get() = Calendar.getInstance().apply {
         this.setMidnight()
     }
 
-
 /**
- * This method sets an hour in the [Calendar] object to 00:00:00:00
+ * Sets the time of the [Calendar] object to midnight (00:00:00:000).
  *
- * @receiver [Calendar] object which hour should be set to 00:00:00:00
- * @return An instance of the [Calendar]
- *
+ * @receiver The [Calendar] object whose time should be set to midnight.
+ * @return The [Calendar] object after being modified.
  */
-fun Calendar.setMidnight() = this.apply {
+fun Calendar.setMidnight(): Calendar = this.apply {
     set(Calendar.HOUR_OF_DAY, 0)
     set(Calendar.MINUTE, 0)
     set(Calendar.SECOND, 0)
     set(Calendar.MILLISECOND, 0)
 }
 
-
 /**
- * This method compares calendars using month and year
+ * Compares the current [Calendar] instance with another [Calendar] based on the month and year.
  *
- * @receiver [Calendar] object to compare
- * @param secondCalendar [Calendar] object to compare
- * @return [Boolean] value if second [Calendar] is before the first one
- *
+ * @receiver The [Calendar] object to compare.
+ * @param secondCalendar The [Calendar] object to compare against. If null, returns false.
+ * @return `true` if the current [Calendar] is after the provided [secondCalendar] based on month and year.
  */
-fun Calendar.isMonthBefore(secondCalendar: Calendar? = null): Boolean {
+fun Calendar.isMonthBefore(secondCalendar: Calendar?): Boolean {
     if (secondCalendar == null) return false
 
     val firstDay = (this.clone() as Calendar).apply {
@@ -58,71 +55,64 @@ fun Calendar.isMonthBefore(secondCalendar: Calendar? = null): Boolean {
     return secondDay.before(firstDay)
 }
 
-
 /**
- * This method compares calendars using month and year
+ * Compares the current [Calendar] instance with another [Calendar] based on the month and year.
  *
- * @receiver [Calendar] object to compare
- * @param secondCalendar [Calendar] object to compare
- * @return [Boolean] value if second [Calendar] is after the first one
- *
+ * @receiver The [Calendar] object to compare.
+ * @param secondCalendar The [Calendar] object to compare against.
+ * @return `true` if the current [Calendar] is before the provided [secondCalendar] based on month and year.
  */
-fun Calendar.isMonthAfter(secondCalendar: Calendar) = secondCalendar.isMonthBefore(this)
-
+fun Calendar.isMonthAfter(secondCalendar: Calendar): Boolean = secondCalendar.isMonthBefore(this)
 
 /**
- * This method returns a string containing a month's name and a year (in number).
- * It's used instead of new SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date);
- * because that method returns a month's name in incorrect form in some languages (i.e. in Polish)
+ * Returns a string representing the month name and year in the format "MMMM yyyy".
+ * This is used instead of `SimpleDateFormat("MMMM yyyy")` due to issues in certain languages (e.g., Polish).
  *
- * @receiver [Calendar] object containing date which will be formatted
- * @param context  An array of months names
- * @return A [String] of the formatted date containing a month's name and a year (in number)
- *
+ * @receiver The [Calendar] object to format.
+ * @param context The [Context] required to access string resources for month names.
+ * @return A formatted string with the month name and year.
+ * @throws IllegalArgumentException if [context] is null.
  */
-fun Calendar.getMonthAndYearDate(context: Context) = String.format(
-    "%s  %s",
-    context.resources.getStringArray(R.array.calendar_months_array_kt)[this.get(Calendar.MONTH)],
-    this.get(Calendar.YEAR)
-)
-
+fun Calendar.getMonthAndYearDate(context: Context): String {
+    val monthNames = context.resources.getStringArray(R.array.calendar_months_array_kt)
+    return String.format(
+        "%s  %s",
+        monthNames[this.get(Calendar.MONTH)],
+        this.get(Calendar.YEAR)
+    )
+}
 
 /**
- * This method is used to count a number of months between two dates
+ * Returns the number of months between the current [Calendar] and a given [endCalendar].
  *
- * @receiver [Calendar] representing a first date
- * @param endCalendar [Calendar] representing a last date
- * @return [Int] Number of months
- *
+ * @receiver The starting [Calendar] object.
+ * @param endCalendar The ending [Calendar] object.
+ * @return The number of months between the two [Calendar] objects.
  */
 fun Calendar.getMonthsToDate(endCalendar: Calendar): Int {
     val years = endCalendar.get(Calendar.YEAR) - this.get(Calendar.YEAR)
     return years * 12 + endCalendar.get(Calendar.MONTH) - this.get(Calendar.MONTH)
 }
 
-
 /**
- * This method checks whether date is correctly between min and max date or not
+ * Checks if the current [Calendar] is between the given [minimumDate] and [maximumDate].
  *
- * @receiver [Calendar] object
- * @param minimumDate [Calendar] properties
- * @param maximumDate [Calendar] properties
- * @return [Boolean] value if date is between min and max date
- *
+ * @receiver The [Calendar] object to compare.
+ * @param minimumDate The minimum allowable [Calendar] date.
+ * @param maximumDate The maximum allowable [Calendar] date.
+ * @return `true` if the current [Calendar] is between the [minimumDate] and [maximumDate].
  */
-fun Calendar.isBetweenMinAndMax(minimumDate: Calendar, maximumDate: Calendar) =
+fun Calendar.isBetweenMinAndMax(minimumDate: Calendar, maximumDate: Calendar): Boolean =
     !(this.before(minimumDate) || this.after(maximumDate))
 
-
 /**
- * This method is used to count a number of days between two dates.  +1 is necessary because method counts from the beginning of start day to beginning of end day
- * and 1, means whole end day
+ * Returns the number of days between the current [Calendar] and a given [endCalendar].
+ * +1 is added to include the entire end day in the calculation.
  *
- *
- * @receiver [Calendar] representing a first date
- * @param endCalendar [Calendar] representing a last date
- * @return [Long] Number of days
- *
+ * @receiver The starting [Calendar] object.
+ * @param endCalendar The ending [Calendar] object.
+ * @return The number of days between the two [Calendar] objects.
+ * @throws IllegalArgumentException if [endCalendar] is earlier than the current [Calendar].
  */
 fun Calendar.getDaysToDate(endCalendar: Calendar): Long {
     this.set(Calendar.DST_OFFSET, 0)
@@ -131,13 +121,11 @@ fun Calendar.getDaysToDate(endCalendar: Calendar): Long {
     return TimeUnit.MILLISECONDS.toDays(endCalendar.timeInMillis - this.timeInMillis) + 1
 }
 
-
 /**
- * This method checks whether selected dates are full dates range
+ * Checks if the list of [Calendar] objects represents a full date range.
  *
- * @receiver [Calendar] object
- * @return [Boolean] value if selected dates are full dates range
- *
+ * @receiver The list of [Calendar] objects to check.
+ * @return `true` if the list represents a full date range (no gaps).
  */
 fun List<Calendar>.isFullDatesRange(): Boolean {
     val selectedDates = this.distinct().sortedBy { it.timeInMillis }
@@ -147,35 +135,31 @@ fun List<Calendar>.isFullDatesRange(): Boolean {
     return selectedDates.size.toLong() == selectedDates.first().getDaysToDate(selectedDates.last())
 }
 
-
 /**
- * This method checks whether calendar is today
+ * Checks if the [Calendar] object represents today's date.
  *
- * @receiver [Calendar] object
- * @return [Boolean] value if [Calendar] is today
- *
+ * @receiver The [Calendar] object to check.
+ * @return `true` if the [Calendar] represents today.
  */
-val Calendar.isToday get() = this == midnightCalendar
-
+val Calendar.isToday: Boolean
+    get() = this == midnightCalendar
 
 /**
- * This method checks whether two calendars are equal
+ * Compares the current [Calendar] object with another [Calendar] to check if they are equal.
  *
- * @receiver [Calendar] object
- * @param calendar [Calendar] object to compare
- * @return [Boolean] value if two calendars are equal
- *
+ * @receiver The [Calendar] object to compare.
+ * @param calendar The other [Calendar] object to compare with.
+ * @return `true` if both [Calendar] objects represent the same moment in time, excluding time details.
  */
-fun Calendar.isEqual(calendar: Calendar) = this.setMidnight() == calendar.setMidnight()
-
+fun Calendar.isEqual(calendar: Calendar): Boolean = this.setMidnight() == calendar.setMidnight()
 
 /**
- * This method returns a list of calendar objects between two dates
+ * Returns a list of [Calendar] objects between the current [Calendar] and another [Calendar].
  *
- * @receiver [Calendar] representing a first selected date
- * @param toCalendar [Calendar] representing a last selected date
- * @return [List] of selected dates between two dates
- *
+ * @receiver The starting [Calendar] object.
+ * @param toCalendar The ending [Calendar] object.
+ * @return A list of [Calendar] objects between the two given dates.
+ * @throws IllegalArgumentException if the `toCalendar` is before the current [Calendar].
  */
 fun Calendar.getDatesRange(toCalendar: Calendar): List<Calendar> =
     if (toCalendar.before(this)) {
@@ -184,14 +168,12 @@ fun Calendar.getDatesRange(toCalendar: Calendar): List<Calendar> =
         this.getCalendarsBetweenDates(toCalendar)
     }
 
-
 /**
- * This method returns a list of calendar objects between two dates
+ * Returns a list of [Calendar] objects between the current [Calendar] and another [Calendar].
  *
- * @receiver [Calendar] representing a first selected date
- * @param toCalendar [Calendar] representing a last selected date
- * @return [List] of selected dates between two dates
- *
+ * @receiver The starting [Calendar] object.
+ * @param toCalendar The ending [Calendar] object.
+ * @return A list of [Calendar] objects between the two given dates.
  */
 fun Calendar.getCalendarsBetweenDates(toCalendar: Calendar): List<Calendar> {
     val calendars = mutableListOf<Calendar>()
@@ -215,15 +197,116 @@ fun Calendar.getCalendarsBetweenDates(toCalendar: Calendar): List<Calendar> {
     return calendars
 }
 
+/**
+ * Converts the [Calendar] object to a string using the provided date format type.
+ *
+ * @receiver The [Calendar] object to format.
+ * @param typeCast The desired date format type. Defaults to [DateFormat.SHORT].
+ * @return The formatted date string.
+ */
+fun Calendar.formatDate(typeCast: Int = DateFormat.SHORT): String =
+    synchronized(this) { DateFormat.getDateInstance(typeCast).format(this.time) }
 
 /**
- * This method returns a list of calendar objects between two dates
+ * Converts the [Calendar] object to a string in both date and time formats using the provided format types.
  *
- * @receiver [Calendar] object
- * @param dateFrom [Date] representing a first selected date
- * @param dateTo [Date] representing a last selected date
- * @return [List] of selected dates between two dates
+ * @receiver The [Calendar] object to format.
+ * @param typeCastDate The desired date format type. Defaults to [DateFormat.SHORT].
+ * @param typeCastTime The desired time format type. Defaults to [DateFormat.MEDIUM].
+ * @return The formatted date-time string, e.g., "7/4/01, 3:53:52 PM".
+ */
+fun Calendar.formatDateTime(
+    typeCastDate: Int = DateFormat.SHORT,
+    typeCastTime: Int = DateFormat.MEDIUM,
+): String = synchronized(this) {
+    DateFormat.getDateTimeInstance(typeCastDate, typeCastTime).format(this.time)
+}
+
+/**
+ * Converts the [Calendar] object to a string in time format using the provided format type.
  *
+ * @receiver The [Calendar] object to format.
+ * @param typeCast The desired time format type. Defaults to [DateFormat.SHORT].
+ * @return The formatted time string, e.g., "3:30 PM".
+ */
+fun Calendar.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized(this) {
+    DateFormat.getTimeInstance(typeCast).format(this.time)
+}
+
+/**
+ * Converts the [Calendar] object to a string using the provided pattern.
+ *
+ * @receiver The [Calendar] object to format.
+ * @param pattern The date pattern to use for formatting. Defaults to "yyyy-MM-dd".
+ * @return The formatted date string, e.g., "2001/07/04".
+ */
+fun Calendar.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
+    SimpleDateFormat(pattern, Locale.getDefault()).format(this.time)
+}
+
+/**
+ * Returns a list of [Calendar] objects between two given [Date] objects.
+ *
+ * @param dateTo The ending [Date].
+ * @return A list of [Calendar] objects between the two given dates.
+ */
+fun Date.getCalendarsBetweenDates(dateTo: Date): List<Calendar> {
+    return getCalendarsBetweenDates(this, dateTo)
+}
+
+/**
+ * Converts the [Date] object to a string using the provided date format type.
+ *
+ * @receiver The [Date] object to format.
+ * @param typeCast The desired date format type. Defaults to [DateFormat.SHORT].
+ * @return The formatted date string.
+ */
+fun Date.formatDate(typeCast: Int = DateFormat.SHORT): String =
+    synchronized(this) { DateFormat.getDateInstance(typeCast).format(this) }
+
+/**
+ * Converts the [Date] object to a string in both date and time formats using the provided format types.
+ *
+ * @receiver The [Date] object to format.
+ * @param typeCastDate The desired date format type. Defaults to [DateFormat.SHORT].
+ * @param typeCastTime The desired time format type. Defaults to [DateFormat.MEDIUM].
+ * @return The formatted date-time string, e.g., "7/4/01, 3:53:52 PM".
+ */
+fun Date.formatDateTime(
+    typeCastDate: Int = DateFormat.SHORT,
+    typeCastTime: Int = DateFormat.MEDIUM,
+): String = synchronized(this) {
+    DateFormat.getDateTimeInstance(typeCastDate, typeCastTime).format(this)
+}
+
+/**
+ * Converts the [Date] object to a string in time format using the provided format type.
+ *
+ * @receiver The [Date] object to format.
+ * @param typeCast The desired time format type. Defaults to [DateFormat.SHORT].
+ * @return The formatted time string, e.g., "3:30 PM".
+ */
+fun Date.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized(this) {
+    DateFormat.getTimeInstance(typeCast).format(this)
+}
+
+/**
+ * Converts the [Date] object to a string using the provided pattern.
+ *
+ * @receiver The [Date] object to format.
+ * @param pattern The date pattern to use for formatting. Defaults to "yyyy-MM-dd".
+ * @return The formatted date string, e.g., "2001/07/04".
+ */
+fun Date.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
+    SimpleDateFormat(pattern, Locale.getDefault()).format(this)
+}
+
+/**
+ * Returns a list of [Calendar] objects between two given [Date] objects.
+ *
+ * @param dateFrom The starting [Date].
+ * @param dateTo The ending [Date].
+ * @return A list of [Calendar] objects between the two given dates.
  */
 fun getCalendarsBetweenDates(dateFrom: Date, dateTo: Date): List<Calendar> {
     val calendars = mutableListOf<Calendar>()
@@ -247,59 +330,4 @@ fun getCalendarsBetweenDates(dateFrom: Date, dateTo: Date): List<Calendar> {
         calendar.add(Calendar.DATE, it.toInt())
     }
     return calendars
-}
-
-
-/**
- * Calendar to String format
- *
- * @receiver [Calendar] object
- * @param typeCast [DateFormat]. By default [DateFormat.SHORT]
- * @return [String] e.g. 7/4/01
- *
- */
-fun Calendar.formatDate(typeCast: Int = DateFormat.SHORT): String =
-    synchronized(this) { DateFormat.getDateInstance(typeCast).format(this.time) }
-
-
-/**
- * Calendar to String format
- *
- * @receiver [Calendar] object
- * @param typeCastDate [DateFormat]. By default [DateFormat.SHORT]
- * @param typeCastTime [DateFormat]. By default [DateFormat.MEDIUM]
- * @return [String] a date/time formatter, e.g. 7/4/01, 3:53:52 PM
- *
- */
-fun Calendar.formatDateTime(
-    typeCastDate: Int = DateFormat.SHORT,
-    typeCastTime: Int = DateFormat.MEDIUM,
-): String = synchronized(this) {
-    DateFormat.getDateTimeInstance(typeCastDate, typeCastTime).format(this.time)
-}
-
-
-/**
- * Calendar to String format
- *
- * @receiver [Calendar] object
- * @param typeCast [DateFormat]. By default [DateFormat.SHORT]
- * @return [String] e.g. 3:30 PM
- *
- */
-fun Calendar.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized(this) {
-    DateFormat.getTimeInstance(typeCast).format(this.time)
-}
-
-
-/**
- * Calendar to String format
- *
- * @receiver [Calendar] object
- * @param pattern [String]. By default yyyy-MM-dd
- * @return [String] e.g. 2001/07/04
- *
- */
-fun Calendar.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
-    SimpleDateFormat(pattern, Locale.getDefault()).format(this.time)
 }
