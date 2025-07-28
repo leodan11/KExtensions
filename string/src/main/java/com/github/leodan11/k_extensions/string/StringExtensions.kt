@@ -3,10 +3,10 @@ package com.github.leodan11.k_extensions.string
 import android.util.Base64
 import androidx.annotation.ColorInt
 import com.github.leodan11.k_extensions.base.ShapeTextDrawable
+import com.github.leodan11.k_extensions.string.content.DatePatternConfig
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.regex.Pattern
 
 
 /**
@@ -118,43 +118,43 @@ fun String.toBoolean(): Boolean {
 
 
 /**
- * Convert a text to a calendar
+ * Converts a string representing a date to a [Calendar] object using the specified [DatePatternConfig].
+ * If no config is provided, the default configuration will be used.
  *
- * @param pattern [String] pattern default `^\\d{4}-\\d{2}-\\d{2}$`
- *
- * @return [Calendar]
- *
- * @throws IllegalArgumentException
- *
+ * @param datePatternConfig The configuration containing date patterns and their formats.
+ * Default is [DatePatternConfig.default()], which includes common patterns.
+ * @return A [Calendar] object representing the parsed date.
+ * @throws Exception If the input string is empty.
+ * @throws IllegalArgumentException If the input string doesn't match any of the available patterns.
  */
-fun String.toCalendar(pattern: String = "^\\d{4}-\\d{2}-\\d{2}$"): Calendar {
+fun String.toCalendar(datePatternConfig: DatePatternConfig = DatePatternConfig.default()): Calendar {
     if (this.isEmpty()) throw Exception("Empty string, not date found")
-    val matcher: Pattern = Pattern.compile(pattern)
-    return when {
-        matcher.matcher(this).matches() -> this.toCalendarSimpleFormat()
-        else -> throw IllegalArgumentException()
-    }
+    val inferredPattern = datePatternConfig.inferDatePattern(this)
+    val matchedPattern = datePatternConfig.getPatterns().find { this.matches(Regex(it.first)) }
+        ?: throw IllegalArgumentException("Input string doesn't match any available pattern")
+    return this.toCalendarSimpleFormat(matchedPattern.second)
 }
 
-
 /**
- * Convert a text to a calendar
+ * Converts a string representing a date to a [Calendar] object using the specified [DatePatternConfig] and locale.
+ * If no config is provided, the default configuration will be used.
  *
- * @param pattern [String] pattern default `^\\d{4}-\\d{2}-\\d{2}$`
- * @param locale The [Locale] to apply for formatting.
- *
- * @return [Calendar]
- *
- * @throws IllegalArgumentException
- *
+ * @param datePatternConfig The configuration containing date patterns and their formats.
+ * Default is [DatePatternConfig.default()], which includes common patterns.
+ * @param locale The [Locale] used for formatting.
+ * @return A [Calendar] object representing the parsed date.
+ * @throws Exception If the input string is empty.
+ * @throws IllegalArgumentException If the input string doesn't match any of the available patterns.
  */
-fun String.toCalendar(pattern: String = "^\\d{4}-\\d{2}-\\d{2}$", locale: Locale): Calendar {
+fun String.toCalendar(
+    datePatternConfig: DatePatternConfig = DatePatternConfig.default(),
+    locale: Locale
+): Calendar {
     if (this.isEmpty()) throw Exception("Empty string, not date found")
-    val matcher: Pattern = Pattern.compile(pattern)
-    return when {
-        matcher.matcher(this).matches() -> this.toCalendarSimpleFormat(locale = locale)
-        else -> throw IllegalArgumentException()
-    }
+    val inferredPattern = datePatternConfig.inferDatePattern(this)
+    val matchedPattern = datePatternConfig.getPatterns().find { this.matches(Regex(it.first)) }
+        ?: throw IllegalArgumentException("Input string doesn't match any available pattern")
+    return this.toCalendarSimpleFormat(matchedPattern.second, locale)
 }
 
 
@@ -188,14 +188,15 @@ fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd"): Calendar = sy
  * @throws IllegalArgumentException
  *
  */
-fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd", locale: Locale): Calendar = synchronized(this) {
-    if (this.isEmpty()) throw IllegalArgumentException("Empty string, not date found")
-    val format = SimpleDateFormat(pattern, locale)
-    val date = format.parse(this) ?: throw IllegalArgumentException("Wrong date")
-    val calendar = Calendar.getInstance()
-    calendar.time = date
-    calendar
-}
+fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd", locale: Locale): Calendar =
+    synchronized(this) {
+        if (this.isEmpty()) throw IllegalArgumentException("Empty string, not date found")
+        val format = SimpleDateFormat(pattern, locale)
+        val date = format.parse(this) ?: throw IllegalArgumentException("Wrong date")
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar
+    }
 
 
 /**
