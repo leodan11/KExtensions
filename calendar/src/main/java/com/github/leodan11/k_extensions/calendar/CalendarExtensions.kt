@@ -198,22 +198,33 @@ fun Calendar.getCalendarsBetweenDates(toCalendar: Calendar): List<Calendar> {
 }
 
 /**
- * Converts the [Calendar] object to a string using the provided date format type.
+ * Formats the [Calendar] instance to a date string using the specified [typeCast] format.
  *
- * @receiver The [Calendar] object to format.
- * @param typeCast The desired date format type. Defaults to [DateFormat.SHORT].
- * @return The formatted date string.
+ * @receiver The [Calendar] instance to format.
+ * @param typeCast The date format style (e.g., [DateFormat.SHORT], [DateFormat.MEDIUM], [DateFormat.LONG]). Default is [DateFormat.SHORT].
+ * @return A formatted date string.
  */
 fun Calendar.formatDate(typeCast: Int = DateFormat.SHORT): String =
     synchronized(this) { DateFormat.getDateInstance(typeCast).format(this.time) }
 
 /**
- * Converts the [Calendar] object to a string in both date and time formats using the provided format types.
+ * Formats the [Calendar] instance to a date string using the specified [typeCast] and [locale].
  *
- * @receiver The [Calendar] object to format.
- * @param typeCastDate The desired date format type. Defaults to [DateFormat.SHORT].
- * @param typeCastTime The desired time format type. Defaults to [DateFormat.MEDIUM].
- * @return The formatted date-time string, e.g., "7/4/01, 3:53:52 PM".
+ * @receiver The [Calendar] instance to format.
+ * @param typeCast The desired date format style.
+ * @param locale The [Locale] to apply for formatting.
+ * @return A localized formatted date string.
+ */
+fun Calendar.formatDate(typeCast: Int = DateFormat.SHORT, locale: Locale): String =
+    synchronized(this) { DateFormat.getDateInstance(typeCast, locale).format(this.time) }
+
+/**
+ * Formats the [Calendar] instance to a date-time string using the given date and time format styles.
+ *
+ * @receiver The [Calendar] instance to format.
+ * @param typeCastDate The date style (e.g., [DateFormat.SHORT]). Default is [DateFormat.SHORT].
+ * @param typeCastTime The time style (e.g., [DateFormat.MEDIUM]). Default is [DateFormat.MEDIUM].
+ * @return A formatted date-time string.
  */
 fun Calendar.formatDateTime(
     typeCastDate: Int = DateFormat.SHORT,
@@ -221,6 +232,24 @@ fun Calendar.formatDateTime(
 ): String = synchronized(this) {
     DateFormat.getDateTimeInstance(typeCastDate, typeCastTime).format(this.time)
 }
+
+/**
+ * Formats the [Calendar] instance to a localized date-time string using the specified [typeCastDate], [typeCastTime], and [locale].
+ *
+ * @receiver The [Calendar] instance to format.
+ * @param typeCastDate The date style to use.
+ * @param typeCastTime The time style to use.
+ * @param locale The [Locale] to apply for formatting.
+ * @return A localized formatted date-time string.
+ */
+fun Calendar.formatDateTime(
+    typeCastDate: Int = DateFormat.SHORT,
+    typeCastTime: Int = DateFormat.MEDIUM,
+    locale: Locale
+): String = synchronized(this) {
+    DateFormat.getDateTimeInstance(typeCastDate, typeCastTime, locale).format(this.time)
+}
+
 
 /**
  * Converts the [Calendar] object to a string in time format using the provided format type.
@@ -234,6 +263,19 @@ fun Calendar.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized
 }
 
 /**
+ * Formats the [Calendar] instance to a localized time string using the specified [typeCast] and [locale].
+ *
+ * @receiver The [Calendar] instance to format.
+ * @param typeCast The time style to use.
+ * @param locale The [Locale] to apply for formatting.
+ * @return A localized formatted time string.
+ */
+fun Calendar.formatTime(typeCast: Int = DateFormat.SHORT, locale: Locale): String =
+    synchronized(this) {
+        DateFormat.getTimeInstance(typeCast, locale).format(this.time)
+    }
+
+/**
  * Converts the [Calendar] object to a string using the provided pattern.
  *
  * @receiver The [Calendar] object to format.
@@ -242,6 +284,18 @@ fun Calendar.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized
  */
 fun Calendar.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
     SimpleDateFormat(pattern, Locale.getDefault()).format(this.time)
+}
+
+/**
+ * Formats the [Calendar] instance using the provided [pattern] and [locale].
+ *
+ * @receiver The [Calendar] to be formatted.
+ * @param pattern The desired date pattern.
+ * @param locale The [Locale] used for formatting.
+ * @return A localized formatted string.
+ */
+fun Calendar.toFormat(pattern: String = "yyyy-MM-dd", locale: Locale): String = synchronized(this) {
+    SimpleDateFormat(pattern, locale).format(this.time)
 }
 
 /**
@@ -265,6 +319,17 @@ fun Date.formatDate(typeCast: Int = DateFormat.SHORT): String =
     synchronized(this) { DateFormat.getDateInstance(typeCast).format(this) }
 
 /**
+ * Formats the [Date] instance using the specified date style and [locale].
+ *
+ * @receiver The [Date] to format.
+ * @param typeCast The desired format style.
+ * @param locale The [Locale] used for formatting.
+ * @return A localized formatted date string.
+ */
+fun Date.formatDate(typeCast: Int = DateFormat.SHORT, locale: Locale): String =
+    synchronized(this) { DateFormat.getDateInstance(typeCast, locale).format(this) }
+
+/**
  * Converts the [Date] object to a string in both date and time formats using the provided format types.
  *
  * @receiver The [Date] object to format.
@@ -280,6 +345,23 @@ fun Date.formatDateTime(
 }
 
 /**
+ * Formats the [Date] instance to a localized date-time string using the given styles and [locale].
+ *
+ * @receiver The [Date] to format.
+ * @param typeCastDate The desired date style.
+ * @param typeCastTime The desired time style.
+ * @param locale The [Locale] used for formatting.
+ * @return A localized formatted date-time string.
+ */
+fun Date.formatDateTime(
+    typeCastDate: Int = DateFormat.SHORT,
+    typeCastTime: Int = DateFormat.MEDIUM,
+    locale: Locale
+): String = synchronized(this) {
+    DateFormat.getDateTimeInstance(typeCastDate, typeCastTime, locale).format(this)
+}
+
+/**
  * Converts the [Date] object to a string in time format using the provided format type.
  *
  * @receiver The [Date] object to format.
@@ -291,6 +373,18 @@ fun Date.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized(thi
 }
 
 /**
+ * Formats the [Date] instance to a localized time string using the given [typeCast] and [locale].
+ *
+ * @receiver The [Date] to format.
+ * @param typeCast The desired time style.
+ * @param locale The [Locale] used for formatting.
+ * @return A localized formatted time string.
+ */
+fun Date.formatTime(typeCast: Int = DateFormat.SHORT, locale: Locale): String = synchronized(this) {
+    DateFormat.getTimeInstance(typeCast, locale).format(this)
+}
+
+/**
  * Converts the [Date] object to a string using the provided pattern.
  *
  * @receiver The [Date] object to format.
@@ -299,6 +393,27 @@ fun Date.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized(thi
  */
 fun Date.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
     SimpleDateFormat(pattern, Locale.getDefault()).format(this)
+}
+
+/**
+ * Formats this [Date] into a [String] based on the specified [pattern] and [locale].
+ *
+ * This function uses [SimpleDateFormat] internally, so the pattern must conform to
+ * Java date/time format conventions (e.g., `"yyyy-MM-dd"` or `"dd MMMM yyyy"`).
+ *
+ * @receiver The [Date] instance to format.
+ * @param pattern The pattern describing the date and time format. Default is `"yyyy-MM-dd"`.
+ * @param locale The [Locale] to apply during formatting (e.g., [Locale.US], [Locale.getDefault()]).
+ *
+ * @return A string representation of the date formatted according to the specified [pattern] and [locale].
+ *
+ * @see java.text.SimpleDateFormat
+ * @sample java.util.Date().toFormat("dd/MM/yyyy", Locale.US)
+ *
+ * @throws IllegalArgumentException If the [pattern] is invalid.
+ */
+fun Date.toFormat(pattern: String = "yyyy-MM-dd", locale: Locale): String = synchronized(this) {
+    SimpleDateFormat(pattern, locale).format(this)
 }
 
 /**

@@ -140,6 +140,27 @@ fun String.toCalendar(pattern: String = "^\\d{4}-\\d{2}-\\d{2}$"): Calendar {
 /**
  * Convert a text to a calendar
  *
+ * @param pattern [String] pattern default `^\\d{4}-\\d{2}-\\d{2}$`
+ * @param locale The [Locale] to apply for formatting.
+ *
+ * @return [Calendar]
+ *
+ * @throws IllegalArgumentException
+ *
+ */
+fun String.toCalendar(pattern: String = "^\\d{4}-\\d{2}-\\d{2}$", locale: Locale): Calendar {
+    if (this.isEmpty()) throw Exception("Empty string, not date found")
+    val matcher: Pattern = Pattern.compile(pattern)
+    return when {
+        matcher.matcher(this).matches() -> this.toCalendarSimpleFormat(locale = locale)
+        else -> throw IllegalArgumentException()
+    }
+}
+
+
+/**
+ * Convert a text to a calendar
+ *
  * @param pattern [String] default `yyyy-MM-dd`
  *
  * @return [Calendar]
@@ -150,6 +171,26 @@ fun String.toCalendar(pattern: String = "^\\d{4}-\\d{2}-\\d{2}$"): Calendar {
 fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd"): Calendar = synchronized(this) {
     if (this.isEmpty()) throw IllegalArgumentException("Empty string, not date found")
     val format = SimpleDateFormat(pattern, Locale.getDefault())
+    val date = format.parse(this) ?: throw IllegalArgumentException("Wrong date")
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    calendar
+}
+
+/**
+ * Convert a text to a calendar
+ *
+ * @param pattern [String] default `yyyy-MM-dd`
+ * @param locale The [Locale] to apply for formatting.
+ *
+ * @return [Calendar]
+ *
+ * @throws IllegalArgumentException
+ *
+ */
+fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd", locale: Locale): Calendar = synchronized(this) {
+    if (this.isEmpty()) throw IllegalArgumentException("Empty string, not date found")
+    val format = SimpleDateFormat(pattern, locale)
     val date = format.parse(this) ?: throw IllegalArgumentException("Wrong date")
     val calendar = Calendar.getInstance()
     calendar.time = date
@@ -197,6 +238,22 @@ fun String.initials(containLastName: Boolean = false): String =
 fun String.toCapitalize(): String {
     return try {
         this.replaceFirstChar { it.titlecase(Locale.getDefault()) }
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+        this
+    }
+}
+
+/**
+ * To write or print with an initial capital
+ *
+ * @param locale The [Locale] to apply for formatting.
+ * @return [String] Converted string or unchanged value if it generates an error
+ *
+ */
+fun String.toCapitalize(locale: Locale): String {
+    return try {
+        this.replaceFirstChar { it.titlecase(locale) }
     } catch (e: java.lang.Exception) {
         e.printStackTrace()
         this
