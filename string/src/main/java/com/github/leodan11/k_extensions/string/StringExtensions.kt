@@ -200,34 +200,105 @@ fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd", locale: Locale
 
 
 /**
- * Get the first two initial letters of a first and last name if it exists
+ * Extracts the main components of a full name string, typically the given name(s)
+ * and one surname, depending on the [preferLastSurname] flag.
  *
- * @param containLastName default false
+ * Returns an empty string if the original string is blank or empty.
  *
- * @return [String]
+ * The extraction logic is:
+ * - If the name has 1 part, return it.
+ * - If it has 2 parts, return both separated by a space.
+ * - If it has 3 or more parts, return:
+ *    - The first and second parts by default.
+ *    - The first and last parts if [preferLastSurname] is true.
  *
+ * This is useful for formatting or displaying names in a simplified way.
+ *
+ * @receiver The full name string to extract from.
+ * @param preferLastSurname When true, prefers the last part as the surname component.
+ *                         Defaults to false.
+ * @return A string with the main name components extracted, or empty if none.
+ *
+ * ```kotlin
+ * "Juan Carlos Pérez García".extractMainNameComponents()         // Returns "Juan Carlos"
+ * "Juan Carlos Pérez García".extractMainNameComponents(true)     // Returns "Juan García"
+ * "María".extractMainNameComponents()                            // Returns "María"
+ * "".extractMainNameComponents()                                 // Returns ""
+ * ```
  */
-fun String.initials(containLastName: Boolean = false): String =
-    if (this.isNotBlank() && this.length < 3) this.uppercase()
-    else {
-        val sorts = this.split(' ')
-        when (sorts.size) {
-            1 -> sorts.first().substring(0, 2).uppercase()
-            2 -> "${sorts.first().substring(0, 1).uppercase()}${
-                sorts.last().substring(0, 1).uppercase()
-            }"
+@JvmSynthetic
+fun String.extractMainNameComponents(preferLastSurname: Boolean = false): String {
+    if (this.isBlank()) return ""
 
-            3 -> if (containLastName) "${sorts.first().substring(0, 1).uppercase()}${
-                sorts.last().substring(0, 1).uppercase()
-            }" else "${sorts.first().substring(0, 1).uppercase()}${
-                sorts[1].substring(0, 1).uppercase()
-            }"
+    val parts = this.trim().split("\\s+".toRegex()).filter { it.isNotBlank() }
 
-            else -> "${sorts.first().substring(0, 1).uppercase()}${
-                sorts[2].substring(0, 1).uppercase()
-            }"
-        }
+    return when (parts.size) {
+        1 -> parts[0]
+        2 -> "${parts[0]} ${parts[1]}"
+        3 -> if (preferLastSurname)
+            "${parts[0]} ${parts[2]}"
+        else
+            "${parts[0]} ${parts[1]}"
+        else -> if (preferLastSurname)
+            "${parts[0]} ${parts.last()}"
+        else
+            "${parts[0]} ${parts[1]}"
     }
+}
+
+
+
+/**
+ * Extracts initials from a text string with support for limits, separators, and full name logic.
+ *
+ * This function is useful for generating short representations (e.g., avatar labels) from names or text.
+ *
+ * - Trims the input and splits by whitespace.
+ * - Returns the first character of selected words in uppercase.
+ * - Allows using a separator (e.g., "." for "J.D.") or no separator (e.g., "JD").
+ * - Can optionally limit the number of initials and choose between first two or first & last.
+ * - For a single word, returns the first [wordLimit] letters uppercased, optionally separated.
+ *
+ * @param wordLimit The number of words or letters to extract initials from. Use `null` to extract from all words.
+ * @param separator A string to place between initials (e.g., "." or "-").
+ * @param containLastName If `true` and [wordLimit] is 2, uses first and last words instead of first two.
+ *
+ * Example:
+ * ```
+ * "John".initials()                             // "JO"
+ * "John".initials(wordLimit = 1)               // "J"
+ * "John Doe".initials()                         // "JD"
+ * "John Doe Smith".initials()                   // "JS"
+ * "John Doe Smith".initials(containLastName = true) // "JS"
+ * "John A. Doe".initials(wordLimit = null)          // "JAD"
+ * "John A. Doe".initials(wordLimit = null, separator = ".") // "J.A.D"
+ * "John A. Doe".initials(wordLimit = 2, separator = "-", containLastName = true) // "J-D"
+ * "John".initials(wordLimit = 3, separator = ".")  // "J.O.H"
+ * ```
+ *
+ * @return A [String] of uppercase initials or letters with optional separator.
+ */
+fun String.initials(wordLimit: Int? = 2, separator: String = "", containLastName: Boolean = false): String {
+    val trimmed = trim()
+    if (trimmed.isEmpty()) return ""
+
+    val parts = trimmed.split("\\s+".toRegex()).filter { it.isNotBlank() }
+
+    return when {
+        parts.size == 1 -> {
+            val letters = parts.first().take(wordLimit ?: parts.first().length).map { it.uppercase() }
+            letters.joinToString(separator)
+        }
+
+        wordLimit == null || wordLimit >= parts.size -> parts.mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(separator)
+
+        wordLimit == 1 -> parts.first().first().uppercase()
+
+        wordLimit == 2 && containLastName && parts.size >= 2 -> listOf(parts.first(), parts.last()).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(separator)
+
+        else -> parts.take(wordLimit).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(separator)
+    }
+}
 
 
 /**
@@ -263,25 +334,26 @@ fun String.toCapitalize(locale: Locale): String {
 
 
 /**
- * Write or print each word with a capital letter
+ * Returns a copy of this string with each word capitalized.
  *
- * @return [String] Converted string or unchanged value if it generates an error
+ * Words are identified by spaces, and each word is converted to lowercase first,
+ * then capitalized on the first character. Extra spaces are removed.
  *
+ * This is useful for displaying properly formatted names, titles, or labels.
+ *
+ * Example:
+ * ```
+ * val raw = "   jOhN    doE  "
+ * val formatted = raw.toCapitalizedPerWord()
+ * // Result: "John Doe"
+ * ```
+ *
+ * @return A new [String] with each word capitalized.
  */
-fun String.toCapitalizePerWord(): String {
-    return try {
-        val srt = this.lowercase()
-        val parts = srt.split(' ')
-        val result = StringBuilder()
-        for (item in parts) {
-            result.append(item.toCapitalize())
-            result.append(" ")
+fun String.toCapitalizedPerWord(): String {
+    return trim().split("\\s+".toRegex()).joinToString(" ") { word ->
+            word.lowercase().replaceFirstChar { it.titlecaseChar() }
         }
-        result.toString().trimEnd()
-    } catch (e: java.lang.Exception) {
-        e.printStackTrace()
-        this
-    }
 }
 
 

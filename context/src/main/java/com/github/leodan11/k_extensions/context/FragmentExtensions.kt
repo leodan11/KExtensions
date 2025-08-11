@@ -4,8 +4,10 @@ import android.content.Intent
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import com.github.leodan11.k_extensions.core.getDisplayText
 import com.google.android.material.textfield.TextInputLayout
 
 /**
@@ -81,15 +83,13 @@ val Fragment.externalFileDirPath: String
  *
  * ```kotlin
  *  /** BlackFragment::class */
- *  addOnBackPressedCallback(object : OnBackPressedCallback(true) {
- *          override fun handleOnBackPressed() {
- *               // Handle back press in activity
- *          }
- *   })
+ *  addOnBackPressedCallback {
+ *         // Handle back press in activity
+ *   }
  * ```
  */
-fun Fragment.addOnBackPressedCallback(callback: OnBackPressedCallback) {
-    requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+fun Fragment.addOnBackPressedCallback(enabled: Boolean = true, callback: OnBackPressedCallback.() -> Unit) {
+    requireActivity().onBackPressedDispatcher.addCallback(this, enabled, callback)
 }
 
 /**
@@ -101,6 +101,36 @@ fun Fragment.addOnBackPressedCallback(callback: OnBackPressedCallback) {
 fun Fragment.hideSoftKeyboard() {
     requireActivity().hideSoftKeyboard()
 }
+
+
+/**
+ * Returns a properly formatted display text from the given [value], or a default string resource
+ * if the input is `null`, blank, or empty.
+ *
+ * Each word in the input is capitalized to improve display consistency.
+ *
+ * @param value The original string (e.g., a name or label), which may be null, blank, or improperly formatted.
+ * @param default A string resource to use as fallback when [value] is null or blank.
+ * @return A formatted string with each word capitalized, or the fallback string.
+ *
+ * Example usage:
+ * ```
+ * /* FragmentClass */
+ *
+ * val rawInput: String? = "   john doe"
+ * val displayText = getDisplayText(rawInput)
+ * // Result: "John Doe"
+ *
+ * val emptyInput: String? = null
+ * val displayText = getDisplayText(emptyInput)
+ * // Result: "Unknown"
+ * ```
+ * @see com.github.leodan11.k_extensions.core.R.string.label_text_unknown for the fallback string resource.
+ */
+fun Fragment.getDisplayText(value: String?, @StringRes default: Int = com.github.leodan11.k_extensions.core.R.string.label_text_unknown): String {
+    return requireActivity().getDisplayText(value, default)
+}
+
 
 /**
  * Gets the version code of the application.

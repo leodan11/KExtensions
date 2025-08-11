@@ -17,6 +17,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
@@ -35,15 +36,13 @@ import androidx.fragment.app.FragmentActivity
  *
  * ```kotlin
  * /** MainActivity::class */
- * addOnBackPressedCallback(object : OnBackPressedCallback(true) {
- *        override fun handleOnBackPressed() {
- *            // Handle back press in activity
- *       }
- * })
+ * addOnBackPressedCallback {
+ *      // Handle back press in activity
+ * }
  * ```
  */
-fun FragmentActivity.addOnBackPressedCallback(callback: OnBackPressedCallback) {
-    onBackPressedDispatcher.addCallback(this, callback)
+fun FragmentActivity.addOnBackPressedCallback(enabled: Boolean = true, callback: OnBackPressedCallback.() -> Unit) {
+    onBackPressedDispatcher.addCallback(this, enabled, callback)
 }
 
 /**

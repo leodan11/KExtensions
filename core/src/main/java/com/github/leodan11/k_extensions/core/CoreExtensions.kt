@@ -1,20 +1,29 @@
 package com.github.leodan11.k_extensions.core
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
+import android.widget.AutoCompleteTextView
+import android.widget.Spinner
+import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import java.io.Serializable
 import java.nio.charset.Charset
 import androidx.core.graphics.createBitmap
 import kotlin.math.abs
 import androidx.core.graphics.set
 import androidx.core.graphics.get
+import androidx.fragment.app.Fragment
 
 
 /**
@@ -167,6 +176,59 @@ fun Bitmap.removeBackground(colorToRemove: Int, tolerance: Int = 10): Bitmap {
 }
 
 /**
+ * Returns a new [Bitmap] tinted with the specified [color].
+ *
+ * This function applies a color filter over the original bitmap, replacing its colors
+ * with the given [color], preserving the bitmap's alpha channel.
+ *
+ * @receiver The original bitmap to be tinted.
+ * @param color The color to apply as a tint. Must be a valid color int (use [ColorInt]).
+ * @return A new [Bitmap] tinted with the specified [color].
+ *
+ * @throws IllegalStateException if the bitmap is recycled.
+ */
+fun Bitmap.tintWithColor(@ColorInt color: Int): Bitmap {
+    check(!isRecycled) { "Cannot tint a recycled Bitmap." }
+
+    val result = createBitmap(width, height)
+    val canvas = Canvas(result)
+    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    val paint = Paint().apply {
+        isAntiAlias = true
+        colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+    }
+    canvas.drawBitmap(this, 0f, 0f, paint)
+    return result
+}
+
+
+/**
+ * Returns a properly formatted display text from the given [value], or a default string resource
+ * if the input is `null`, blank, or empty.
+ *
+ * Each word in the input is capitalized to improve display consistency.
+ *
+ * @param value The original string (e.g., a name or label), which may be null, blank, or improperly formatted.
+ * @param default A string resource to use as fallback when [value] is null or blank.
+ * @return A formatted string with each word capitalized, or the fallback string.
+ *
+ * Example usage:
+ * ```
+ * val rawInput: String? = "   john doe"
+ * val displayText = context.getDisplayText(rawInput)
+ * // Result: "John Doe"
+ *
+ * val emptyInput: String? = null
+ * val displayText = context.getDisplayText(emptyInput)
+ * // Result: "Unknown"
+ * ```
+ * @see R.string.label_text_unknown for the fallback string resource.
+ */
+fun Context.getDisplayText(value: String?, @StringRes default: Int = R.string.label_text_unknown): String {
+    return value?.trim()?.takeIf { it.isNotEmpty() }?.split("\\s+".toRegex())?.joinToString(" ") { it.lowercase().replaceFirstChar(Char::titlecase) } ?: getString(default)
+}
+
+/**
  * Safely converts a [Drawable] to a [Bitmap].
  *
  * This handles cases where the drawable has no intrinsic width or height by falling back to
@@ -186,6 +248,45 @@ fun Drawable.toBitmapSafe(): Bitmap {
     setBounds(0, 0, canvas.width, canvas.height)
     draw(canvas)
     return bitmap
+}
+
+/**
+ * Transforms a list of objects into a list of pairs consisting of the original object and its display name.
+ * The display name is extracted using the provided [nameProvider] lambda and processed by [Context.getDisplayText]
+ * to ensure a standardized, non-null, and user-friendly format based on the app's resources.
+ *
+ * This is useful when binding lists to UI components like [AutoCompleteTextView] or [Spinner],
+ * where a readable display name is required for selection while retaining access to the original model.
+ *
+ * @param T The type of the original objects in the list.
+ * @param context The [Context] used to resolve string resources when the display name is null or empty.
+ * @param nameProvider A lambda function that extracts a string (e.g., name, title, label) from each object of type [T].
+ * @return A list of pairs where each pair contains the original object and its processed display name.
+ *
+ * @see Context.getDisplayText
+ */
+fun <T> List<T>.toDisplayPairList(context: Context, nameProvider: (T) -> String): List<Pair<T, String>> {
+    return this.map { item -> item to context.getDisplayText(nameProvider(item)) }
+}
+
+
+/**
+ * Transforms a list of objects into a list of pairs consisting of the original object and its display name.
+ * The display name is extracted using the provided [nameProvider] lambda and processed by [Context.getDisplayText]
+ * to ensure a standardized, non-null, and user-friendly format based on the app's resources.
+ *
+ * This is useful when binding lists to UI components like [AutoCompleteTextView] or [Spinner],
+ * where a readable display name is required for selection while retaining access to the original model.
+ *
+ * @param T The type of the original objects in the list.
+ * @param context The [Context] used to resolve string resources when the display name is null or empty.
+ * @param nameProvider A lambda function that extracts a string (e.g., name, title, label) from each object of type [T].
+ * @return A list of pairs where each pair contains the original object and its processed display name.
+ *
+ * @see Context.getDisplayText
+ */
+fun <T> List<T>.toDisplayPairList(context: Fragment, nameProvider: (T) -> String): List<Pair<T, String>> {
+    return this.toDisplayPairList(context.requireActivity(), nameProvider)
 }
 
 
