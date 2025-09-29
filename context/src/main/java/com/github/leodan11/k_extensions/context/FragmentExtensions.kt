@@ -1,14 +1,62 @@
 package com.github.leodan11.k_extensions.context
 
+import android.app.Activity
 import android.content.Intent
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.annotation.MainThread
 import androidx.annotation.StringRes
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import com.github.leodan11.k_extensions.core.getDisplayText
 import com.google.android.material.textfield.TextInputLayout
+
+
+/**
+ * Adds a [MenuProvider] to the [Fragment]'s parent [MenuHost] (usually the hosting [Activity]),
+ * scoped to the [Fragment]'s `viewLifecycleOwner` and a specified minimum [Lifecycle.State].
+ *
+ * This extension simplifies integrating Jetpack's `MenuProvider` API inside a [Fragment],
+ * ensuring the menu is only available when the [Fragment]'s view lifecycle is at least in the specified state.
+ *
+ * ```kotlin
+ * //example
+ * override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+ *     addMenuProvider(object : MenuProvider {
+ *         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+ *             menuInflater.inflate(R.menu.sample_menu, menu)
+ *         }
+ *
+ *         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+ *             return when (menuItem.itemId) {
+ *                 R.id.action_settings -> {
+ *                     openSettings()
+ *                     true
+ *                 }
+ *                 else -> false
+ *             }
+ *         }
+ *     })
+ * }
+ * ```
+ *
+ * @receiver The [Fragment] to which the menu provider is being added.
+ * @param menuProvider The [MenuProvider] responsible for populating and handling the menu.
+ * @param lifecycleState The minimum lifecycle state required for the menu to be visible. Defaults to [Lifecycle.State.RESUMED].
+ *
+ * @see androidx.core.view.MenuProvider
+ * @see androidx.core.view.MenuHost
+ */
+@MainThread
+fun Fragment.addMenuProvider(menuProvider: MenuProvider, lifecycleState: Lifecycle.State = Lifecycle.State.RESUMED) {
+    val menuHost: MenuHost = requireActivity()
+    menuHost.addMenuProvider(menuProvider, viewLifecycleOwner, lifecycleState)
+}
+
 
 /**
  * Gets the absolute path to the app's internal cache directory.

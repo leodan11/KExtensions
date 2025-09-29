@@ -197,6 +197,61 @@ fun Calendar.getCalendarsBetweenDates(toCalendar: Calendar): List<Calendar> {
     return calendars
 }
 
+
+/**
+ * Returns the localized full name of the day of the week for this [Calendar] instance,
+ * using the default system locale.
+ *
+ * This is a convenience overload that delegates to [getDayOfWeekDisplayName] passing
+ * the default locale ([Locale.getDefault]).
+ *
+ * ```kotlin
+ * //example
+ * val calendar = Calendar.getInstance().apply {
+ *     set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
+ * }
+ * val dayName = calendar.getDayOfWeekDisplayName()
+ * println(dayName) // Output: "Friday"
+ * ```
+ *
+ * @receiver The [Calendar] instance from which the day name will be extracted.
+ * @return The capitalized localized full name of the day of the week (e.g., "Monday").
+ *
+ * @see getDayOfWeekDisplayName(locale)
+ */
+fun Calendar.getDayOfWeekDisplayName(): String = this.getDayOfWeekDisplayName(Locale.getDefault())
+
+/**
+ * Returns the localized full name of the day of the week for this [Calendar] instance,
+ * using the specified [locale].
+ *
+ * The day name is formatted using the `"EEEE"` pattern which provides the full
+ * textual representation of the day of the week (e.g., "Monday", "Lunes").
+ * The resulting string is capitalized to ensure the first character is uppercase.
+ *
+ * If the formatted day name is blank (unlikely), the function returns `"Unknown"`.
+ *
+ * ```kotlin
+ * //example
+ * val calendar = Calendar.getInstance().apply {
+ *     set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+ * }
+ * val dayNameSpanish = calendar.getDayOfWeekDisplayName(Locale("es", "ES"))
+ * println(dayNameSpanish) // Output: "Lunes"
+ * ```
+ *
+ * @receiver The [Calendar] instance from which the day name will be extracted.
+ * @param locale The [Locale] used for formatting the day name.
+ * @return The capitalized localized full name of the day of the week.
+ *
+ * @see java.text.SimpleDateFormat
+ */
+fun Calendar.getDayOfWeekDisplayName(locale: Locale): String {
+    val dayName = this.toFormat("EEEE", locale).ifBlank { "Unknown" }
+    return dayName.replaceFirstChar { it.uppercaseChar() }
+}
+
+
 /**
  * Formats the [Calendar] instance to a date string using the specified [typeCast] format.
  *

@@ -1,13 +1,73 @@
 package com.github.leodan11.k_extensions.string
 
 import android.util.Base64
+import android.util.Log
 import androidx.annotation.ColorInt
 import com.github.leodan11.k_extensions.base.ShapeTextDrawable
 import com.github.leodan11.k_extensions.string.content.DatePatternConfig
+import com.github.leodan11.k_extensions.string.content.HashFormat
+import java.nio.charset.Charset
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+private val ALPHABETIC_REGEX = Regex("^[a-zA-Z]*$")
+private val ALPHANUMERIC_REGEX = Regex("^[a-zA-Z0-9]*$")
+
+
+/**
+ * Checks whether the string contains only alphabetic characters (letters a-z, A-Z).
+ *
+ * This excludes digits, symbols, punctuation, whitespace, or special characters.
+ *
+ * ```kotlin
+ * "HelloWorld".isAlphabetic   // true
+ * "Hello123".isAlphabetic     // false
+ * "".isAlphabetic             // true (empty string is considered valid)
+ * ```
+ *
+ * @return `true` if the string consists only of letters, or is empty; `false` otherwise.
+ */
+val String.isAlphabetic: Boolean
+    get() = ALPHABETIC_REGEX.matches(this)
+
+
+/**
+ * Returns the negation of [isAlphabetic].
+ *
+ * @see isAlphabetic
+ */
+val String.isNotAlphabetic: Boolean
+    get() = !isAlphabetic
+
+
+/**
+ * Checks whether the string contains only alphanumeric characters (letters and digits).
+ *
+ * This excludes symbols, punctuation, whitespace, or special characters.
+ *
+ * ```kotlin
+ * "abc123".isAlphanumeric    // true
+ * "abc_123".isAlphanumeric   // false
+ * "".isAlphanumeric          // true
+ * ```
+ *
+ * @return `true` if the string consists only of letters (a-z, A-Z) and digits (0-9), or is empty; `false` otherwise.
+ *
+ */
+val String.isAlphanumeric: Boolean
+    get() = ALPHANUMERIC_REGEX.matches(this)
+
+
+/**
+ * Returns the negation of [isAlphanumeric].
+ *
+ * @see isAlphanumeric
+ */
+val String.isNotAlphanumeric: Boolean
+    get() = !isAlphanumeric
+
 
 /**
  * Generate avatars with initials from names.
@@ -20,10 +80,9 @@ import java.util.Locale
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatar(
-    @ColorInt color: Int,
-    config: ShapeTextDrawable.Builder.() -> Unit = {},
-) = ShapeTextDrawable.build(this, color, config)
+fun String.asAvatar(@ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+    return ShapeTextDrawable.build(this, color, config)
+}
 
 
 /**
@@ -37,10 +96,9 @@ fun String.asAvatar(
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatarRect(
-    @ColorInt color: Int,
-    config: ShapeTextDrawable.Builder.() -> Unit = {},
-) = ShapeTextDrawable.buildRect(this, color, config)
+fun String.asAvatarRect(@ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+    return ShapeTextDrawable.buildRect(this, color, config)
+}
 
 
 /**
@@ -54,10 +112,9 @@ fun String.asAvatarRect(
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatarRound(
-    @ColorInt color: Int,
-    config: ShapeTextDrawable.Builder.() -> Unit = {},
-) = ShapeTextDrawable.buildRound(this, color, config)
+fun String.asAvatarRound(@ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+    return ShapeTextDrawable.buildRound(this, color, config)
+}
 
 
 /**
@@ -72,24 +129,105 @@ fun String.asAvatarRound(
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatarRoundRect(
-    radius: Int,
-    @ColorInt color: Int,
-    config: ShapeTextDrawable.Builder.() -> Unit = {},
-) = ShapeTextDrawable.buildRoundRect(this, color, radius, config)
+fun String.asAvatarRoundRect(radius: Int, @ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+    return ShapeTextDrawable.buildRoundRect(this, color, radius, config)
+}
 
 
 /**
- * Convert a string as consecutive code
+ * Pads this [String] on the left with the specified [paddingChar] until it reaches the desired [length].
  *
- * @param length default 5
- * @param char default 0
+ * Commonly used for formatting numeric codes or identifiers to a fixed length.
  *
- * @return [String] code, e.g: 00002
+ * ```kotlin
+ * "42".toFixedLengthCode()           // "00042"
+ * "123".toFixedLengthCode(6, 'X')    // "XXX123"
+ * "98765".toFixedLengthCode(4)       // "98765" (no truncation, returned as-is)
+ * ```
  *
+ * @param length The total desired length of the output string. If the string is already this length or longer, it is returned as-is.
+ * @param paddingChar The character to pad with. Default is `'0'`.
+ * @return A new string padded to the specified [length] using [paddingChar] on the left.
  */
-fun String.asConsecutiveCode(length: Int = 5, char: Char = '0'): String =
-    this.padStart(length, char)
+fun String.toFixedLengthCode(length: Int = 5, paddingChar: Char = '0'): String = this.padStart(length, paddingChar)
+
+
+/**
+ * Generates a hexadecimal hash string from this [String] using the specified [algorithm].
+ *
+ * @param algorithm The hashing algorithm to use. Common values include:
+ * - `"SHA-256"` (default)
+ * - `"SHA-1"`
+ * - `"SHA-512"`
+ * - `"MD5"`
+ *
+ * ```kotlin
+ * val hash = "hello".hash("SHA-512")
+ * println(hash)
+ * ```
+ *
+ * @return The resulting hash as a lowercase hexadecimal string.
+ *
+ * @throws IllegalArgumentException if the algorithm is not supported.
+ */
+fun String.hash(algorithm: String = "SHA-256"): String {
+    val digest = MessageDigest.getInstance(algorithm)
+    val hashBytes = digest.digest(this.toByteArray())
+    return hashBytes.joinToString("") { "%02x".format(it) }
+}
+
+
+/**
+ * Generates a hash from this [String] using the specified [algorithm] and returns it in the selected [format].
+ *
+ * @param algorithm The hashing algorithm to use. Default is `"SHA-256"`.
+ *                  Common values: `"SHA-1"`, `"SHA-256"`, `"SHA-512"`, `"MD5"`.
+ * @param format The output format: either [HashFormat.HEX] or [HashFormat.BASE64]. Default is HEX.
+ * @param charset The charset to use when converting the string to bytes. Default is [Charsets.UTF_8].
+ * @param base64Flags Flags to control Base64 encoding. Only used if [format] is [HashFormat.BASE64].
+ *                    Defaults to [Base64.NO_WRAP].
+ *
+ * @return The resulting hash string in the specified format.
+ *
+ * ### Examples:
+ * ```kotlin
+ * val hash1 = "hello".hash("SHA-512") // hex by default
+ * val hash2 = "hello".hash("MD5", format = HashFormat.BASE64)
+ * val hash3 = "hello".hash("SHA-1", charset = Charsets.UTF_16)
+ * ```
+ */
+fun String.hash(algorithm: String = "SHA-256", format: HashFormat = HashFormat.HEX, charset: Charset = Charsets.UTF_8, base64Flags: Int = Base64.NO_WRAP): String {
+    val digest = MessageDigest.getInstance(algorithm)
+    val hashBytes = digest.digest(this.toByteArray(charset))
+    return when (format) {
+        HashFormat.HEX -> hashBytes.joinToString("") { "%02x".format(it) }
+        HashFormat.BASE64 -> Base64.encodeToString(hashBytes, base64Flags)
+    }
+}
+
+
+/**
+ * Computes the SHA-256 hash of this string and returns it as a hexadecimal string.
+ *
+ * This extension uses the `MessageDigest` class to generate a SHA-256 hash,
+ * which is a cryptographic hash function that produces a 256-bit (32-byte) hash value.
+ * The resulting hash bytes are converted to a lowercase hexadecimal string.
+ *
+ * ```kotlin
+ * //example
+ * val input = "Hello, World!"
+ * val hash = input.sha256()
+ * println(hash) // Output: "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e"
+ * ```
+ *
+ * @receiver The input [String] to be hashed.
+ * @return A [String] representing the SHA-256 hash in hexadecimal format.
+ *
+ * @throws java.security.NoSuchAlgorithmException if SHA-256 algorithm is not available on the platform.
+ */
+fun String.sha256(): String {
+    return this.hash()
+}
 
 
 /**
@@ -130,10 +268,11 @@ fun String.toBoolean(): Boolean {
 fun String.toCalendar(datePatternConfig: DatePatternConfig = DatePatternConfig.default()): Calendar {
     if (this.isEmpty()) throw Exception("Empty string, not date found")
     val inferredPattern = datePatternConfig.inferDatePattern(this)
-    val matchedPattern = datePatternConfig.getPatterns().find { this.matches(Regex(it.first)) }
-        ?: throw IllegalArgumentException("Input string doesn't match any available pattern")
+    Log.i("StringExtensions", "Pattern: $inferredPattern")
+    val matchedPattern = datePatternConfig.getPatterns().find { this.matches(Regex(it.first)) } ?: throw IllegalArgumentException("Input string doesn't match any available pattern")
     return this.toCalendarSimpleFormat(matchedPattern.second)
 }
+
 
 /**
  * Converts a string representing a date to a [Calendar] object using the specified [DatePatternConfig] and locale.
@@ -146,14 +285,11 @@ fun String.toCalendar(datePatternConfig: DatePatternConfig = DatePatternConfig.d
  * @throws Exception If the input string is empty.
  * @throws IllegalArgumentException If the input string doesn't match any of the available patterns.
  */
-fun String.toCalendar(
-    datePatternConfig: DatePatternConfig = DatePatternConfig.default(),
-    locale: Locale
-): Calendar {
+fun String.toCalendar(datePatternConfig: DatePatternConfig = DatePatternConfig.default(), locale: Locale): Calendar {
     if (this.isEmpty()) throw Exception("Empty string, not date found")
     val inferredPattern = datePatternConfig.inferDatePattern(this)
-    val matchedPattern = datePatternConfig.getPatterns().find { this.matches(Regex(it.first)) }
-        ?: throw IllegalArgumentException("Input string doesn't match any available pattern")
+    Log.i("StringExtensions", "Pattern: $inferredPattern")
+    val matchedPattern = datePatternConfig.getPatterns().find { this.matches(Regex(it.first)) } ?: throw IllegalArgumentException("Input string doesn't match any available pattern")
     return this.toCalendarSimpleFormat(matchedPattern.second, locale)
 }
 
@@ -176,6 +312,7 @@ fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd"): Calendar = sy
     calendar.time = date
     calendar
 }
+
 
 /**
  * Convert a text to a calendar
@@ -247,7 +384,6 @@ fun String.extractMainNameComponents(preferLastSurname: Boolean = false): String
 }
 
 
-
 /**
  * Extracts initials from a text string with support for limits, separators, and full name logic.
  *
@@ -316,6 +452,7 @@ fun String.toCapitalize(): String {
     }
 }
 
+
 /**
  * To write or print with an initial capital
  *
@@ -358,21 +495,49 @@ fun String.toCapitalizedPerWord(): String {
 
 
 /**
- * Check if a string is alphanumeric
+ * Checks whether this [String] matches the given [Regex] pattern.
  *
- * @return [Boolean] - `true` or `false`
+ * ```kotlin
+ * "hello123".matchesPattern(Regex("^[a-zA-Z0-9]+$")) // true
+ * "hello!".matchesPattern(Regex("^[a-zA-Z]+$"))      // false
+ * ```
  *
+ * @param pattern A compiled [Regex] to match against the string.
+ * @return `true` if the string matches the pattern; `false` otherwise.
  */
-val String.isAlphanumeric get() = matches("^[a-zA-Z0-9]*$".toRegex())
+fun String.matchesPattern(pattern: Regex): Boolean = pattern.matches(this)
 
 
 /**
- * Check if a string is alphabetic
+ * Checks whether this [String] matches the given regex pattern provided as a [String].
  *
- * @return [Boolean] - `true` or `false`
+ * ```kotlin
+ * "42".matchesPattern("^\\d+$")  // true
+ * "abc".matchesPattern("^\\d+$") // false
+ * ```
  *
+ * @param pattern A regex pattern in string format.
+ * @return `true` if the string matches the pattern; `false` otherwise.
  */
-val String.isAlphabetic get() = matches("^[a-zA-Z]*$".toRegex())
+fun String.matchesPattern(pattern: String): Boolean = Regex(pattern).matches(this)
+
+
+/**
+ * Checks whether this [String] does NOT match the given [Regex] pattern.
+ *
+ * @param pattern A compiled [Regex] to match against the string.
+ * @return `true` if the string does NOT match the pattern; `false` if it does.
+ */
+fun String.doesNotMatchPattern(pattern: Regex): Boolean = !this.matches(pattern)
+
+
+/**
+ * Checks whether this [String] does NOT match the given regex pattern string.
+ *
+ * @param pattern A regex pattern in string format.
+ * @return `true` if the string does NOT match the pattern; `false` if it does.
+ */
+fun String.doesNotMatchPattern(pattern: String): Boolean = !this.matches(Regex(pattern))
 
 
 /**
