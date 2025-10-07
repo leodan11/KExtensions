@@ -165,17 +165,23 @@ fun Context.compatDrawable(@DrawableRes drawableResId: Int): Drawable? = try {
     AppCompatResources.getDrawable(this, drawableResId)
 }
 
+
 /**
- * Retrieves the resource ID associated with a given attribute resource.
+ * Retrieves a color value from the current theme's attributes.
  *
- * @receiver Context
- * @param idAttrRes Int - Attribute resource ID (e.g., android.R.attr.colorAccent).
- * @return Int - The resolved resource ID.
+ * ```kotlin
+ * val color = context.customColorResource(R.attr.colorPrimary, Color.RED)
+ * ```
+ *
+ * @param idAttrRes The attribute resource ID representing the color to fetch.
+ * @param fallbackColor The color to return if the attribute is not found or cannot be resolved. Default is 0 (transparent).
+ *
+ * @return The resolved color integer (ARGB), or [fallbackColor] if attribute resolution fails.
  */
-fun Context.customResolverResourceId(@AttrRes idAttrRes: Int): Int {
+fun Context.customColorResource(@AttrRes idAttrRes: Int, fallbackColor: Int = 0): Int {
     val typedValue = TypedValue()
-    theme.resolveAttribute(idAttrRes, typedValue, true)
-    return typedValue.resourceId
+    val resolved = this.theme.resolveAttribute(idAttrRes, typedValue, true)
+    return if (resolved) typedValue.data else fallbackColor
 }
 
 /**

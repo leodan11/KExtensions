@@ -12,12 +12,14 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
 import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.PixelCopy
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.annotation.AttrRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
@@ -44,6 +46,25 @@ import androidx.fragment.app.FragmentActivity
 fun FragmentActivity.addOnBackPressedCallback(enabled: Boolean = true, callback: OnBackPressedCallback.() -> Unit) {
     onBackPressedDispatcher.addCallback(this, enabled, callback)
 }
+
+
+/**
+ * Retrieves a color value from the current theme's attributes.
+ *
+ * ```kotlin
+ * // MainActivity.kt
+ * val color = customColorResource(R.attr.colorPrimary, Color.RED)
+ * ```
+ *
+ * @param idAttrRes The attribute resource ID representing the color to fetch.
+ * @param fallbackColor The color to return if the attribute is not found or cannot be resolved. Default is 0 (transparent).
+ *
+ * @return The resolved color integer (ARGB), or [fallbackColor] if attribute resolution fails.
+ */
+fun Activity.customColorResource(@AttrRes idAttrRes: Int, fallbackColor: Int = 0): Int {
+    return applicationContext.customColorResource(idAttrRes = idAttrRes, fallbackColor = fallbackColor)
+}
+
 
 /**
  * Enables fullscreen mode for the Activity.

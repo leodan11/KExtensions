@@ -18,13 +18,7 @@ sealed class FlashResult : Serializable {
      * @property title Optional title for the flash message. If the personalized toast requires it.
      * @property vObject Optional object associated with the error, useful for debugging or context.
      */
-    data class Error(
-        val message: String,
-        val isSimple: Boolean = true,
-        val colorToast: Boolean = true,
-        val title: String? = null,
-        val vObject: Any? = null
-    ) : FlashResult()
+    data class Error(val message: String, val isSimple: Boolean = true, val colorToast: Boolean = true, val title: String? = null, val vObject: Any? = null) : FlashResult()
 
     /**
      * Represents a successful result of an operation.
@@ -37,13 +31,6 @@ sealed class FlashResult : Serializable {
      * @property vObject Optional object associated with the result, such as returned data.
      *
      */
-    data class Success(
-        var message: String,
-        val isSimple: Boolean = true,
-        val showToast: Boolean = true,
-        val colorToast: Boolean = true,
-        val title: String? = null,
-        val vObject: Any? = null
-    ) : FlashResult()
+    data class Success(var message: String, val isSimple: Boolean = true, val showToast: Boolean = true, val colorToast: Boolean = true, val title: String? = null, val vObject: Any? = null) : FlashResult()
 
 }

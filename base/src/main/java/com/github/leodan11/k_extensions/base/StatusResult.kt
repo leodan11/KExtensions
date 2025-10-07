@@ -21,12 +21,7 @@ sealed class StatusResult : Serializable {
      * @property throwable Optional [Throwable] associated with the error, if any.
      * @property vObject Optional additional object related to the error, can be any type.
      */
-    data class Error(
-        val message: String,
-        val details: String? = null,
-        val throwable: Throwable? = null,
-        val vObject: Any? = null
-    ) : StatusResult()
+    data class Error(val message: String, val details: String? = null, val throwable: Throwable? = null, val vObject: Any? = null) : StatusResult()
 
     /**
      * Represents a successful result.
@@ -35,9 +30,6 @@ sealed class StatusResult : Serializable {
      * @property details Optional additional details about the success.
      * @property vObject Optional additional object related to the success, can be any type.
      */
-    data class Success(
-        var message: String,
-        val details: String? = null,
-        val vObject: Any? = null
-    ) : StatusResult()
+    data class Success(var message: String, val details: String? = null, val vObject: Any? = null) : StatusResult()
+
 }

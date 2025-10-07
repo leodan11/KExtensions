@@ -6,6 +6,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.annotation.AttrRes
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.core.view.MenuHost
@@ -139,6 +140,25 @@ val Fragment.externalFileDirPath: String
 fun Fragment.addOnBackPressedCallback(enabled: Boolean = true, callback: OnBackPressedCallback.() -> Unit) {
     requireActivity().onBackPressedDispatcher.addCallback(this, enabled, callback)
 }
+
+
+/**
+ * Retrieves a color value from the current theme's attributes.
+ *
+ * ```kotlin
+ * // BlackFragment.kt
+ * val color = customColorResource(R.attr.colorPrimary, Color.RED)
+ * ```
+ *
+ * @param idAttrRes The attribute resource ID representing the color to fetch.
+ * @param fallbackColor The color to return if the attribute is not found or cannot be resolved. Default is 0 (transparent).
+ *
+ * @return The resolved color integer (ARGB), or [fallbackColor] if attribute resolution fails.
+ */
+fun Fragment.customColorResource(@AttrRes idAttrRes: Int, fallbackColor: Int = 0): Int {
+    return requireActivity().customColorResource(idAttrRes = idAttrRes, fallbackColor = fallbackColor)
+}
+
 
 /**
  * Hides the soft keyboard if any view in the Activity currently has focus.

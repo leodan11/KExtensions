@@ -11,386 +11,448 @@ import com.github.leodan11.k_extensions.core.tag
 import kotlin.math.roundToInt
 
 /**
- * Get Background Color Default Theme Material Design
+ * Retrieves the `colorAccent` from AppCompat theme attributes.
  *
- * @return [Int] - Color value
+ * This is useful for supporting legacy themes or apps that still define `colorAccent`,
+ * even though it has been deprecated in Material 3 and is no longer part of modern theme attributes.
+ *
+ * Example:
+ * ```kotlin
+ * val accentColor = context.colorAccent()
+ * ```
+ *
+ * @return The resolved accent color as an ARGB integer, or `Color.TRANSPARENT` if not defined.
+ * @since 2.2.0
  */
+@ColorInt
+fun Context.colorAccent(): Int {
+    return customColorResource(androidx.appcompat.R.attr.colorAccent)
+}
+
+/**
+ * Retrieves the background color from the current theme's attributes.
+ *
+ * ```kotlin
+ * val bgColor = context.backgroundColor()
+ * ```
+ *
+ * @return The resolved background color as an ARGB integer.
+ * If the attribute is not found, returns transparent (0).
+ */
+@ColorInt
 fun Context.backgroundColor(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.backgroundColor,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.backgroundColor)
 }
 
 
 /**
- * Get OnBackground Color Default Theme Material Design
+ * Retrieves the color used for content displayed on top of the background color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onBackgroundColor = context.colorOnBackground()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnBackground(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnBackground,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnBackground)
 }
 
 
 /**
- * Get color custom resource theme
+ * Retrieves the error color defined in AppCompat-based themes.
  *
- * @param idAttrRes ID Resource, e.g: [android.R.attr.colorAccent]
- * @return [Int] - Color value
- */
-fun Context.customColorResource(@AttrRes idAttrRes: Int): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(idAttrRes, typedValue, true)
-    return typedValue.data
-}
-
-
-/**
- * Get Error Color Default Theme Material Design
+ * This replaces the previous implementation based on
+ * `com.google.android.material.R.attr.colorError`, which was removed in
+ * Material Components `1.13.0`.
  *
- * @return [Int] - Color value
+ * Useful when using AppCompat or hybrid Material 2 themes that still define `colorError`.
+ *
+ * Example:
+ * ```kotlin
+ * val errorColor = context.colorError()
+ * ```
+ *
+ * @return The resolved error color from the current theme, or `Color.TRANSPARENT` if not defined.
+ * @since 2.2.0
  */
+@ColorInt
 fun Context.colorError(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorError, typedValue, true)
-    return typedValue.data
+    return customColorResource(androidx.appcompat.R.attr.colorError)
 }
 
 
 /**
- * Get OnError Color Default Theme Material Design
+ * Retrieves the color used for content displayed on top of error surfaces from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onErrorColor = context.colorOnError()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnError(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnError, typedValue, true)
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnError)
 }
 
 
 /**
- * Get ErrorContainer Color Only Theme Material Design 3
+ * Retrieves the color used for error container surfaces from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val errorContainerColor = context.colorErrorContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorErrorContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorErrorContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorErrorContainer)
 }
 
 
 /**
- * Get OnErrorContainer Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of error container surfaces from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onErrorContainerColor = context.colorOnErrorContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnErrorContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnErrorContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnErrorContainer)
 }
 
 
 /**
- * Get Outline Color Only Theme Material Design 3
+ * Retrieves the outline color used in the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val outlineColor = context.colorOutline()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOutline(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOutline, typedValue, true)
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOutline)
 }
 
 
 /**
- * Get OutlineVariant Color Only Theme Material Design 3
+ * Retrieves the variant outline color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val outlineVariantColor = context.colorOutlineVariant()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOutlineVariant(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOutlineVariant,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOutlineVariant)
 }
 
 
 /**
- * Get Primary Color Default Theme Material Design
+ * Retrieves the primary color defined in AppCompat-based themes.
  *
- * @return [Int] - Color value
+ * This replaces the previous implementation based on
+ * `com.google.android.material.R.attr.colorPrimary`, which was removed in
+ * Material Components `1.13.0`.
+ *
+ * Useful when using AppCompat or hybrid Material 2 themes that still define `colorPrimary`.
+ *
+ * Example:
+ * ```kotlin
+ * val primaryColor = context.colorPrimary()
+ * ```
+ *
+ * @return The resolved primary color from the current theme, or `Color.TRANSPARENT` if not defined.
+ * @since 2.2.0
  */
+@ColorInt
 fun Context.colorPrimary(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
-    return typedValue.data
+    return customColorResource(androidx.appcompat.R.attr.colorPrimary)
 }
 
+
 /**
- * Get PrimaryInverse Color Only Theme Material Design 3
+ * Retrieves the inverse primary color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val primaryInverseColor = context.colorPrimaryInverse()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorPrimaryInverse(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorPrimaryInverse,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorPrimaryInverse)
 }
 
 
 /**
- * Get OnPrimary Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of the primary color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onPrimaryColor = context.colorOnPrimary()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnPrimary(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, typedValue, true)
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnPrimary)
 }
 
 
 /**
- * Get PrimaryContainer Color Only Theme Material Design 3
+ * Retrieves the primary container color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val primaryContainerColor = context.colorPrimaryContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorPrimaryContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorPrimaryContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorPrimaryContainer)
 }
 
 
 /**
- * Get OnPrimaryContainer Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of the primary container color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onPrimaryContainerColor = context.colorOnPrimaryContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnPrimaryContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnPrimaryContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnPrimaryContainer)
 }
 
 
 /**
- * Get Secondary Color Default Theme Material Design
+ * Retrieves the secondary color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val secondaryColor = context.colorSecondary()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorSecondary(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorSecondary, typedValue, true)
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorSecondary)
 }
 
 
 /**
- * Get OnSecondary Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of the secondary color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onSecondaryColor = context.colorOnSecondary()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnSecondary(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnSecondary,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnSecondary)
 }
 
 
 /**
- * Get SecondaryContainer Color Only Theme Material Design 3
+ * Retrieves the secondary container color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val secondaryContainerColor = context.colorSecondaryContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorSecondaryContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorSecondaryContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorSecondaryContainer)
 }
 
 
 /**
- * Get OnSecondaryContainer Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of the secondary container color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onSecondaryContainerColor = context.colorOnSecondaryContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnSecondaryContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnSecondaryContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnSecondaryContainer)
 }
 
 
 /**
- * Get Surface Color Default Theme Material Design
+ * Retrieves the surface color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val surfaceColor = context.colorSurface()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorSurface(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorSurface)
 }
 
 
 /**
- * Get OnSurface Color Default Theme Material Design
+ * Retrieves the color used for content displayed on top of surface color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onSurfaceColor = context.colorOnSurface()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnSurface(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnSurface)
 }
 
 
 /**
- * Get SurfaceVariant Color Only Theme Material Design 3
+ * Retrieves the surface variant color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val surfaceVariantColor = context.colorSurfaceVariant()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorSurfaceVariant(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorSurfaceVariant,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorSurfaceVariant)
 }
 
 
 /**
- * Get OnSurfaceVariant Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of the surface variant color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onSurfaceVariantColor = context.colorOnSurfaceVariant()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnSurfaceVariant(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnSurfaceVariant,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnSurfaceVariant)
 }
 
 
 /**
- * Get Tertiary Color Only Theme Material Design 3
+ * Retrieves the tertiary color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val tertiaryColor = context.colorTertiary()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorTertiary(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(com.google.android.material.R.attr.colorTertiary, typedValue, true)
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorTertiary)
 }
 
 
 /**
- * Get OnTertiary Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of the tertiary color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onTertiaryColor = context.colorOnTertiary()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnTertiary(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnTertiary,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnTertiary)
 }
 
 
 /**
- * Get TertiaryContainer Color Only Theme Material Design 3
+ * Retrieves the tertiary container color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val tertiaryContainerColor = context.colorTertiaryContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorTertiaryContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorTertiaryContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorTertiaryContainer)
 }
 
 
 /**
- * Get OnTertiaryContainer Color Only Theme Material Design 3
+ * Retrieves the color used for content displayed on top of the tertiary container color from the current theme's attributes.
  *
- * @return [Int] - Color value
+ * ```kotlin
+ * val onTertiaryContainerColor = context.colorOnTertiaryContainer()
+ * ```
+ *
+ * @return The resolved ARGB color integer.
+ * If the attribute is not found, returns transparent (0).
  */
+@ColorInt
 fun Context.colorOnTertiaryContainer(): Int {
-    val typedValue = TypedValue()
-    this.theme.resolveAttribute(
-        com.google.android.material.R.attr.colorOnTertiaryContainer,
-        typedValue,
-        true
-    )
-    return typedValue.data
+    return customColorResource(com.google.android.material.R.attr.colorOnTertiaryContainer)
 }
 
 
 /**
- * Adjust the alpha of a color
+ * Adjusts the alpha (transparency) of a color by a given factor.
+ * The factor should be between 0 and 1, where 0 is fully transparent and 1 is fully opaque.
  *
- * @param factor [Float] - Factor to adjust the alpha
- * @return [Int] - Color value
+ * ```kotlin
+ * val adjustedColor = originalColor.adjustAlpha(0.5f)
+ * ```
+ *
+ * @param factor The factor by which to adjust the alpha. A value between 0 (fully transparent) and 1 (fully opaque).
+ * @return The resulting ARGB color integer with the adjusted alpha value.
  */
 @ColorInt
 fun Int.adjustAlpha(factor: Float): Int {
@@ -400,10 +462,17 @@ fun Int.adjustAlpha(factor: Float): Int {
 
 
 /**
- * Get ColorStateList
+ * Creates a `ColorStateList` based on the provided color. It defines the colors for different states
+ * such as enabled, disabled, and checked states.
  *
- * @param color [Int] - Color value
- * @return [ColorStateList] - ColorStateList
+ * The color's alpha is adjusted for disabled states, and the checked state will keep the base color.
+ *
+ * ```kotlin
+ * val colorStateList = context.colorStateList(Color.RED)
+ * ```
+ *
+ * @param color The base color to create the `ColorStateList` from.
+ * @return A `ColorStateList` containing colors for various states.
  */
 fun Context.colorStateList(@ColorInt color: Int): ColorStateList {
     val disabledColor = color.adjustAlpha(0.3f)
@@ -417,4 +486,11 @@ fun Context.colorStateList(@ColorInt color: Int): ColorStateList {
         ),
         intArrayOf(color.adjustAlpha(0.8f), color, disabledColor, disabledColor)
     )
+}
+
+
+private fun Context.customColorResource(@AttrRes idAttrRes: Int, fallbackColor: Int = 0): Int {
+    val typedValue = TypedValue()
+    val resolved = this.theme.resolveAttribute(idAttrRes, typedValue, true)
+    return if (resolved) typedValue.data else fallbackColor
 }
