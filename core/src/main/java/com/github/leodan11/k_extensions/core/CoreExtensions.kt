@@ -1,5 +1,6 @@
 package com.github.leodan11.k_extensions.core
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -12,14 +13,19 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.graphics.PorterDuffXfermode
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
+import android.util.TypedValue
+import android.view.Menu
 import android.widget.AutoCompleteTextView
 import android.widget.Spinner
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
 import androidx.core.graphics.set
@@ -31,6 +37,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
+import androidx.core.view.size
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 
 /**
@@ -74,7 +88,11 @@ inline fun <reified T : Serializable> Bundle.serializable(key: String): T? = whe
  * @see Intent.getSerializableExtra
  */
 inline fun <reified T : Serializable> Intent.serializable(key: String): T? = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(key, T::class.java)
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getSerializableExtra(
+        key,
+        T::class.java
+    )
+
     else -> @Suppress("DEPRECATION") getSerializableExtra(key) as? T
 }
 
@@ -142,7 +160,10 @@ inline fun <reified T> Any.safeCast(): T? = this as? T
  * @param charset The character set used to decode the resulting bytes into a string. Defaults to UTF-8.
  * @return The decoded string result.
  */
-fun ByteArray.toBase64Decode(flags: Int = Base64.DEFAULT, charset: Charset = Charsets.UTF_8): String = Base64.decode(this, flags).toString(charset)
+fun ByteArray.toBase64Decode(
+    flags: Int = Base64.DEFAULT,
+    charset: Charset = Charsets.UTF_8
+): String = Base64.decode(this, flags).toString(charset)
 
 
 /**
@@ -157,7 +178,8 @@ fun ByteArray.toBase64Decode(flags: Int = Base64.DEFAULT, charset: Charset = Cha
  * @param flags Optional flags for encoding. Defaults to [Base64.DEFAULT].
  * @return The Base64 encoded string representation of this byte array.
  */
-fun ByteArray.toBase64Encode(flags: Int = Base64.DEFAULT): String = Base64.encodeToString(this, flags)
+fun ByteArray.toBase64Encode(flags: Int = Base64.DEFAULT): String =
+    Base64.encodeToString(this, flags)
 
 
 /**
@@ -175,7 +197,8 @@ fun ByteArray.toBase64Encode(flags: Int = Base64.DEFAULT): String = Base64.encod
  * @param separator A string to insert between each hex byte. Defaults to an empty string (no separator).
  * @return The hexadecimal string representation of this byte array.
  */
-fun ByteArray.toHexString(separator: String = ""): String = joinToString(separator) { "%02x".format(it) }
+fun ByteArray.toHexString(separator: String = ""): String =
+    joinToString(separator) { "%02x".format(it) }
 
 
 /**
@@ -195,8 +218,17 @@ fun ByteArray.toHexString(separator: String = ""): String = joinToString(separat
  * @param alpha Alpha value (transparency) for the receiver bitmap. Range 0 (transparent) to 255 (opaque). Defaults to 255.
  * @return A new [Bitmap] combining both bitmaps.
  */
-fun Bitmap.mergeBitmaps(baseBitmap: Bitmap, offsetX: Float = (baseBitmap.width - this.width) / 2f, offsetY: Float = (baseBitmap.height - this.height) / 2f, alpha: Int = 255): Bitmap {
-    val combined = createBitmap(baseBitmap.width, baseBitmap.height, baseBitmap.config ?: Bitmap.Config.ARGB_8888)
+fun Bitmap.mergeBitmaps(
+    baseBitmap: Bitmap,
+    offsetX: Float = (baseBitmap.width - this.width) / 2f,
+    offsetY: Float = (baseBitmap.height - this.height) / 2f,
+    alpha: Int = 255
+): Bitmap {
+    val combined = createBitmap(
+        baseBitmap.width,
+        baseBitmap.height,
+        baseBitmap.config ?: Bitmap.Config.ARGB_8888
+    )
     val canvas = Canvas(combined)
     val paint = Paint().apply { this.alpha = alpha.coerceIn(0, 255) }
     canvas.drawBitmap(baseBitmap, Matrix(), null)
@@ -227,8 +259,18 @@ fun Bitmap.mergeBitmaps(baseBitmap: Bitmap, offsetX: Float = (baseBitmap.width -
  * @param alpha Alpha value (transparency) for the receiver bitmap. Range 0 (transparent) to 255 (opaque). Defaults to 255.
  * @return A new [Bitmap] combining both bitmaps with the blend mode applied.
  */
-fun Bitmap.mergeWithBlendMode(baseBitmap: Bitmap, blendMode: PorterDuff.Mode = PorterDuff.Mode.SRC_OVER, offsetX: Float = (baseBitmap.width - this.width) / 2f, offsetY: Float = (baseBitmap.height - this.height) / 2f, alpha: Int = 255): Bitmap {
-    val combined = createBitmap(baseBitmap.width, baseBitmap.height, baseBitmap.config ?: Bitmap.Config.ARGB_8888)
+fun Bitmap.mergeWithBlendMode(
+    baseBitmap: Bitmap,
+    blendMode: PorterDuff.Mode = PorterDuff.Mode.SRC_OVER,
+    offsetX: Float = (baseBitmap.width - this.width) / 2f,
+    offsetY: Float = (baseBitmap.height - this.height) / 2f,
+    alpha: Int = 255
+): Bitmap {
+    val combined = createBitmap(
+        baseBitmap.width,
+        baseBitmap.height,
+        baseBitmap.config ?: Bitmap.Config.ARGB_8888
+    )
     val canvas = Canvas(combined)
     val paint = Paint().apply {
         this.alpha = alpha.coerceIn(0, 255)
@@ -272,8 +314,18 @@ fun Bitmap.mergeWithBlendMode(baseBitmap: Bitmap, blendMode: PorterDuff.Mode = P
  *
  */
 @RequiresApi(Build.VERSION_CODES.Q)
-fun Bitmap.mergeWithModernBlendMode(baseBitmap: Bitmap, blendMode: BlendMode = BlendMode.SRC_OVER, offsetX: Float = (baseBitmap.width - this.width) / 2f, offsetY: Float = (baseBitmap.height - this.height) / 2f, alpha: Int = 255): Bitmap {
-    val combined = createBitmap(baseBitmap.width, baseBitmap.height, baseBitmap.config ?: Bitmap.Config.ARGB_8888)
+fun Bitmap.mergeWithModernBlendMode(
+    baseBitmap: Bitmap,
+    blendMode: BlendMode = BlendMode.SRC_OVER,
+    offsetX: Float = (baseBitmap.width - this.width) / 2f,
+    offsetY: Float = (baseBitmap.height - this.height) / 2f,
+    alpha: Int = 255
+): Bitmap {
+    val combined = createBitmap(
+        baseBitmap.width,
+        baseBitmap.height,
+        baseBitmap.config ?: Bitmap.Config.ARGB_8888
+    )
     val canvas = Canvas(combined)
     val paint = Paint().apply {
         this.alpha = alpha.coerceIn(0, 255)
@@ -366,9 +418,61 @@ fun Bitmap.tintWithColor(@ColorInt color: Int): Bitmap {
  * ```
  * @see R.string.label_text_unknown for the fallback string resource.
  */
-fun Context.getDisplayText(value: String?, @StringRes default: Int = R.string.label_text_unknown): String {
-    return value?.trim()?.takeIf { it.isNotEmpty() }?.split("\\s+".toRegex())?.joinToString(" ") { it.lowercase().replaceFirstChar(Char::titlecase) } ?: getString(default)
+fun Context.getDisplayText(value: String?, @StringRes default: Int? = null): String {
+    val def = default?.let { this.getString(it) } ?: this.getString(R.string.label_text_unknown)
+    return this.getDisplayText(value = value, default = def)
 }
+
+
+/**
+ * Returns a properly formatted display text from the given [value], or a default string resource
+ * if the input is `null`, blank, or empty.
+ *
+ * Each word in the input is capitalized to improve display consistency.
+ *
+ * @param value The original string (e.g., a name or label), which may be null, blank, or improperly formatted.
+ * @param default A string resource to use as fallback when [value] is null or blank.
+ *
+ * Example usage:
+ * ```
+ * val rawInput: String? = "   john doe"
+ * val displayText = context.getDisplayText(rawInput)
+ * // Result: "John Doe"
+ *
+ * val emptyInput: String? = null
+ * val displayText = context.getDisplayText(emptyInput)
+ * // Result: "Unknown"
+ * ```
+ * @return A formatted string with each word capitalized, or the fallback string.
+ * @since 2.2.1
+ */
+fun Context.getDisplayText(value: String?, default: String): String {
+    val def: String = default.ifEmpty { this.getString(R.string.label_text_unknown) }
+    return value?.trim()?.takeIf { it.isNotEmpty() }?.split("\\s+".toRegex())?.joinToString(" ") { it.lowercase().replaceFirstChar(Char::titlecase) } ?: def
+}
+
+
+/**
+ * Checks if the internet connection is currently available.
+ *
+ * This is a suspend function that returns the current internet connectivity status
+ * as a [Boolean]. It optionally takes a [CoroutineScope] to manage the lifecycle of
+ * the underlying flow subscription. If no scope is provided, a new one is created
+ * using [Dispatchers.IO].
+ *
+ * @param coroutineScope An optional [CoroutineScope] to use for collecting the internet detection flow.
+ *                       If null, a new scope is created internally.
+ * @receiver The [Context] used to access system services for internet detection.
+ * @return [Boolean] indicating whether the internet connection is currently available.
+ * @throws CancellationException if the coroutine scope is cancelled during execution.
+ * @since 2.2.1
+ */
+suspend fun Context.internetOn(coroutineScope: CoroutineScope? = null): Boolean {
+    val scope = coroutineScope ?: CoroutineScope(Job() + IO)
+    val result: StateFlow<Boolean> = this.internetDetection().stateIn(scope)
+    return result.value
+}
+
 
 /**
  * Safely converts a [Drawable] to a [Bitmap].
@@ -407,7 +511,10 @@ fun Drawable.toBitmapSafe(): Bitmap {
  *
  * @see Context.getDisplayText
  */
-fun <T> List<T>.toDisplayPairList(context: Context, nameProvider: (T) -> String): List<Pair<T, String>> {
+fun <T> List<T>.toDisplayPairList(
+    context: Context,
+    nameProvider: (T) -> String
+): List<Pair<T, String>> {
     return this.map { item -> item to context.getDisplayText(nameProvider(item)) }
 }
 
@@ -427,8 +534,90 @@ fun <T> List<T>.toDisplayPairList(context: Context, nameProvider: (T) -> String)
  *
  * @see Context.getDisplayText
  */
-fun <T> List<T>.toDisplayPairList(context: Fragment, nameProvider: (T) -> String): List<Pair<T, String>> {
+fun <T> List<T>.toDisplayPairList(
+    context: Fragment,
+    nameProvider: (T) -> String
+): List<Pair<T, String>> {
     return this.toDisplayPairList(context.requireActivity(), nameProvider)
+}
+
+
+/**
+ * Enables icon visibility in a [Menu] if possible.
+ *
+ * This is useful when using [MenuBuilder], which supports showing icons
+ * in menus. The function safely casts the menu and handles any exceptions.
+ *
+ *
+ * ```kotlin
+ * override fun onCreateOptionsMenu(menu: Menu): Boolean {
+ *     menuInflater.inflate(R.menu.my_menu, menu)
+ *     menu.enableIcons()
+ *     return true
+ * }
+ * ```
+ * @return `true` if icons were successfully enabled, `false` otherwise.
+ * @since 2.2.1
+ */
+@SuppressLint("RestrictedApi")
+fun Menu.enableIcons(): Boolean = try {
+    (this as? MenuBuilder)?.run {
+        setOptionalIconsVisible(true)
+        true
+    } ?: false
+} catch (e: Exception) {
+    Log.w("Menu", "Failed to enable menu icons visibility", e)
+    false
+}
+
+
+/**
+ * Enables icon visibility in the menu and applies horizontal margins to icons for better alignment.
+ *
+ * This method uses reflection to invoke the internal `setOptionalIconsVisible(true)` method
+ * on the menu implementation, which is typically a `MenuBuilder` instance in AndroidX.
+ * If successful, it adds horizontal padding around each menu item's icon to improve appearance,
+ * especially on devices running Lollipop and above.
+ *
+ * @receiver The [Menu] instance on which to enable icon visibility and apply margins.
+ * @param context The [Context] used to convert density-independent pixels (dp) to pixels.
+ * @param marginDp The horizontal margin in dp to apply around icons. Default is 16dp.
+ * @return `true` if icon visibility was successfully enabled and margins applied, `false` otherwise.
+ *
+ * @throws ReflectiveOperationException if the internal method cannot be accessed or invoked.
+ * @since 2.2.1
+ */
+@SuppressLint("RestrictedApi")
+fun Menu.enableIconsWithMargin(context: Context, marginDp: Int = 16): Boolean {
+    return try {
+        if (this is MenuBuilder) {
+            this.setOptionalIconsVisible(true)
+            val marginPx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                marginDp.toFloat(),
+                context.resources.displayMetrics
+            ).toInt()
+            for (i in 0 until this.size) {
+                val item = this.getItem(i)
+                item.icon?.let { icon ->
+                    item.icon = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                        InsetDrawable(icon, marginPx, 0, marginPx, 0)
+                    } else {
+                        // For pre-Lollipop devices, override intrinsic width to maintain layout
+                        object : InsetDrawable(icon, marginPx, 0, marginPx, 0) {
+                            override fun getIntrinsicWidth(): Int {
+                                return intrinsicHeight + marginPx * 2
+                            }
+                        }
+                    }
+                }
+            }
+            true
+        } else false
+    } catch (e: Exception) {
+        Log.w("Menu", "Failed to enable menu icons visibility/margins", e)
+        false
+    }
 }
 
 
@@ -461,7 +650,13 @@ fun <T> List<T>.toDisplayPairList(context: Fragment, nameProvider: (T) -> String
  *
  * @throws IllegalArgumentException if [hashLength] is less than 1.
  */
-fun generateOfflineDevCode(secretKey: String, dateFormat: String = "yyyyMMddHH", hashLength: Int = 6, uppercase: Boolean = true, locale: Locale = Locale.getDefault()): String {
+fun generateOfflineDevCode(
+    secretKey: String,
+    dateFormat: String = "yyyyMMddHH",
+    hashLength: Int = 6,
+    uppercase: Boolean = true,
+    locale: Locale = Locale.getDefault()
+): String {
     require(hashLength > 0) { "hashLength must be greater than 0" }
     val currentDateTime = Date().toFormat(dateFormat, locale)
     val rawInput = currentDateTime + secretKey
@@ -495,6 +690,7 @@ private fun String.sha256(): String {
 }
 
 
-private fun Date.toFormat(pattern: String = "yyyy-MM-dd", locale: Locale): String = synchronized(this) {
-    SimpleDateFormat(pattern, locale).format(this)
-}
+private fun Date.toFormat(pattern: String = "yyyy-MM-dd", locale: Locale): String =
+    synchronized(this) {
+        SimpleDateFormat(pattern, locale).format(this)
+    }

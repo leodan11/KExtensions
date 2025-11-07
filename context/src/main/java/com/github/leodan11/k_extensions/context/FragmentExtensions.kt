@@ -1,6 +1,7 @@
 package com.github.leodan11.k_extensions.context
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
@@ -14,7 +15,11 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.github.leodan11.k_extensions.core.getDisplayText
+import com.github.leodan11.k_extensions.core.internetOn
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 
 /**
@@ -229,6 +234,26 @@ fun Fragment.getVersionCode(pkgName: String = requireActivity().packageName): Lo
 fun Fragment.getVersionName(pkgName: String = requireActivity().packageName): String {
     return requireActivity().getVersionName(pkgName)
 }
+
+/**
+ * Checks if the internet connection is currently available.
+ *
+ * This is a suspend function that returns the current internet connectivity status
+ * as a [Boolean]. It optionally takes a [CoroutineScope] to manage the lifecycle of
+ * the underlying flow subscription. If no scope is provided, a new one is created
+ * using [Dispatchers.IO].
+ *
+ * @param coroutineScope An optional [CoroutineScope] to use for collecting the internet detection flow.
+ *                       If null, a new scope is created internally.
+ * @receiver The [Context] used to access system services for internet detection.
+ * @return [Boolean] indicating whether the internet connection is currently available.
+ * @throws CancellationException if the coroutine scope is cancelled during execution.
+ * @since 2.2.1
+ */
+suspend fun Fragment.internetOn(coroutineScope: CoroutineScope? = null): Boolean {
+    return requireActivity().internetOn(coroutineScope = coroutineScope)
+}
+
 
 /**
  * Launches a new Activity from a Fragment.

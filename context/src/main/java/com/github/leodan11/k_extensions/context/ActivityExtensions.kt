@@ -12,7 +12,6 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
 import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.PixelCopy
 import android.view.View
 import android.view.WindowManager
@@ -24,9 +23,13 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import com.github.leodan11.k_extensions.core.DisplayDensity
 import androidx.core.graphics.createBitmap
 import androidx.fragment.app.FragmentActivity
+import com.github.leodan11.k_extensions.core.DisplayDensity
+import com.github.leodan11.k_extensions.core.internetOn
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Registers a custom [OnBackPressedCallback] for this [FragmentActivity].
@@ -45,6 +48,26 @@ import androidx.fragment.app.FragmentActivity
  */
 fun FragmentActivity.addOnBackPressedCallback(enabled: Boolean = true, callback: OnBackPressedCallback.() -> Unit) {
     onBackPressedDispatcher.addCallback(this, enabled, callback)
+}
+
+
+/**
+ * Checks if the internet connection is currently available.
+ *
+ * This is a suspend function that returns the current internet connectivity status
+ * as a [Boolean]. It optionally takes a [CoroutineScope] to manage the lifecycle of
+ * the underlying flow subscription. If no scope is provided, a new one is created
+ * using [Dispatchers.IO].
+ *
+ * @param coroutineScope An optional [CoroutineScope] to use for collecting the internet detection flow.
+ *                       If null, a new scope is created internally.
+ * @receiver The [Context] used to access system services for internet detection.
+ * @return [Boolean] indicating whether the internet connection is currently available.
+ * @throws CancellationException if the coroutine scope is cancelled during execution.
+ * @since 2.2.1
+ */
+suspend fun FragmentActivity.internetOn(coroutineScope: CoroutineScope? = null): Boolean {
+    return applicationContext.internetOn(coroutineScope = coroutineScope)
 }
 
 

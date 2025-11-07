@@ -1,36 +1,72 @@
 package com.github.leodan11.k_extensions.base
 
-import android.widget.Toast
 import java.io.Serializable
+import kotlinx.serialization.Serializable as KSerializable
 
 /**
- * Represents the result of an operation, which can either be a success or an error.
- * This is a sealed class, meaning it can only be subclassed within this file.
+ * Represents the result of a flash operation, which can either be a success or an error.
+ * Optionally allows including an object of type [T] associated with the result.
+ *
+ * This design provides flexibility while using generics to avoid casting from `Any`
+ * and improve type safety.
+ *
+ * @param T Optional type of the associated object. Defaults to `Nothing` when no object is included.
+ *
+ * ```kotlin
+ * // Error without object
+ * val errorSimple = FlashResult.Error(message = "Simple error")
+ *
+ * // Error with object
+ * val user = User("Alice", 30)
+ * val errorWithData = FlashResult.Error(message = "Error with user", data = user)
+ *
+ * // Success without object
+ * val successSimple = FlashResult.Success(message = "Operation succeeded")
+ *
+ * // Success with object
+ * val successWithData = FlashResult.Success(message = "User loaded", data = user)
+ * ```
+ * @since 2.2.1
  */
-sealed class FlashResult : Serializable {
+@KSerializable
+sealed class FlashResult<out T : Any> : Serializable {
 
     /**
-     * Represents a failed result of an operation.
+     * Represents an error in the flash operation.
      *
-     * @property message Main error message describing the failure.
-     * @property isSimple [Boolean] If `true`, the error will be shown as a simple [Toast], otherwise, it will be displayed as if it were a custom Toast.
-     * @property colorToast [Boolean] Extra condition in case your personalized toast requires other changes.
-     * @property title Optional title for the flash message. If the personalized toast requires it.
-     * @property vObject Optional object associated with the error, useful for debugging or context.
+     * @property message Main error message.
+     * @property isSimple Flag to indicate if the error is simple (default: true).
+     * @property colorToast Flag to indicate if the toast should be colored (default: true).
+     * @property title Optional title for the error message.
+     * @property data Optional object related to the error.
      */
-    data class Error(val message: String, val isSimple: Boolean = true, val colorToast: Boolean = true, val title: String? = null, val vObject: Any? = null) : FlashResult()
+    @KSerializable
+    data class Error<T : Any> @JvmOverloads constructor(
+        val message: String,
+        val isSimple: Boolean = true,
+        val colorToast: Boolean = true,
+        val title: String? = null,
+        val data: T? = null
+    ) : FlashResult<T>(), Serializable
 
     /**
-     * Represents a successful result of an operation.
+     * Represents a successful flash operation.
      *
-     * @property message Descriptive message indicating success.
-     * @property isSimple [Boolean] If `true`, the error will be c as a simple [Toast], otherwise, it will be displayed as if it were a custom Toast.
-     * @property showToast [Boolean] If `true` shown a toast, otherwise, do not show a toast.
-     * @property colorToast [Boolean] Extra condition in case your personalized toast requires other changes.
-     * @property title Optional title for the flash message. If the personalized toast requires it.
-     * @property vObject Optional object associated with the result, such as returned data.
-     *
+     * @property message Main success message.
+     * @property isSimple Flag to indicate if the success is simple (default: true).
+     * @property showToast Flag to indicate if a toast should be shown (default: true).
+     * @property colorToast Flag to indicate if the toast should be colored (default: true).
+     * @property title Optional title for the success message.
+     * @property data Optional object related to the success.
      */
-    data class Success(var message: String, val isSimple: Boolean = true, val showToast: Boolean = true, val colorToast: Boolean = true, val title: String? = null, val vObject: Any? = null) : FlashResult()
+    @KSerializable
+    data class Success<T : Any> @JvmOverloads constructor(
+        val message: String,
+        val isSimple: Boolean = true,
+        val showToast: Boolean = true,
+        val colorToast: Boolean = true,
+        val title: String? = null,
+        val data: T? = null
+    ) : FlashResult<T>(), Serializable
 
 }
