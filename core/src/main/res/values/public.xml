@@ -2,4 +2,14 @@
 <resources>
     <public name="label_text_unknown" type="string" />
     <public name="label_this_field_cannot_be_left_empty" type="string" />
+    <public name="text_value_a_moment_ago" type="string" />
+    <public name="text_value_elapsed_time_singular" type="string" />
+    <public name="text_value_elapsed_time_plural" type="string" />
+    <public name="text_value_elapsed_time_with_day_singular" type="string" />
+    <public name="text_value_elapsed_time_with_day_plural" type="string" />
+    <public name="text_value_elapsed_time_minutes_singular" type="string" />
+    <public name="text_value_elapsed_time_minutes_plural" type="string" />
+    <public name="text_value_elapsed_time_seconds_singular" type="string" />
+    <public name="text_value_elapsed_time_seconds_plural" type="string" />
+    <public name="text_value_and" type="string" />
 </resources>

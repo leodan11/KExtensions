@@ -1,64 +1,104 @@
 package com.github.leodan11.k_extensions.base
 
 import java.io.Serializable
-import kotlinx.serialization.Serializable as KSerializable
 
 /**
  * Represents the result of an operation, which can be either a success or an error.
- * Optionally allows including an object of type [T] associated with the result.
  *
- * This design preserves the flexibility of the original style while using generics
- * to avoid casting from `Any` and improve type safety.
+ * This sealed class provides four distinct outcomes:
+ * 1. [Success]: operation completed successfully without data.
+ * 2. [SuccessData]: operation completed successfully with associated data.
+ * 3. [Error]: operation failed without associated data.
+ * 4. [ErrorData]: operation failed with associated data.
  *
- * @param T Optional type of the associated object. Defaults to `Nothing` when no object is included.
+ * Using generics in [SuccessData] and [ErrorData] avoids unsafe casting and improves type safety.
  *
+ * Example usage:
  * ```kotlin
- * // Simple error without object
+ * // Simple error without data
  * val errorSimple = StatusResult.Error(message = "Operation failed")
  *
- * // Error with object
+ * // Error with data
  * val user = User("John", 25) // Example object
- * val errorWithData = StatusResult.Error(message = "Error with user", data = user)
+ * val errorWithData = StatusResult.ErrorData(data = user, message = "Error with user")
  *
- * // Simple success without object
+ * // Simple success without data
  * val successSimple = StatusResult.Success(message = "Operation completed")
  *
- * // Success with object
- * val successWithData = StatusResult.Success(message = "User loaded", data = user)
+ * // Success with data
+ * val successWithData = StatusResult.SuccessData(data = user, message = "User loaded")
  * ```
+ *
  * @since 2.2.1
  */
-@KSerializable
-sealed class StatusResult<out T : Any> : Serializable {
+sealed class StatusResult : Serializable {
 
     /**
-     * Represents an error in the operation.
+     * Represents an operation failure without associated data.
      *
-     * @property message Main error message.
-     * @property details Optional additional information about the error.
-     * @property throwable Optional exception associated with the error.
-     * @property data Optional object related to the error.
+     * @property message Short description of the error.
+     * @property details Optional additional details or context.
+     * @property throwable Optional underlying exception that caused the error.
      */
-    @KSerializable
-    data class Error<T : Any> @JvmOverloads constructor(
+    data class Error(
         val message: String,
         val details: String? = null,
-        val throwable: Throwable? = null,
-        val data: T? = null
-    ) : StatusResult<T>(), Serializable
+        val throwable: Throwable? = null
+    ) : StatusResult()
 
     /**
-     * Represents a successful operation.
+     * Represents an operation failure with associated data.
      *
-     * @property message Main success message.
-     * @property details Optional additional information about the success.
-     * @property data Optional object related to the success.
+     * @param T Type of the data associated with the error.
+     * @property data The data associated with the error (e.g., cached or partial results).
+     * @property message Short description of the error.
+     * @property details Optional additional details or context.
+     * @property throwable Optional underlying exception that caused the error.
      */
-    @KSerializable
-    data class Success<T : Any> @JvmOverloads constructor(
+    data class ErrorData<T>(
+        val data: T,
         val message: String,
         val details: String? = null,
-        val data: T? = null
-    ) : StatusResult<T>(), Serializable
+        val throwable: Throwable? = null
+    ) : StatusResult()
+
+    /**
+     * Represents a successful operation without associated data.
+     *
+     * @property message Short description of the success result.
+     * @property details Optional additional details or context.
+     */
+    data class Success(
+        val message: String,
+        val details: String? = null
+    ) : StatusResult()
+
+    /**
+     * Represents a successful operation with associated data.
+     *
+     * @param T Type of the data associated with the success.
+     * @property data The data returned by the successful operation.
+     * @property message Short description of the success result.
+     * @property details Optional additional details or context.
+     */
+    data class SuccessData<T>(
+        val data: T,
+        val message: String,
+        val details: String? = null
+    ) : StatusResult()
+
+    companion object {
+        fun error(message: String, details: String? = null, throwable: Throwable? = null): StatusResult =
+            Error(message, details, throwable)
+
+        fun <T : Any> errorData(data: T, message: String, details: String? = null, throwable: Throwable? = null): StatusResult =
+            ErrorData(data, message, details, throwable)
+
+        fun success(message: String, details: String? = null): StatusResult =
+            Success(message, details)
+
+        fun <T : Any> successData(data: T, message: String, details: String? = null): StatusResult =
+            SuccessData(data, message, details)
+    }
 
 }

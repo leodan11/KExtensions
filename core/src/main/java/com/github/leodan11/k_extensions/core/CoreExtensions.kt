@@ -475,6 +475,52 @@ suspend fun Context.internetOn(coroutineScope: CoroutineScope? = null): Boolean 
 
 
 /**
+ * Returns a localized string representing elapsed time in selectable units.
+ *
+ * You can choose which units to show (days, hours, minutes, seconds).
+ * Units with zero value will be omitted unless explicitly included.
+ *
+ * Example:
+ * ```kotlin
+ * context.toElapsedTimeString(days = 1, hours = 2, minutes = 3, seconds = 4)
+ * // Default: "1 day, 2 hours, 3 minutes and 4 seconds"
+ *
+ * context.toElapsedTimeString(days = 1, hours = 2, minutes = 3, showUnits = listOf(UnitType.DAYS, UnitType.HOURS))
+ * // Only shows days and hours: "1 day and 2 hours"
+ * ```
+ *
+ * @param days Number of elapsed days
+ * @param hours Number of elapsed hours
+ * @param minutes Number of elapsed minutes
+ * @param seconds Number of elapsed seconds
+ * @param showUnits List of units to display. Default shows all non-zero units.
+ * @return A localized, formatted string describing the elapsed time
+ *
+ * @since 2.2.2
+ */
+fun Context.toElapsedTimeString(days: Int = 0, hours: Int = 0, minutes: Int = 0, seconds: Int = 0, showUnits: List<UnitType> = listOf(UnitType.DAYS, UnitType.HOURS, UnitType.MINUTES, UnitType.SECONDS)): String {
+    fun pluralize(count: Int, singularResId: Int, pluralResId: Int) = if (count == 1) getString(singularResId, count) else getString(pluralResId, count)
+    val parts = mutableListOf<String>()
+    showUnits.forEach { unit ->
+        when (unit) {
+            UnitType.DAYS -> if (days > 0) parts.add(pluralize(days, R.string.text_value_elapsed_time_with_day_singular, R.string.text_value_elapsed_time_with_day_plural))
+            UnitType.HOURS -> if (hours > 0) parts.add(pluralize(hours, R.string.text_value_elapsed_time_singular, R.string.text_value_elapsed_time_plural))
+            UnitType.MINUTES -> if (minutes > 0) parts.add(pluralize(minutes, R.string.text_value_elapsed_time_minutes_singular, R.string.text_value_elapsed_time_minutes_plural))
+            UnitType.SECONDS -> if (seconds > 0) parts.add(pluralize(seconds, R.string.text_value_elapsed_time_seconds_singular, R.string.text_value_elapsed_time_seconds_plural))
+        }
+    }
+    return when {
+        parts.isEmpty() -> getString(R.string.text_value_a_moment_ago)
+        parts.size == 1 -> parts[0]
+        else -> {
+            val last = parts.removeAt(parts.size - 1)
+            parts.joinToString(", ") + " " + getString(R.string.text_value_and) + " " + last
+        }
+    }
+}
+
+
+/**
  * Safely converts a [Drawable] to a [Bitmap].
  *
  * This handles cases where the drawable has no intrinsic width or height by falling back to

@@ -2,4 +2,14 @@
 <resources>
     <string name="label_text_unknown">Unknown</string>
     <string name="label_this_field_cannot_be_left_empty">This field cannot be left empty</string>
+    <string name="text_value_a_moment_ago">a moment ago</string>
+    <string name="text_value_elapsed_time_singular">%d hour</string>
+    <string name="text_value_elapsed_time_plural">%d hours</string>
+    <string name="text_value_elapsed_time_with_day_singular">%d day</string>
+    <string name="text_value_elapsed_time_with_day_plural">%d days</string>
+    <string name="text_value_elapsed_time_minutes_singular">%d minute</string>
+    <string name="text_value_elapsed_time_minutes_plural">%d minutes</string>
+    <string name="text_value_elapsed_time_seconds_singular">%d second</string>
+    <string name="text_value_elapsed_time_seconds_plural">%d seconds</string>
+    <string name="text_value_and">and</string>
 </resources>

@@ -207,6 +207,21 @@ fun String.hash(algorithm: String = "SHA-256", format: HashFormat = HashFormat.H
 
 
 /**
+ * Checks if the string matches any of the provided [conditions], ignoring case.
+ *
+ * @receiver String? The string to check. Can be null.
+ * @param conditions Vararg of strings to compare with.
+ * @return True if the string equals (ignoring case) any of the conditions, false otherwise.
+ *
+ * @since 2.2.2
+ */
+fun String?.isOneOf(vararg conditions: String): Boolean {
+    if (this == null) return false
+    return conditions.any { this.equals(it, ignoreCase = true) }
+}
+
+
+/**
  * Computes the SHA-256 hash of this string and returns it as a hexadecimal string.
  *
  * This extension uses the `MessageDigest` class to generate a SHA-256 hash,

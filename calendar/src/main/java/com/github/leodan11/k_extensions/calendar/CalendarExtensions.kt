@@ -1,12 +1,15 @@
 package com.github.leodan11.k_extensions.calendar
 
 import android.content.Context
+import com.github.leodan11.k_extensions.core.UnitType
+import com.github.leodan11.k_extensions.core.toElapsedTimeString
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.absoluteValue
 
 
 /**
@@ -63,6 +66,54 @@ fun Calendar.isMonthBefore(secondCalendar: Calendar?): Boolean {
  * @return `true` if the current [Calendar] is before the provided [secondCalendar] based on month and year.
  */
 fun Calendar.isMonthAfter(secondCalendar: Calendar): Boolean = secondCalendar.isMonthBefore(this)
+
+
+/**
+ * Returns the localized name of the day of the week for this [Calendar] instance,
+ * using the device’s default [Locale].
+ *
+ * This is a convenience overload that internally delegates to
+ * [getDayName] with [Locale.getDefault].
+ *
+ * Example:
+ * ```kotlin
+ * val calendar = Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 8) }
+ * println(calendar.getDayName()) // e.g. "Saturday" (depending on device locale)
+ * ```
+ *
+ * @return The formatted name of the day with its first letter capitalized.
+ *
+ * @since 2.2.2
+ */
+fun Calendar.getDayName(): String {
+    return this.getDayName(Locale.getDefault())
+}
+
+
+/**
+ * Returns the localized name of the day of the week for this [Calendar] instance,
+ * using the specified [locale].
+ *
+ * The format pattern `"EEEE"` corresponds to the full name of the day,
+ * such as `"monday"`, `"tuesday"`, `"wednesday"`, etc.
+ *
+ * Example:
+ * ```kotlin
+ * val calendar = Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 8) }
+ * println(calendar.getDayName(Locale("en", "US"))) // "Saturday"
+ * println(calendar.getDayName(Locale("es", "ES"))) // "Sábado"
+ * ```
+ *
+ * @param locale The [Locale] determining the language of the day name.
+ * @return The formatted day name with its first letter in uppercase.
+ *
+ * @since 2.2.2
+ */
+fun Calendar.getDayName(locale: Locale): String {
+    val dayName = this.toFormat("EEEE", locale)
+    return dayName.replaceFirstChar { it.uppercase(locale) }
+}
+
 
 /**
  * Returns a string representing the month name and year in the format "MMMM yyyy".
@@ -330,6 +381,44 @@ fun Calendar.formatTime(typeCast: Int = DateFormat.SHORT, locale: Locale): Strin
         DateFormat.getTimeInstance(typeCast, locale).format(this.time)
     }
 
+
+/**
+ * Converts this [Calendar] instance to a [Date] object.
+ *
+ * This is useful when you need a [Date] instance for APIs that require it,
+ * while keeping the same point in time as this [Calendar].
+ *
+ * Example:
+ * ```kotlin
+ * val calendar = Calendar.getInstance().apply {
+ *     set(2025, Calendar.NOVEMBER, 8, 14, 30)
+ * }
+ * val date: Date = calendar.toDate()
+ * println(date) // Sat Nov 08 14:30:00 GMT+01:00 2025
+ * ```
+ *
+ * @return A [Date] representing the same moment in time as this [Calendar].
+ *
+ * @since 2.2.2
+ */
+fun Calendar.toDate(): Date = this.time
+
+
+/**
+ * Returns a localized string representing the elapsed time from this [Calendar] to now.
+ *
+ * @param context Context for accessing resources
+ * @param showUnits Units to display (default: all non-zero units)
+ * @return A localized string like "1 day, 5 hours and 10 minutes"
+ *
+ * @since 2.2.2
+ */
+fun Calendar.toElapsedTimeString(
+    context: Context,
+    showUnits: List<UnitType> = listOf(UnitType.DAYS, UnitType.HOURS, UnitType.MINUTES, UnitType.SECONDS)
+): String = this.time.toElapsedTimeString(context, showUnits)
+
+
 /**
  * Converts the [Calendar] object to a string using the provided pattern.
  *
@@ -437,6 +526,53 @@ fun Date.formatTime(typeCast: Int = DateFormat.SHORT): String = synchronized(thi
  */
 fun Date.formatTime(typeCast: Int = DateFormat.SHORT, locale: Locale): String = synchronized(this) {
     DateFormat.getTimeInstance(typeCast, locale).format(this)
+}
+
+/**
+ * Converts this [Date] instance to a [Calendar] object.
+ *
+ * This allows you to perform date manipulations or retrieve
+ * calendar-specific information (day, month, year, etc.)
+ * from a [Date] object.
+ *
+ * Example:
+ * ```kotlin
+ * val date = Date()
+ * val calendar: Calendar = date.toCalendar()
+ * println(calendar.get(Calendar.YEAR))  // e.g., 2025
+ * println(calendar.get(Calendar.MONTH)) // e.g., 10 (November, zero-based)
+ * ```
+ *
+ * @return A [Calendar] instance representing the same point in time as this [Date].
+ *
+ * @since 2.2.2
+ */
+fun Date.toCalendar(): Calendar = Calendar.getInstance().apply { time = this@toCalendar }
+
+
+/**
+ * Returns a localized string representing the elapsed time from this [Date] to now.
+ *
+ * @param context Context for accessing resources
+ * @param showUnits Units to display (default: all non-zero units)
+ * @return A localized string like "1 day, 5 hours and 10 minutes"
+ *
+ * @since 2.2.2
+ */
+fun Date.toElapsedTimeString(
+    context: Context,
+    showUnits: List<UnitType> = listOf(UnitType.DAYS, UnitType.HOURS, UnitType.MINUTES, UnitType.SECONDS)
+): String {
+    val now = Calendar.getInstance().time
+    val diffMillis = (now.time - this.time).absoluteValue
+
+    val secondsTotal = diffMillis / 1000
+    val days = (secondsTotal / 86400).toInt()
+    val hours = ((secondsTotal % 86400) / 3600).toInt()
+    val minutes = ((secondsTotal % 3600) / 60).toInt()
+    val seconds = (secondsTotal % 60).toInt()
+
+    return context.toElapsedTimeString(days = days, hours = hours, minutes = minutes, seconds = seconds, showUnits = showUnits)
 }
 
 /**

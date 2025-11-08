@@ -14,8 +14,10 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import com.github.leodan11.k_extensions.core.UnitType
 import com.github.leodan11.k_extensions.core.getDisplayText
 import com.github.leodan11.k_extensions.core.internetOn
+import com.github.leodan11.k_extensions.core.toElapsedTimeString
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -276,6 +278,35 @@ fun Fragment.startNewPage(
     block: Intent.() -> Unit = {}
 ) {
     requireActivity().startNewPage(page, finishCurrent, block)
+}
+
+
+/**
+ * Returns a localized string representing elapsed time in selectable units.
+ *
+ * You can choose which units to show (days, hours, minutes, seconds).
+ * Units with zero value will be omitted unless explicitly included.
+ *
+ * Example:
+ * ```kotlin
+ * context.toElapsedTimeString(days = 1, hours = 2, minutes = 3, seconds = 4)
+ * // Default: "1 day, 2 hours, 3 minutes and 4 seconds"
+ *
+ * context.toElapsedTimeString(days = 1, hours = 2, minutes = 3, showUnits = listOf(UnitType.DAYS, UnitType.HOURS))
+ * // Only shows days and hours: "1 day and 2 hours"
+ * ```
+ *
+ * @param days Number of elapsed days
+ * @param hours Number of elapsed hours
+ * @param minutes Number of elapsed minutes
+ * @param seconds Number of elapsed seconds
+ * @param showUnits List of units to display. Default shows all non-zero units.
+ * @return A localized, formatted string describing the elapsed time
+ *
+ * @since 2.2.2
+ */
+fun Fragment.toElapsedTimeString(days: Int = 0, hours: Int = 0, minutes: Int = 0, seconds: Int = 0, showUnits: List<UnitType> = listOf(UnitType.DAYS, UnitType.HOURS, UnitType.MINUTES, UnitType.SECONDS)): String {
+    return requireActivity().toElapsedTimeString(days = days, hours = hours, minutes = minutes, seconds = seconds, showUnits = showUnits)
 }
 
 /**
