@@ -1,114 +1,104 @@
 package com.github.leodan11.k_extensions.base
 
 import java.io.Serializable
-import kotlinx.serialization.Serializable as KSerializable
 
 /**
- * Represents the result of a flash operation, which can either be a success or an error.
- *
- * This sealed class provides four distinct outcomes:
- * 1. [Success]: operation completed successfully without data.
- * 2. [SuccessData]: operation completed successfully with associated data.
- * 3. [Error]: operation failed without associated data.
- * 4. [ErrorData]: operation failed with associated data.
- *
- * Using generics in [SuccessData] and [ErrorData] avoids unsafe casting and improves type safety.
+ * Represents the result of a flash operation, which can either be a success with typed data
+ * or an error with optional extra payload.
  *
  * Example usage:
  * ```kotlin
  * val user = User("Alice", 30)
  *
  * val result1 = FlashResult.success("Completed")
- * val result2 = FlashResult.successData(user, "User loaded")
+ * val result2 = FlashResult.success(user, "User loaded")
  * val result3 = FlashResult.error("Failed")
- * val result4 = FlashResult.errorData(user, "Failed with user")
+ * val result4 = FlashResult.error("Failed with user", payload = user)
  *
  * // Functional handling
- * result2
- *     .onSuccess { user -> println("User loaded: $user") }
- *     .onError { println("Something went wrong") }
+ * when (result2) {
+ *     is FlashResult.Success -> println("Message: ${result2.message}")
+ *     is FlashResult.Error -> println("Error: ${result2.message}")
+ * }
  * ```
  *
- * @since 2.2.1
+ * @param T Type of data returned by a successful operation.
+ * @since 2.2.3
  */
-@KSerializable
-sealed class FlashResult : Serializable {
+sealed class FlashResult<out T> : Serializable {
 
-    /** Flash operation failure without associated data. */
-    @KSerializable
+    /**
+     * Represents a flash operation failure.
+     *
+     * @property message Short description of the error.
+     * @property isSimple Indicates if the error should be shown in a simple way.
+     * @property colorToast Optional flag to use colored toast.
+     * @property title Optional title for the error.
+     * @property payload Optional additional data associated with the error.
+     */
     data class Error(
         val message: String,
         val isSimple: Boolean = true,
         val colorToast: Boolean = true,
-        val title: String? = null
-    ) : FlashResult()
+        val title: String? = null,
+        val payload: Any? = null
+    ) : FlashResult<Nothing>()
 
-    /** Flash operation failure with associated data. */
-    @KSerializable
-    data class ErrorData<T : Any>(
-        val data: T,
-        val message: String,
-        val isSimple: Boolean = true,
-        val colorToast: Boolean = true,
-        val title: String? = null
-    ) : FlashResult()
-
-    /** Flash operation success without associated data. */
-    @KSerializable
-    data class Success(
-        val message: String,
-        val isSimple: Boolean = true,
-        val showToast: Boolean = true,
-        val colorToast: Boolean = true,
-        val title: String? = null
-    ) : FlashResult()
-
-    /** Flash operation success with associated data. */
-    @KSerializable
-    data class SuccessData<T : Any>(
+    /**
+     * Represents a successful flash operation with typed data.
+     *
+     * @param T Type of the data returned by the operation.
+     * @property data Data returned by the operation.
+     * @property message Short description of the success.
+     * @property isSimple Flag to show in simple style.
+     * @property showToast Flag to display toast.
+     * @property colorToast Flag for colored toast.
+     * @property title Optional title for the success.
+     */
+    data class Success<out T>(
         val data: T,
         val message: String,
         val isSimple: Boolean = true,
         val showToast: Boolean = true,
         val colorToast: Boolean = true,
         val title: String? = null
-    ) : FlashResult()
+    ) : FlashResult<T>()
 
     companion object {
-        /** Helper for creating a simple error result. */
+        /** Helper for creating a simple error without payload. */
         fun error(
             message: String,
             isSimple: Boolean = true,
             colorToast: Boolean = true,
             title: String? = null
-        ): FlashResult = Error(message, isSimple, colorToast, title)
+        ): FlashResult<Nothing> = Error(message, isSimple, colorToast, title)
 
-        /** Helper for creating an error result with data. */
-        fun <T : Any> errorData(
-            data: T,
+        /** Helper for creating an error with optional payload. */
+        fun error(
             message: String,
+            payload: Any?,
             isSimple: Boolean = true,
             colorToast: Boolean = true,
             title: String? = null
-        ): FlashResult = ErrorData(data, message, isSimple, colorToast, title)
+        ): FlashResult<Nothing> = Error(message, isSimple, colorToast, title, payload)
 
-        /** Helper for creating a simple success result. */
+        /** Helper for creating a success without data (can use Unit as data). */
         fun success(
             message: String,
             isSimple: Boolean = true,
             showToast: Boolean = true,
             colorToast: Boolean = true,
             title: String? = null
-        ): FlashResult = Success(message, isSimple, showToast, colorToast, title)
+        ): FlashResult<Unit> = Success(Unit, message, isSimple, showToast, colorToast, title)
 
-        /** Helper for creating a success result with data. */
-        fun <T : Any> successData(
+        /** Helper for creating a success with typed data. */
+        fun <T> success(
             data: T,
             message: String,
             isSimple: Boolean = true,
             showToast: Boolean = true,
             colorToast: Boolean = true,
             title: String? = null
-        ): FlashResult = SuccessData(data, message, isSimple, showToast, colorToast, title)
+        ): FlashResult<T> = Success(data, message, isSimple, showToast, colorToast, title)
     }
 }

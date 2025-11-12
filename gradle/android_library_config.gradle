@@ -4,6 +4,13 @@ if (versions == null || versions.publish_version == null) {
     throw new IllegalStateException("Must provide module_group and module_name!")
 }
 
+tasks.register("dokkaJar", Jar) {
+    group = "documentation"
+    description = "Generates a JAR file with KDoc documentation"
+    archiveClassifier.set("javadoc")
+    from(tasks.named("dokkaHtml"))
+}
+
 afterEvaluate {
     publishing {
         publications {
@@ -43,6 +50,13 @@ afterEvaluate {
                         url = 'https://github.com/leodan11/KExtensions/tree/main'
                     }
                 }
+
+                artifact(tasks.named("dokkaJar"))
+            }
+        }
+        repositories {
+            maven {
+                url = uri("https://jitpack.io")
             }
         }
     }
