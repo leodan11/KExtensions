@@ -352,6 +352,37 @@ fun String.toCalendarSimpleFormat(pattern: String = "yyyy-MM-dd", locale: Locale
 
 
 /**
+ * Extension function to format a name string into a "Name Lastname" format.
+ *
+ * This function takes a nullable string and returns a formatted string with
+ * the first name capitalized and the last name capitalized. If the input
+ * string is null, it returns "John Doe" as a default value.
+ *
+ * If the input string contains only one to three words, it capitalizes each
+ * word individually. If the input contains more than three words, it takes
+ * the first and the third word as the first name and last name, respectively.
+ *
+ * ```kotlin
+ * "john doe".toNameWithLastName() // Returns "John Doe"
+ * "janet alisa smith".toNameWithLastName() // Returns "Janet Smith"
+ * null.toNameWithLastName() // Returns "John Doe"
+ * ```
+ *
+ * @return A string in the format of "FirstName LastName", where both names
+ *         are capitalized.
+ * @since 2.2.4
+ */
+fun String?.toNameWithLastName(): String {
+    val str = this ?: return "John Doe"
+    val sorts = str.split(' ')
+    return when (sorts.size) {
+        in 1..3 -> str.toCapitalizedPerWord()
+        else -> "${sorts.first().toCapitalize()} ${sorts[2].toCapitalize()}"
+    }
+}
+
+
+/**
  * Extracts the main components of a full name string, typically the given name(s)
  * and one surname, depending on the [preferLastSurname] flag.
  *
