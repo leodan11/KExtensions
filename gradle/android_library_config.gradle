@@ -54,10 +54,5 @@ afterEvaluate {
                 artifact(tasks.named("dokkaJar"))
             }
         }
-        repositories {
-            maven {
-                url = uri("https://jitpack.io")
-            }
-        }
     }
 }
