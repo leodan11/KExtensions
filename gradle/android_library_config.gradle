@@ -7,7 +7,7 @@ if (versions == null || versions.publish_version == null) {
 tasks.register("dokkaJar", Jar) {
     group = "documentation"
     description = "Generates a JAR file with KDoc documentation"
-    archiveClassifier.set("javadoc")
+    archiveClassifier.set("${module_name}-javadoc")
     from(tasks.named("dokkaHtml"))
 }
 
