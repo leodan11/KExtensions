@@ -191,7 +191,7 @@ val LocalDate.isToday: Boolean get() = this == LocalDate.now()
  * @return `true` if dates are equal.
  * @since 2.2.6
  */
-fun LocalDate.isEqual(other: LocalDate): Boolean = this == other
+fun LocalDate.isSameAs(other: LocalDate): Boolean = this == other
 
 /**
  * Returns a list of [LocalDate] from this date to [to], inclusive.
@@ -201,7 +201,7 @@ fun LocalDate.isEqual(other: LocalDate): Boolean = this == other
  * @return List of consecutive [LocalDate] from start to end.
  * @since 2.2.6
  */
-fun LocalDate.datesUntil(to: LocalDate): List<LocalDate> {
+fun LocalDate.toListDatesUntil(to: LocalDate): List<LocalDate> {
     val days = ChronoUnit.DAYS.between(this, to).toInt()
     return (0..days).map { this.plusDays(it.toLong()) }
 }
