@@ -1,6 +1,7 @@
-package com.github.leodan11.k_extensions.calendar
+package com.github.leodan11.k_extensions.calendar.legacy
 
 import android.content.Context
+import com.github.leodan11.k_extensions.calendar.R
 import com.github.leodan11.k_extensions.core.UnitType
 import com.github.leodan11.k_extensions.core.toElapsedTimeString
 import java.text.DateFormat
@@ -295,7 +296,7 @@ fun Calendar.getDayOfWeekDisplayName(): String = this.getDayOfWeekDisplayName(Lo
  * @param locale The [Locale] used for formatting the day name.
  * @return The capitalized localized full name of the day of the week.
  *
- * @see java.text.SimpleDateFormat
+ * @see SimpleDateFormat
  */
 fun Calendar.getDayOfWeekDisplayName(locale: Locale): String {
     val dayName = this.toFormat("EEEE", locale).ifBlank { "Unknown" }
@@ -598,8 +599,8 @@ fun Date.toFormat(pattern: String = "yyyy-MM-dd"): String = synchronized(this) {
  *
  * @return A string representation of the date formatted according to the specified [pattern] and [locale].
  *
- * @see java.text.SimpleDateFormat
- * @sample java.util.Date().toFormat("dd/MM/yyyy", Locale.US)
+ * @see SimpleDateFormat
+ * @sample Date().toFormat("dd/MM/yyyy", Locale.US)
  *
  * @throws IllegalArgumentException If the [pattern] is invalid.
  */

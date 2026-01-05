@@ -344,24 +344,43 @@ fun Number.toNumberFormatInt(locale: Locale): String =
 
 
 /**
- * Formats the number as a percentage string according to the default locale.
+ * Formats this [Number] as a percentage string according to the default locale.
  *
- * @return formatted percentage string, e.g., 0.25 to "25%"
+ * Null-safe: if the number is null, returns "0.00 %".
+ *
+ * @param minDigits Minimum number of fraction digits (default 2).
+ * @param maxDigits Maximum number of fraction digits (default 2).
+ * @return Formatted percentage [String], e.g., 0.2567 -> "25.67 %".
  */
-fun Number.toNumberFormatPercent(): String = this.toNumberFormatPercent(Locale.getDefault())
+fun Number?.toNumberFormatPercent(minDigits: Int = 2, maxDigits: Int = 2): String {
+    return this.toNumberFormatPercent(locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
+}
 
 /**
- * Formats the number as a percentage string according to the specified [locale].
+ * Formats this [Number] as a percentage string according to the specified [locale].
  *
- * @param locale the [Locale] to use for percentage formatting
- * @return formatted percentage string, e.g., 0.25 to "25%"
+ * Null-safe: if the number is null, returns "0.00 %".
+ *
+ * Example:
+ * ```kotlin
+ * val value = 0.2567
+ * value.toNumberFormatPercent(Locale.US) // "25.67 %"
+ * ```
+ *
+ * @param locale The [Locale] to use for percentage formatting.
+ * @param minDigits Minimum number of fraction digits (default `2`).
+ * @param maxDigits Maximum number of fraction digits (default `2`).
+ * @return Formatted percentage [String], or "0.00 %" if null or formatting fails.
  */
-fun Number.toNumberFormatPercent(locale: Locale): String =
+fun Number?.toNumberFormatPercent(locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String =
     runCatching {
-        NumberFormat.getPercentInstance(locale).format(this)
-    }.getOrElse {
-        this.toString()
-    }
+        require(minDigits <= maxDigits) { "minDigits must be less than or equal to maxDigits" }
+        val formatted = NumberFormat.getPercentInstance(locale).apply {
+            minimumFractionDigits = minDigits
+            maximumFractionDigits = maxDigits
+        }.format(this ?: 0)
+        if (!formatted.contains(" %")) formatted.replace("%", " %") else formatted
+    }.getOrElse { "0.00 %" }
 
 
 /**

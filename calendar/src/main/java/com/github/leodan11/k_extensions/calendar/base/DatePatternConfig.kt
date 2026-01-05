@@ -1,4 +1,4 @@
-package com.github.leodan11.k_extensions.string.content
+package com.github.leodan11.k_extensions.calendar.base
 
 /**
  * This class provides configurations for date patterns and their corresponding formats.
@@ -68,6 +68,7 @@ class DatePatternConfig private constructor(
          * Builds and returns a [DatePatternConfig] instance with the added patterns and formats.
          *
          * @return A new instance of [DatePatternConfig] with the configured patterns.
+         * @since 2.2.6
          */
         fun build(): DatePatternConfig {
             return DatePatternConfig(patternToFormat)
