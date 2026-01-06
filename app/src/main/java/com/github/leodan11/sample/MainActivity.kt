@@ -3,13 +3,18 @@ package com.github.leodan11.sample
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.github.leodan11.k_extensions.calendar.formatDateTime
+import com.github.leodan11.k_extensions.calendar.getDayName
+import com.github.leodan11.k_extensions.calendar.getMonthAndYearDate
 import com.github.leodan11.sample.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,9 +33,17 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+        val local = LocalDateTime.now()
+
         binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            Snackbar.make(view, "Time: ${local.formatDateTime()}", Snackbar.LENGTH_LONG)
+                .setAction(local.getDayName()) {
+                    Toast.makeText(
+                        applicationContext,
+                        local.getMonthAndYearDate(),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }.show()
         }
 
     }
