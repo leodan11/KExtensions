@@ -393,6 +393,32 @@ fun AppCompatActivity.getDisplayDensity(): DisplayDensity {
 }
 
 /**
+ * Calculates the optimal number of spans (columns) for a grid layout based on the item width in density-independent pixels (dp).
+ *
+ * This is useful when using a [androidx.recyclerview.widget.RecyclerView] with a [androidx.recyclerview.widget.GridLayoutManager] and you want items to have a consistent width
+ * across different screen sizes and densities.
+ *
+ * The calculation uses the screen width in dp and divides it by the provided [itemWidthDp]. The minimum number of
+ * spans is 2.
+ *
+ * ## Example:
+ * ```kotlin
+ * val spanCount = context.calculateSpanCount(itemWidthDp = 120)
+ * val layoutManager = GridLayoutManager(context, spanCount)
+ * recyclerView.layoutManager = layoutManager
+ * ```
+ *
+ * @receiver [Activity] Used to access [android.content.res.Resources] and [android.util.DisplayMetrics].
+ * @param itemWidthDp The desired width of each item in dp (density-independent pixels).
+ * @return The calculated number of spans (columns) as an [Int], with a minimum of 2.
+ *
+ * @since 2.2.7
+ */
+fun Activity.calculateSpanCount(itemWidthDp: Int): Int {
+    return applicationContext.calculateSpanCount(itemWidthDp = itemWidthDp)
+}
+
+/**
  * Gets the status bar height in pixels.
  *
  * @receiver Activity to get the status bar height.

@@ -94,6 +94,21 @@ fun LocalDateTime.getDayName(locale: Locale): String =
         .replaceFirstChar { it.uppercase(locale) }
 
 /**
+ * Returns the month name and year of this [LocalDateTime] in the format "MMMM yyyy". [Locale] for formatting. Defaults to system locale.
+ *
+ * ```kotlin
+ * val dt = LocalDateTime.of(2026, 1, 5, 14, 0)
+ * println(dt.getMonthAndYearDate()) // "January 2026"
+ * ```
+ *
+ * @receiver The [LocalDateTime] to format.
+ * @return A string in the format "MMMM yyyy".
+ * @since 2.2.6
+ */
+fun LocalDateTime.getMonthAndYearDate(): String = this.getMonthAndYearDate(Locale.getDefault())
+
+
+/**
  * Returns the month name and year of this [LocalDateTime] in the format "MMMM yyyy".
  *
  * ```kotlin
@@ -106,8 +121,24 @@ fun LocalDateTime.getDayName(locale: Locale): String =
  * @return A string in the format "MMMM yyyy".
  * @since 2.2.6
  */
-fun LocalDateTime.getMonthAndYearDate(locale: Locale = Locale.getDefault()): String =
+fun LocalDateTime.getMonthAndYearDate(locale: Locale): String =
     "${this.month.getDisplayName(TextStyle.FULL, locale)} ${this.year}"
+
+/**
+ * Formats this [LocalDateTime] to a string using a custom pattern.
+ * The [Locale] to format. Defaults to system default.
+ *
+ * ```kotlin
+ * val dt = LocalDateTime.of(2026, 1, 5, 14, 30)
+ * println(dt.toFormat("yyyy/MM/dd HH:mm")) // "2026/01/05 14:30"
+ * ```
+ *
+ * @receiver The [LocalDateTime] to format.
+ * @param pattern The date-time pattern. Defaults to "yyyy-MM-dd".
+ * @return Formatted date-time string.
+ * @since 2.2.6
+ */
+fun LocalDateTime.toFormat(pattern: String = "yyyy-MM-dd"): String = this.toFormat(pattern = pattern, locale = Locale.getDefault())
 
 /**
  * Formats this [LocalDateTime] to a string using a custom pattern and optional locale.
@@ -123,7 +154,7 @@ fun LocalDateTime.getMonthAndYearDate(locale: Locale = Locale.getDefault()): Str
  * @return Formatted date-time string.
  * @since 2.2.6
  */
-fun LocalDateTime.toFormat(pattern: String = "yyyy-MM-dd", locale: Locale = Locale.getDefault()): String =
+fun LocalDateTime.toFormat(pattern: String = "yyyy-MM-dd", locale: Locale): String =
     this.format(DateTimeFormatter.ofPattern(pattern, locale))
 
 /**
@@ -171,6 +202,25 @@ fun LocalDateTime.isBetween(start: LocalDateTime, end: LocalDateTime): Boolean =
 fun LocalDateTime.daysTo(endDate: LocalDateTime): Long = ChronoUnit.DAYS.between(this, endDate) + 1
 
 /**
+ * Formats this [LocalDateTime] using localized date and time styles.
+ * The [Locale] to use for formatting. Defaults to system default.
+ *
+ * ```kotlin
+ * val dateTime = LocalDateTime.of(2026, 1, 5, 14, 30)
+ * println(dateTime.formatDateTime()) // e.g., "01/05/26 14:30:00"
+ * println(dateTime.formatDateTime(FormatStyle.LONG, FormatStyle.SHORT)) // e.g., "January 5, 2026 14:30"
+ * ```
+ *
+ * @receiver The [LocalDateTime] to format.
+ * @param dateStyle The localized date style. Default is [FormatStyle.SHORT].
+ * @param timeStyle The localized time style. Default is [FormatStyle.MEDIUM].
+ * @return The formatted date-time string.
+ * @since 2.2.6
+ */
+fun LocalDateTime.formatDateTime(dateStyle: FormatStyle = SHORT, timeStyle: FormatStyle = MEDIUM): String =
+    this.formatDateTime(dateStyle = dateStyle, timeStyle = timeStyle, locale = Locale.getDefault())
+
+/**
  * Formats this [LocalDateTime] using localized date and time styles and optional [Locale].
  *
  * ```kotlin
@@ -195,6 +245,24 @@ fun LocalDateTime.formatDateTime(
 
 
 /**
+ * Formats this [LocalDateTime] using a custom [pattern].
+ * The [Locale] to use for formatting. Defaults to system default.
+ *
+ * ```kotlin
+ * val dateTime = LocalDateTime.of(2026, 1, 5, 14, 30, 15)
+ * println(dateTime.format()) // "2026-01-05 14:30:15"
+ * println(dateTime.format("dd/MM/yyyy HH:mm", Locale("es","ES"))) // "05/01/2026 14:30"
+ * ```
+ *
+ * @receiver The [LocalDateTime] to format.
+ * @param pattern The date-time pattern, default is "yyyy-MM-dd HH:mm:ss".
+ * @return The formatted date-time string.
+ * @since 2.2.6
+ */
+fun LocalDateTime.format(pattern: String = "yyyy-MM-dd HH:mm:ss"): String =
+    this.format(pattern = pattern, locale = Locale.getDefault())
+
+/**
  * Formats this [LocalDateTime] using a custom [pattern] and optional [Locale].
  *
  * ```kotlin
@@ -209,5 +277,5 @@ fun LocalDateTime.formatDateTime(
  * @return The formatted date-time string.
  * @since 2.2.6
  */
-fun LocalDateTime.format(pattern: String = "yyyy-MM-dd HH:mm:ss", locale: Locale = Locale.getDefault()): String =
+fun LocalDateTime.format(pattern: String = "yyyy-MM-dd HH:mm:ss", locale: Locale): String =
     this.format(DateTimeFormatter.ofPattern(pattern, locale))

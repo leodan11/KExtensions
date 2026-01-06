@@ -8,7 +8,7 @@ tasks.register("dokkaJar", Jar) {
     group = "documentation"
     description = "Generates a JAR file with KDoc documentation"
     archiveClassifier.set("${module_name}-javadoc")
-    from(tasks.named("dokkaHtml"))
+    from(tasks.named("dokkaHtmlTask"))
 }
 
 afterEvaluate {

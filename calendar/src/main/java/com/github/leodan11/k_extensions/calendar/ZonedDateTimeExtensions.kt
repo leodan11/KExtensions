@@ -59,7 +59,14 @@ fun ZonedDateTime.isMonthAfter(other: ZonedDateTime): Boolean =
  * Returns the localized name of the day of the week for this [ZonedDateTime].
  * @since 2.2.6
  */
-fun ZonedDateTime.getDayName(locale: Locale = Locale.getDefault()): String =
+fun ZonedDateTime.getDayName(): String =
+    this.getDayName(locale = Locale.getDefault())
+
+/**
+ * Returns the localized name of the day of the week for this [ZonedDateTime].
+ * @since 2.2.6
+ */
+fun ZonedDateTime.getDayName(locale: Locale): String =
     this.dayOfWeek.getDisplayName(TextStyle.FULL, locale)
         .replaceFirstChar { it.uppercase(locale) }
 
@@ -67,7 +74,13 @@ fun ZonedDateTime.getDayName(locale: Locale = Locale.getDefault()): String =
  * Returns the month name and year in the format "MMMM yyyy".
  * @since 2.2.6
  */
-fun ZonedDateTime.getMonthAndYearDate(locale: Locale = Locale.getDefault()): String =
+fun ZonedDateTime.getMonthAndYearDate(): String = this.getMonthAndYearDate(locale = Locale.getDefault())
+
+/**
+ * Returns the month name and year in the format "MMMM yyyy".
+ * @since 2.2.6
+ */
+fun ZonedDateTime.getMonthAndYearDate(locale: Locale): String =
     "${this.month.getDisplayName(TextStyle.FULL, locale)} ${this.year}"
 
 /**
@@ -107,6 +120,24 @@ fun ZonedDateTime.toElapsedString(): String {
 
 
 /**
+ * Formats this [ZonedDateTime] using a custom [pattern].
+ * The [Locale] to use for formatting. Defaults to system default.
+ *
+ * ```kotlin
+ * val zoned = ZonedDateTime.now(ZoneId.of("America/Mexico_City"))
+ * println(zoned.format()) // "2026-01-05 14:30:00 -06:00[America/Mexico_City]"
+ * println(zoned.format("dd/MM/yyyy HH:mm z", Locale("es","ES"))) // "05/01/2026 14:30 CST"
+ * ```
+ *
+ * @receiver The [ZonedDateTime] to format.
+ * @param pattern The date-time pattern, default is "yyyy-MM-dd HH:mm:ss z".
+ * @return The formatted date-time string.
+ * @since 2.2.6
+ */
+fun ZonedDateTime.format(pattern: String = "yyyy-MM-dd HH:mm:ss z"): String =
+    this.format(pattern = pattern, locale = Locale.getDefault())
+
+/**
  * Formats this [ZonedDateTime] using a custom [pattern] and optional [Locale].
  *
  * ```kotlin
@@ -123,6 +154,25 @@ fun ZonedDateTime.toElapsedString(): String {
  */
 fun ZonedDateTime.format(pattern: String = "yyyy-MM-dd HH:mm:ss z", locale: Locale = Locale.getDefault()): String =
     this.format(DateTimeFormatter.ofPattern(pattern, locale))
+
+/**
+ * Formats this [ZonedDateTime] using localized date and time styles.
+ * The [Locale] to use for formatting. Defaults to system default.
+ *
+ * ```kotlin
+ * val zoned = ZonedDateTime.now(ZoneId.of("America/Mexico_City"))
+ * println(zoned.formatDateTime()) // e.g., "01/05/26 14:30:00"
+ * println(zoned.formatDateTime(FormatStyle.LONG, FormatStyle.SHORT, Locale("es","ES"))) // e.g., "5 de enero de 2026 14:30"
+ * ```
+ *
+ * @receiver The [ZonedDateTime] to format.
+ * @param dateStyle The localized date style. Default is [FormatStyle.SHORT].
+ * @param timeStyle The localized time style. Default is [FormatStyle.MEDIUM].
+ * @return The formatted date-time string.
+ * @since 2.2.6
+ */
+fun ZonedDateTime.formatDateTime(dateStyle: FormatStyle = SHORT, timeStyle: FormatStyle = MEDIUM): String =
+    this.formatDateTime(dateStyle = dateStyle, timeStyle = timeStyle, locale = Locale.getDefault())
 
 /**
  * Formats this [ZonedDateTime] using localized date and time styles and optional [Locale].
@@ -143,6 +193,6 @@ fun ZonedDateTime.format(pattern: String = "yyyy-MM-dd HH:mm:ss z", locale: Loca
 fun ZonedDateTime.formatDateTime(
     dateStyle: FormatStyle = SHORT,
     timeStyle: FormatStyle = MEDIUM,
-    locale: Locale = Locale.getDefault()
+    locale: Locale
 ): String =
     this.format(DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle).withLocale(locale))

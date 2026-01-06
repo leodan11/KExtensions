@@ -109,10 +109,9 @@ fun LocalDate.getDayName(locale: Locale): String {
 }
 
 /**
- * Returns the month name and year in the format "MMMM yyyy" for this [LocalDate].
+ * Returns the month name and year in the format "MMMM yyyy" for this [LocalDate]. The [Locale] to format the month name. Defaults to system default.
  *
  * @receiver The [LocalDate] object.
- * @param locale The [Locale] to format the month name. Defaults to system default.
  *
  *
  * ```kotlin
@@ -122,7 +121,25 @@ fun LocalDate.getDayName(locale: Locale): String {
  * @return A string in the format "MMMM yyyy".
  * @since 2.2.6
  */
-fun LocalDate.getMonthAndYearDate(locale: Locale = Locale.getDefault()): String {
+fun LocalDate.getMonthAndYearDate(): String {
+    return this.getMonthAndYearDate(locale = Locale.getDefault())
+}
+
+/**
+ * Returns the month name and year in the format "MMMM yyyy" for this [LocalDate].
+ *
+ * @receiver The [LocalDate] object.
+ * @param locale The [Locale] to format the month name.
+ *
+ *
+ * ```kotlin
+ * val date = LocalDate.of(2026, 1, 5)
+ * println(date.getMonthAndYearDate()) // "January 2026"
+ * ```
+ * @return A string in the format "MMMM yyyy".
+ * @since 2.2.6
+ */
+fun LocalDate.getMonthAndYearDate(locale: Locale): String {
     return "${this.month.getDisplayName(TextStyle.FULL, locale)} ${this.year}"
 }
 
@@ -207,7 +224,7 @@ fun LocalDate.toListDatesUntil(to: LocalDate): List<LocalDate> {
 }
 
 /**
- * Formats this [LocalDate] using a localized [FormatStyle] and optional [Locale].
+ * Formats this [LocalDate] using a localized [FormatStyle] and the [Locale] to use for formatting. Defaults to system default.
  *
  * ```kotlin
  * val date = LocalDate.of(2026, 1, 5)
@@ -217,12 +234,46 @@ fun LocalDate.toListDatesUntil(to: LocalDate): List<LocalDate> {
  *
  * @receiver The [LocalDate] to format.
  * @param style The localized date style. Default is [FormatStyle.SHORT].
- * @param locale The [Locale] to use for formatting. Defaults to system default.
  * @return The formatted date string.
  * @since 2.2.6
  */
-fun LocalDate.formatDate(style: FormatStyle = SHORT, locale: Locale = Locale.getDefault()): String =
+fun LocalDate.formatDate(style: FormatStyle = SHORT): String =
+    this.formatDate(style = style, locale = Locale.getDefault() )
+
+/**
+ * Formats this [LocalDate] using a localized [FormatStyle] and [Locale].
+ *
+ * ```kotlin
+ * val date = LocalDate.of(2026, 1, 5)
+ * println(date.formatDate()) // e.g., "01/05/26" depending on locale
+ * println(date.formatDate(FormatStyle.LONG)) // e.g., "January 5, 2026"
+ * ```
+ *
+ * @receiver The [LocalDate] to format.
+ * @param style The localized date style. Default is [FormatStyle.SHORT].
+ * @param locale The [Locale] to use for formatting.
+ * @return The formatted date string.
+ * @since 2.2.6
+ */
+fun LocalDate.formatDate(style: FormatStyle = SHORT, locale: Locale): String =
     this.format(DateTimeFormatter.ofLocalizedDate(style).withLocale(locale))
+
+/**
+ * Formats this [LocalDate] using a custom [pattern] and The [Locale] to use for formatting. Defaults to system default.
+ *
+ * ```kotlin
+ * val date = LocalDate.of(2026, 1, 5)
+ * println(date.format("dd/MM/yyyy")) // "05/01/2026"
+ * println(date.format("MMMM yyyy", Locale("es","ES"))) // "enero 2026"
+ * ```
+ *
+ * @receiver The [LocalDate] to format.
+ * @param pattern The date pattern, default is "yyyy-MM-dd".
+ * @return The formatted date string.
+ * @since 2.2.6
+ */
+fun LocalDate.format(pattern: String = "yyyy-MM-dd"): String =
+    this.format(pattern = pattern, locale = Locale.getDefault())
 
 /**
  * Formats this [LocalDate] using a custom [pattern] and optional [Locale].
