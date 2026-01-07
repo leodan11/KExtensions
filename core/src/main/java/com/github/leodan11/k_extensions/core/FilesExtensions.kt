@@ -431,26 +431,29 @@ fun readFileAsList(filePath: String, charsetName: String = ""): List<String> {
  */
 
 /**
- * Copy or move a directory (default is copy directory)
+ * Copy or move this directory to [destDir].
  *
- * @param destDir
- * @param isMove default false
+ * @receiver Directory to copy/move.
+ * @param destDir Destination directory.
+ * @param isMove If `true`, move the directory (delete source), otherwise copy. Defaults to `false`.
+ * @return `true` if operation succeeded, `false` otherwise.
  */
 fun File.copyOrMoveDir(destDir: File, isMove: Boolean = false): Boolean {
-    val srcPath = path + File.separator
-    val destPath = destDir.path + File.separator
-    if (destPath.contains(srcPath)) return false
+    val srcPath = canonicalPath + File.separator
+    val destPath = destDir.canonicalPath + File.separator
+
+    if (destPath.startsWith(srcPath)) return false
     if (!exists() || !isDirectory) return false
     if (!destDir.createOrExistsDir()) return false
 
-    val files = listFiles()
-    files?.forEach {
-        val destFile = File(destPath + it.name)
-        if (it.isFile) {
-            if (!it.copyOrMoveFile(destFile, isMove)) return false
-        } else if (it.isDirectory) {
-            if (!copyOrMoveDir(destFile, isMove)) return false
+    for (file in listFiles() ?: emptyArray()) {
+        val destFile = File(destPath + file.name)
+        val success = if (file.isFile) {
+            file.copyOrMoveFile(destFile, isMove)
+        } else {
+            file.copyOrMoveDir(destFile, isMove)
         }
+        if (!success) return false
     }
 
     return !isMove || deleteDir()
@@ -512,25 +515,22 @@ fun copyOrMoveFile(srcPath: String, destPath: String, isMove: Boolean = false): 
 
 
 /**
- * Delete folder
+ * Recursively deletes this directory and all its contents.
  *
- * @return true or false
- *
+ * @receiver Directory to delete.
+ * @return `true` if the directory and all its contents were successfully deleted, `false` otherwise.
  */
 fun File.deleteDir(): Boolean {
     if (!exists()) return true
     if (!isDirectory) return false
 
-    val files = listFiles()
-    files?.forEach {
-        if (it.isFile) {
-            if (!it.delete()) return false
-        } else if (it.isDirectory) {
-            if (!deleteDir()) return false
+    return listFiles()?.all { file ->
+        if (file.isFile) {
+            file.delete()
+        } else {
+            file.deleteDir()
         }
-    }
-
-    return delete()
+    }?.also { delete() } == true
 }
 
 /**

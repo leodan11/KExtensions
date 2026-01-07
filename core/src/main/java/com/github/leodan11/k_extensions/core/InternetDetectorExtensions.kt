@@ -4,42 +4,40 @@ package com.github.leodan11.k_extensions.core
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
+import android.net.NetworkInfo
 import android.os.Build
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 /**
- * Sends internet statuses as a simple flow of booleans
- * true if user has an active internet connection
- * false if user hasn't
+ * Checks whether a given [serverUrl] is reachable by performing an HTTP connection.
  *
- * @receiver [Context]
- * @param serverUrl [String] the url to ping for successfully internet connection
- * @param timeOut [Int] timeout for the ping
- * @return Flow<Boolean>
+ * **Important:** This function **must not be called on the main thread**, as it performs
+ * network I/O. Always call it from a background thread, coroutine, or using `Dispatchers.IO`.
  *
+ * The function first checks if the device is online (via [isOnline]) before attempting
+ * the HTTP connection. It returns `true` if the server responds with HTTP 200, and `false`
+ * otherwise or if any exception occurs.
  *
- */
-fun Context.internetDetection(
-    serverUrl: String = "https://www.google.com/",
-    timeOut: Int = 10 * 1000
-) = InternetDetector(this, serverUrl, timeOut).state
-
-
-/**
- * Must not be called on the main thread
+ * ### Parameters:
+ * @receiver [Context] The Android context used to check network connectivity.
+ * @param serverUrl The URL of the server to check. Must be a valid HTTP(S) URL.
+ * @param timeOut Connection timeout in milliseconds. Default is 10,000 ms (10 seconds).
  *
- * @receiver [Context]
- * @param serverUrl [String]
- * @param timeOut [Int] default is 10 seconds, timeout is in ms
- * @return [Boolean]
+ * @return `true` if the server is reachable and responds with HTTP 200, `false` otherwise.
  *
+ * ### Example usage:
+ * ```kotlin
+ * lifecycleScope.launch(Dispatchers.IO) {
+ *     val reachable = context.isURLReachable("https://www.google.com")
+ *     println("Server reachable: $reachable")
+ * }
+ * ```
+ *
+ * @see URL
+ * @see HttpURLConnection
+ * @since 2.2.8
  */
 fun Context.isURLReachable(serverUrl: String, timeOut: Int = 10 * 1000): Boolean {
     if (isOnline) {
@@ -49,7 +47,7 @@ fun Context.isURLReachable(serverUrl: String, timeOut: Int = 10 * 1000): Boolean
                 connect()
                 responseCode == 200
             }
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             false
         }
     }
@@ -58,40 +56,38 @@ fun Context.isURLReachable(serverUrl: String, timeOut: Int = 10 * 1000): Boolean
 
 
 /**
- * Check if internet is compatible with the device
+ * Checks whether the device currently has an active internet connection.
  *
- * @receiver [Context]
- * @return [Boolean]
+ * This property evaluates network connectivity using [ConnectivityManager]. It supports
+ * both pre-API 23 and newer Android versions:
  *
- */
-fun Context.internetCapabilitiesCallback() = callbackFlow {
-    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-    val callback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            trySend(true)
-        }
-
-        override fun onLost(network: Network) {
-            trySend(false)
-        }
-    }
-    val networkRequest = NetworkRequest.Builder()
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .build()
-    connectivityManager?.registerNetworkCallback(networkRequest, callback)
-
-    awaitClose {
-        connectivityManager?.unregisterNetworkCallback(callback)
-    }
-}
-
-
-/**
- * Check if the device is online
+ * - **API < 23:** Uses [NetworkInfo] to check if the device is connected via Wi-Fi, Mobile,
+ *   VPN, or Ethernet.
+ * - **API ≥ 23:** Uses [NetworkCapabilities] of the active network to verify if one of the
+ *   following transports is available: Cellular, Wi-Fi, Ethernet, or VPN.
  *
- * @receiver [Context]
- * @return [Boolean]
+ * ### Usage:
+ * ```kotlin
+ * if (context.isOnline) {
+ *     println("Device is online")
+ * } else {
+ *     println("Device is offline")
+ * }
+ * ```
  *
+ * ### Notes:
+ * - Does **not guarantee that the internet is actually reachable**; it only checks if the
+ *   device has an active network connection capable of internet access.
+ * - Recommended to combine with a real connectivity check (e.g., `isURLReachable`) if
+ *   you need to confirm server availability.
+ *
+ * @receiver [Context] The Android context used to access system connectivity services.
+ * @return `true` if the device has an active network connection (Wi-Fi, Cellular, VPN, or Ethernet), `false` otherwise.
+ *
+ * @see ConnectivityManager
+ * @see NetworkCapabilities
+ * @see Context.isURLReachable
+ * @since 2.2.8
  */
 val Context.isOnline: Boolean
     get() {

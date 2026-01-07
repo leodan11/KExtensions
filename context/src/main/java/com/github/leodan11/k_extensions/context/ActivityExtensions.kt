@@ -16,6 +16,8 @@ import android.view.PixelCopy
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.AutoCompleteTextView
+import android.widget.Spinner
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.AttrRes
@@ -25,9 +27,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.graphics.createBitmap
 import androidx.fragment.app.FragmentActivity
-import com.github.leodan11.k_extensions.core.DisplayDensity
-import com.github.leodan11.k_extensions.core.UnitType
-import com.github.leodan11.k_extensions.core.internetOn
+import com.github.leodan11.k_extensions.core.content.DisplayDensity
+import com.github.leodan11.k_extensions.core.content.UnitType
+import com.github.leodan11.k_extensions.core.getDisplayText
+import com.github.leodan11.k_extensions.core.toDisplayPairList
 import com.github.leodan11.k_extensions.core.toElapsedTimeString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -417,6 +420,30 @@ fun AppCompatActivity.getDisplayDensity(): DisplayDensity {
 fun Activity.calculateSpanCount(itemWidthDp: Int): Int {
     return applicationContext.calculateSpanCount(itemWidthDp = itemWidthDp)
 }
+
+
+/**
+ * Transforms a list of objects into a list of pairs consisting of the original object and its display name.
+ * The display name is extracted using the provided [nameProvider] lambda and processed by [Context.getDisplayText]
+ * to ensure a standardized, non-null, and user-friendly format based on the app's resources.
+ *
+ * This is useful when binding lists to UI components like [AutoCompleteTextView] or [Spinner],
+ * where a readable display name is required for selection while retaining access to the original model.
+ *
+ * @param T The type of the original objects in the list.
+ * @param context The [Activity] used to resolve string resources when the display name is null or empty.
+ * @param nameProvider A lambda function that extracts a string (e.g., name, title, label) from each object of type [T].
+ * @return A list of pairs where each pair contains the original object and its processed display name.
+ *
+ * @see Context.getDisplayText
+ *
+ * @since 2.2.8
+ */
+fun <T> List<T>.toDisplayPairList(context: Activity, nameProvider: (T) -> String): List<Pair<T, String>> {
+    return this.toDisplayPairList(context.applicationContext, nameProvider)
+}
+
+
 
 /**
  * Gets the status bar height in pixels.

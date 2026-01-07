@@ -2,7 +2,7 @@ package com.github.leodan11.k_extensions.calendar.legacy
 
 import android.content.Context
 import com.github.leodan11.k_extensions.calendar.R
-import com.github.leodan11.k_extensions.core.UnitType
+import com.github.leodan11.k_extensions.core.content.UnitType
 import com.github.leodan11.k_extensions.core.toElapsedTimeString
 import java.text.DateFormat
 import java.text.SimpleDateFormat

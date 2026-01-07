@@ -22,6 +22,10 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
 import android.text.TextUtils
 import android.util.TypedValue
@@ -32,11 +36,23 @@ import android.widget.EditText
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
+import com.github.leodan11.k_extensions.core.content.InternetDetector
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.stateIn
 
 /**
  * Returns the absolute path of the application cache directory.
@@ -290,6 +306,107 @@ fun Context.getVersionName(pkgName: String = packageName): String {
  */
 fun Context.onLayoutInflater(): LayoutInflater =
     getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+
+/**
+ * Observes the device's internet connectivity state as a [Flow] of [Boolean] values.
+ *
+ * This function emits `true` when the device has network connectivity capable of accessing
+ * the internet, and `false` when such connectivity is lost. It uses [ConnectivityManager]
+ * and a [NetworkCallback] internally to monitor network changes in real time.
+ *
+ * ### Usage example:
+ * ```kotlin
+ * lifecycleScope.launch {
+ *     context.internetCapabilitiesCallback().collect { hasInternet ->
+ *         if (hasInternet) {
+ *             println("Internet is available")
+ *         } else {
+ *             println("Internet is lost")
+ *         }
+ *     }
+ * }
+ * ```
+ *
+ * ### Notes:
+ * - Requires the **`ACCESS_NETWORK_STATE`** permission in the AndroidManifest:
+ * ```xml
+ * <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+ * ```
+ * - This flow only monitors network capability. It does **not** guarantee that a specific
+ *   server is reachable. For a real connectivity check, you should combine it with a ping
+ *   or HTTP request.
+ *
+ * @receiver [Context] The Android context used to access system services.
+ * @return [Flow]<[Boolean]> emitting the current internet connectivity status.
+ *
+ * @see ConnectivityManager
+ * @see NetworkCapabilities
+ * @since 2.2.8
+ */
+@RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
+fun Context.internetCapabilitiesCallback() = callbackFlow {
+    val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+    val callback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            trySend(true)
+        }
+
+        override fun onLost(network: Network) {
+            trySend(false)
+        }
+    }
+    val networkRequest = NetworkRequest.Builder()
+        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        .build()
+    connectivityManager?.registerNetworkCallback(networkRequest, callback)
+
+    awaitClose {
+        connectivityManager?.unregisterNetworkCallback(callback)
+    }
+}
+
+
+/**
+ * Sends internet statuses as a simple flow of booleans
+ * true if user has an active internet connection
+ * false if user hasn't
+ *
+ * @receiver [Context]
+ * @param serverUrl [String] the url to ping for successfully internet connection
+ * @param timeOut [Int] timeout for the ping
+ * @return Flow<Boolean>
+ *
+ * @since 2.2.8
+ *
+ */
+fun Context.internetDetection(
+    serverUrl: String = "https://www.google.com/",
+    timeOut: Int = 10 * 1000
+) = InternetDetector(this, serverUrl, timeOut).state
+
+
+/**
+ * Checks if the internet connection is currently available.
+ *
+ * This is a suspend function that returns the current internet connectivity status
+ * as a [Boolean]. It optionally takes a [CoroutineScope] to manage the lifecycle of
+ * the underlying flow subscription. If no scope is provided, a new one is created
+ * using [Dispatchers.IO].
+ *
+ * @param coroutineScope An optional [CoroutineScope] to use for collecting the internet detection flow.
+ *                       If null, a new scope is created internally.
+ * @receiver The [Context] used to access system services for internet detection.
+ * @return [Boolean] indicating whether the internet connection is currently available.
+ * @throws CancellationException if the coroutine scope is cancelled during execution.
+ * @since 2.2.1
+ */
+suspend fun Context.internetOn(coroutineScope: CoroutineScope? = null): Boolean {
+    val scope = coroutineScope ?: CoroutineScope(Job() + IO)
+    val result: StateFlow<Boolean> = this.internetDetection().stateIn(scope)
+    return result.value
+}
+
 
 /**
  * Returns whether the device is currently in night mode.
