@@ -55,13 +55,13 @@ import kotlinx.coroutines.Dispatchers
  *
  * @receiver The [Fragment] to which the menu provider is being added.
  * @param menuProvider The [MenuProvider] responsible for populating and handling the menu.
- * @param lifecycleState The minimum lifecycle state required for the menu to be visible. Defaults to [Lifecycle.State.RESUMED].
+ * @param lifecycleState The minimum lifecycle state required for the menu to be visible. Defaults to [Lifecycle.State.STARTED].
  *
- * @see androidx.core.view.MenuProvider
- * @see androidx.core.view.MenuHost
+ * @see MenuProvider
+ * @see MenuHost
  */
 @MainThread
-fun Fragment.addMenuProvider(menuProvider: MenuProvider, lifecycleState: Lifecycle.State = Lifecycle.State.RESUMED) {
+fun Fragment.addMenuProvider(menuProvider: MenuProvider, lifecycleState: Lifecycle.State = Lifecycle.State.STARTED) {
     val menuHost: MenuHost = requireActivity()
     menuHost.addMenuProvider(menuProvider, viewLifecycleOwner, lifecycleState)
 }
