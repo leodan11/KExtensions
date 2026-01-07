@@ -1,5 +1,8 @@
 package com.github.leodan11.k_extensions.base
 
+import com.github.leodan11.k_extensions.base.model.FlashResult
+import com.github.leodan11.k_extensions.base.model.StatusResult
+
 
 /**
  * Checks if this [FlashResult] is a success.

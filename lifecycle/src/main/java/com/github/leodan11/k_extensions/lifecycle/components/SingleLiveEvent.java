@@ -1,4 +1,4 @@
-package com.github.leodan11.k_extensions.base;
+package com.github.leodan11.k_extensions.lifecycle.components;
 
 import android.util.Log;
 

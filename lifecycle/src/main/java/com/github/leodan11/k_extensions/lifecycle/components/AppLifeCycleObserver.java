@@ -1,8 +1,10 @@
-package com.github.leodan11.k_extensions.base;
+package com.github.leodan11.k_extensions.lifecycle.components;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
+
+import com.github.leodan11.k_extensions.lifecycle.components.contracts.LifeCycleCallBacks;
 
 /**
  * USAGE

@@ -1,11 +1,10 @@
-package com.github.leodan11.k_extensions.base
+package com.github.leodan11.k_extensions.lifecycle.components
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 
-
 /**
- * A [MediatorLiveData] that combines two source [LiveData] objects into one.
+ * A [androidx.lifecycle.MediatorLiveData] that combines two source [androidx.lifecycle.LiveData] objects into one.
  *
  * By default, it emits a [Pair] of the last values from both sources, but
  * you can provide a custom [combine] lambda to produce any type [R].

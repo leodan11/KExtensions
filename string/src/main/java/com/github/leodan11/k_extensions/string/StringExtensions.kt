@@ -2,7 +2,7 @@ package com.github.leodan11.k_extensions.string
 
 import android.util.Base64
 import androidx.annotation.ColorInt
-import com.github.leodan11.k_extensions.base.ShapeTextDrawable
+import com.github.leodan11.k_extensions.base.components.ShapeTextDrawable
 import com.github.leodan11.k_extensions.string.content.HashFormat
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset

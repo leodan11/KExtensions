@@ -1,4 +1,4 @@
-package com.github.leodan11.k_extensions.base
+package com.github.leodan11.k_extensions.base.components
 
 import android.Manifest
 import android.content.Context

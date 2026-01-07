@@ -1,9 +1,8 @@
-package com.github.leodan11.k_extensions.base
+package com.github.leodan11.k_extensions.base.components
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.widget.ImageView
 import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.PixelFormat
@@ -17,14 +16,14 @@ import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.shapes.RectShape
 import android.graphics.drawable.shapes.RoundRectShape
 import androidx.annotation.ColorInt
+import androidx.core.graphics.withSave
 import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.min
-import androidx.core.graphics.withSave
 
 /**
  *
- * This light-weight library provides images with letter/text. It extends the [Drawable] class thus can be used with existing/custom/network [ImageView] classes.
+ * This light-weight library provides images with letter/text. It extends the [android.graphics.drawable.Drawable] class thus can be used with existing/custom/network [android.widget.ImageView] classes.
  *
  * - This is just an updated version of the rather-abandoned [TextDrawable](https://github.com/jahirfiquitiva/TextDrawable) and applying some of the active pull requests in it. Credits go completely to its creator and the people who has contributed with those pull requests.
  *
