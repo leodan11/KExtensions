@@ -577,11 +577,8 @@ fun String.gzip(charset: Charset = Charsets.UTF_8): Result<ByteArray> =
  * ```kotlin
  * //example
  * val secret = "YourSuperSecretKey"
- * val code = generateOfflineDevCode(secretKey = secret)
+ * val code = secret.generateOfflineDevCode()
  * println(code) // e.g., "A1B2C3"
- *
- * val customCode = generateOfflineDevCode(secretKey = secret,dateFormat = "yyyyMMddHHmm",hashLength = 8,uppercase = false,locale = Locale.US)
- * println(customCode) // e.g., "a1b2c3d4"
  * ```
  *
  * @receiver [String] The secret key used to salt the hash. Must be kept private.
@@ -612,18 +609,15 @@ fun String.generateOfflineDevCode(dateFormat: String = "yyyyMMddHH", hashLength:
  * ```kotlin
  * //example
  * val secret = "YourSuperSecretKey"
- * val code = generateOfflineDevCode(secretKey = secret)
- * println(code) // e.g., "A1B2C3"
- *
- * val customCode = generateOfflineDevCode(secretKey = secret,dateFormat = "yyyyMMddHHmm",hashLength = 8,uppercase = false,locale = Locale.US)
+ * val customCode = secret.generateOfflineDevCode(locale = Locale.US, dateFormat = "yyyyMMddHHmm", hashLength = 8, uppercase = false)
  * println(customCode) // e.g., "a1b2c3d4"
  * ```
  *
  * @receiver [String] The secret key used to salt the hash. Must be kept private.
+ * @param locale The [Locale] used for case conversion.
  * @param dateFormat The pattern used to format the current date-time. Default is `"yyyyMMddHH"`.
  * @param hashLength The number of characters to take from the start of the hash. Default is `6`.
  * @param uppercase If true, the resulting code is converted to uppercase; otherwise lowercase. Default is `true`.
- * @param locale The [Locale] used for case conversion.
  *
  * @return A short string representing the generated offline development code.
  *
@@ -631,7 +625,7 @@ fun String.generateOfflineDevCode(dateFormat: String = "yyyyMMddHH", hashLength:
  *
  * @since 2.2.8
  */
-fun String.generateOfflineDevCode(dateFormat: String = "yyyyMMddHH", hashLength: Int = 6, uppercase: Boolean = true, locale: Locale): String {
+fun String.generateOfflineDevCode(locale: Locale, dateFormat: String = "yyyyMMddHH", hashLength: Int = 6, uppercase: Boolean = true): String {
     require(hashLength > 0) { "hashLength must be greater than 0" }
     val currentDateTime = Date().toFormat(pattern = dateFormat, locale = locale)
     val rawInput = currentDateTime + this
