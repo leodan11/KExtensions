@@ -344,43 +344,164 @@ fun Number.toNumberFormatInt(locale: Locale): String =
 
 
 /**
- * Formats this [Number] as a percentage string according to the default locale.
+ * Formats a normalized percentage value using the default locale.
  *
- * Null-safe: if the number is null, returns "0.00 %".
+ * This function expects the receiver to be a value between `0.0` and `1.0`,
+ * where `1.0` represents `100%`.
  *
- * @param minDigits Minimum number of fraction digits (default 2).
- * @param maxDigits Maximum number of fraction digits (default 2).
- * @return Formatted percentage [String], e.g., 0.2567 -> "25.67 %".
- */
-fun Number?.toNumberFormatPercent(minDigits: Int = 2, maxDigits: Int = 2): String {
-    return this.toNumberFormatPercent(locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
-}
-
-/**
- * Formats this [Number] as a percentage string according to the specified [locale].
- *
- * Null-safe: if the number is null, returns "0.00 %".
- *
- * Example:
- * ```kotlin
- * val value = 0.2567
- * value.toNumberFormatPercent(Locale.US) // "25.67 %"
+ * ### Example:
+ * ```
+ * 0.25.toPercentNormalized() // "25.00 %"
  * ```
  *
- * @param locale The [Locale] to use for percentage formatting.
- * @param minDigits Minimum number of fraction digits (default `2`).
- * @param maxDigits Maximum number of fraction digits (default `2`).
- * @return Formatted percentage [String], or "0.00 %" if null or formatting fails.
+ * @param minDigits Minimum number of fraction digits.
+ * @param maxDigits Maximum number of fraction digits.
+ *
+ * @return A localized percentage string. Returns `"0.00 %"` if formatting fails.
+ *
+ * @since 2.2.8
  */
-fun Number?.toNumberFormatPercent(locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String =
-    runCatching {
+fun Number?.toPercentNormalized(minDigits: Int = 2, maxDigits: Int = 2): String {
+    return this.toPercentNormalized(locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
+}
+
+
+/**
+ * Formats a normalized percentage value using the specified locale.
+ *
+ * This function expects the receiver to be a value between `0.0` and `1.0`,
+ * where `1.0` represents `100%`.
+ *
+ * ### Example:
+ * ```
+ * 0.1.toPercentNormalized(Locale.US) // "10.00%"
+ * ```
+ *
+ * @param locale Locale used for formatting.
+ * @param minDigits Minimum number of fraction digits.
+ * @param maxDigits Maximum number of fraction digits.
+ *
+ * @return A localized percentage string. Returns `"0.00 %"` if formatting fails.
+ *
+ * @throws IllegalArgumentException if `minDigits > maxDigits`.
+ *
+ * @since 2.2.8
+ */
+fun Number?.toPercentNormalized(locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String = runCatching {
         require(minDigits <= maxDigits) { "minDigits must be less than or equal to maxDigits" }
-        val formatted = NumberFormat.getPercentInstance(locale).apply {
+        NumberFormat.getPercentInstance(locale).apply {
             minimumFractionDigits = minDigits
             maximumFractionDigits = maxDigits
         }.format(this ?: 0)
-        if (!formatted.contains(" %")) formatted.replace("%", " %") else formatted
     }.getOrElse { "0.00 %" }
+
+
+/**
+ * Formats a percentage from a direct numeric value using the default locale.
+ *
+ * This function expects the receiver to be a value where 100 represents 100%.
+ * Values greater than 100 are displayed as-is.
+ *
+ * ### Example:
+ * ```
+ * 10.toPercentFromValue() // "10.00 %"
+ * ```
+ *
+ * @param minDigits Minimum number of fraction digits.
+ * @param maxDigits Maximum number of fraction digits.
+ *
+ * @return A localized percentage string. Returns `"0.00 %"` if formatting fails.
+ *
+ * @since 2.2.8
+ */
+fun Number?.toPercentFromValue(minDigits: Int = 2, maxDigits: Int = 2): String {
+    return this.toPercentFromValue(locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
+}
+
+
+/**
+ * Formats a percentage from a direct numeric value using the specified locale.
+ *
+ * This function expects the receiver to be a value where 100 represents 100%.
+ * Values greater than 100 are displayed as-is.
+ *
+ * ### Examples:
+ * ```
+ * 50.toPercentFromValue() // "50.00 %"
+ * 200.toPercentFromValue() // "200.00 %"
+ * ```
+ *
+ * @param locale Locale used for formatting.
+ * @param minDigits Minimum number of fraction digits.
+ * @param maxDigits Maximum number of fraction digits.
+ *
+ * @return A localized percentage string. Returns `"0.00 %"` if formatting fails.
+ *
+ * @throws IllegalArgumentException if `minDigits > maxDigits`.
+ *
+ * @since 2.2.8
+ */
+fun Number?.toPercentFromValue(locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String = runCatching {
+    require(minDigits <= maxDigits) { "minDigits must be less than or equal to maxDigits" }
+    val value = (this?.toDouble() ?: 0.0) / 100.0
+    NumberFormat.getPercentInstance(locale).apply {
+        minimumFractionDigits = minDigits
+        maximumFractionDigits = maxDigits
+    }.format(value)
+}.getOrElse { "0.00 %" }
+
+
+/**
+ * Calculates and formats the percentage that this value represents of the given total
+ * using the default locale.
+ *
+ * ### Example:
+ * ```
+ * 25.percentageOf(200) // "12.50 %"
+ * ```
+ *
+ * @param total The total value used as the denominator.
+ * @param minDigits Minimum number of fraction digits.
+ * @param maxDigits Maximum number of fraction digits.
+ *
+ * @return A localized percentage string. Returns `"0.00 %"` if calculation fails.
+ *
+ * @since 2.2.8
+ */
+fun Number?.percentageOf(total: Number?, minDigits: Int = 2, maxDigits: Int = 2): String {
+    return this.percentageOf(total = total, locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
+}
+
+
+/**
+ * Calculates and formats the percentage that this value represents of the given total
+ * using the specified locale.
+ *
+ * ### Example:
+ * ```
+ * 50.percentageOf(400, Locale.US) // "12.50%"
+ * ```
+ *
+ * @param total The total value used as the denominator. Must not be zero.
+ * @param locale Locale used for formatting.
+ * @param minDigits Minimum number of fraction digits.
+ * @param maxDigits Maximum number of fraction digits.
+ *
+ * @return A localized percentage string. Returns `"0.00 %"` if calculation fails.
+ *
+ * @throws IllegalArgumentException if `total` is zero or `minDigits > maxDigits`.
+ *
+ * @since 2.2.8
+ */
+fun Number?.percentageOf(total: Number?, locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String = runCatching {
+    require(minDigits <= maxDigits) { "minDigits must be less than or equal to maxDigits" }
+    require(total != null && total.toDouble() != 0.0) { "Total must not be null or zero when calculating percentage" }
+    val value = (this?.toDouble() ?: 0.0) / total.toDouble()
+    NumberFormat.getPercentInstance(locale).apply {
+        minimumFractionDigits = minDigits
+        maximumFractionDigits = maxDigits
+    }.format(value)
+}.getOrElse { "0.00 %" }
 
 
 /**
