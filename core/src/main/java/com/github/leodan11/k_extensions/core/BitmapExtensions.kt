@@ -282,10 +282,10 @@ fun Bitmap.tintWithColor(@ColorInt color: Int): Bitmap {
 
     val result = createBitmap(width, height)
     val canvas = Canvas(result)
-    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    canvas.drawColor(Color.TRANSPARENT, Mode.CLEAR)
     val paint = Paint().apply {
         isAntiAlias = true
-        colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+        colorFilter = PorterDuffColorFilter(color, Mode.SRC_IN)
     }
     canvas.drawBitmap(this, 0f, 0f, paint)
     return result
