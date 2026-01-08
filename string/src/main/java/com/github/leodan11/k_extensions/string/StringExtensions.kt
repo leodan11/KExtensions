@@ -3,6 +3,7 @@ package com.github.leodan11.k_extensions.string
 import android.util.Base64
 import androidx.annotation.ColorInt
 import com.github.leodan11.k_extensions.base.components.ShapeTextDrawable
+import com.github.leodan11.k_extensions.string.content.HashAlgorithm
 import com.github.leodan11.k_extensions.string.content.HashFormat
 import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
@@ -162,18 +163,20 @@ fun String.toFixedLengthCode(length: Int = 5, paddingChar: Char = '0'): String =
  * - `"MD5"`
  *
  * ```kotlin
- * val hash = "hello".hash("SHA-512")
+ * val hash = "hello".hashHex(HashAlgorithm.SHA512)
  * println(hash)
+ *
+ *
+ * val hash2 = "hello".hash(HashAlgorithm.Custom("SHA-512"))
+ *  println(hash2)
  * ```
  *
  * @return The resulting hash as a lowercase hexadecimal string.
  *
  * @throws IllegalArgumentException if the algorithm is not supported.
  */
-fun String.hash(algorithm: String): String {
-    val digest = MessageDigest.getInstance(algorithm)
-    val hashBytes = digest.digest(this.toByteArray())
-    return hashBytes.joinToString("") { "%02x".format(it) }
+fun String.hashHex(algorithm: HashAlgorithm): String {
+    return this.hash(algorithm = algorithm, format = HashFormat.HEX)
 }
 
 
@@ -191,13 +194,20 @@ fun String.hash(algorithm: String): String {
  *
  * ### Examples:
  * ```kotlin
- * val hash1 = "hello".hash("SHA-512") // hex by default
- * val hash2 = "hello".hash("MD5", format = HashFormat.BASE64)
- * val hash3 = "hello".hash("SHA-1", charset = Charsets.UTF_16)
+ * val hash1 = "hello".hash(HashAlgorithm.SHA512) // hex by default
+ * val hash2 = "hello".hash(HashAlgorithm.Custom("SHA-512")) // Custom hash
+ * val hash3 = "hello".hash(HashAlgorithm.MD5, format = HashFormat.BASE64)
+ * val hash4 = "hello".hash(HashAlgorithm.SHA1, charset = Charsets.UTF_16)
  * ```
+ *
+ * @throws IllegalArgumentException if the algorithm is not supported.
  */
-fun String.hash(algorithm: String = "SHA-256", format: HashFormat = HashFormat.HEX, charset: Charset = Charsets.UTF_8, base64Flags: Int = Base64.NO_WRAP): String {
-    val digest = MessageDigest.getInstance(algorithm)
+fun String.hash(algorithm: HashAlgorithm, format: HashFormat = HashFormat.HEX, charset: Charset = Charsets.UTF_8, base64Flags: Int = Base64.NO_WRAP): String {
+    val digest = runCatching {
+        MessageDigest.getInstance(algorithm.value)
+    }.getOrElse {
+        throw IllegalArgumentException("Invalid hash algorithm: '${algorithm.value}'. Make sure it is supported by MessageDigest.", it)
+    }
     val hashBytes = digest.digest(this.toByteArray(charset))
     return when (format) {
         HashFormat.HEX -> hashBytes.joinToString("") { "%02x".format(it) }
@@ -241,7 +251,7 @@ fun String?.isOneOf(vararg conditions: String): Boolean {
  * @throws java.security.NoSuchAlgorithmException if SHA-256 algorithm is not available on the platform.
  */
 fun String.sha256(): String {
-    return this.hash(algorithm = "SHA-256")
+    return this.hashHex(algorithm = HashAlgorithm.SHA256)
 }
 
 
