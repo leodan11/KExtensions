@@ -12,6 +12,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
 import android.util.DisplayMetrics
+import android.view.Menu
 import android.view.PixelCopy
 import android.view.View
 import android.view.WindowManager
@@ -22,6 +23,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.AttrRes
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
@@ -29,6 +31,7 @@ import androidx.core.graphics.createBitmap
 import androidx.fragment.app.FragmentActivity
 import com.github.leodan11.k_extensions.core.content.DisplayDensity
 import com.github.leodan11.k_extensions.core.content.UnitType
+import com.github.leodan11.k_extensions.core.enableIconsWithMargin
 import com.github.leodan11.k_extensions.core.getDisplayText
 import com.github.leodan11.k_extensions.core.toDisplayPairList
 import com.github.leodan11.k_extensions.core.toElapsedTimeString
@@ -120,6 +123,94 @@ fun FragmentActivity.toElapsedTimeString(days: Int = 0, hours: Int = 0, minutes:
  */
 fun Activity.customColorResource(@AttrRes idAttrRes: Int, fallbackColor: Int = 0): Int {
     return applicationContext.customColorResource(idAttrRes = idAttrRes, fallbackColor = fallbackColor)
+}
+
+
+/**
+ * Returns a properly formatted display text from the given [value], or a default string resource
+ * if the input is `null`, blank, or empty.
+ *
+ * Each word in the input is capitalized to improve display consistency.
+ *
+ * @param value The original string (e.g., a name or label), which may be null, blank, or improperly formatted.
+ * @return A formatted string with each word capitalized, or the fallback string. Use `com.github.leodan11.k_extensions.core.R.string.label_text_unknown` for the default fallback string.
+ *
+ * Example usage:
+ * ```
+ * /* ActivityClass */
+ *
+ * val rawInput: String? = "   john doe"
+ * val displayText = getDisplayText(rawInput)
+ * // Result: "John Doe"
+ *
+ * val emptyInput: String? = null
+ * val displayText = getDisplayText(emptyInput)
+ * // Result: "Unknown"
+ * ```
+ * @see [com.github.leodan11.k_extensions.core.R.string.label_text_unknown]
+ * @since 2.2.8
+ */
+fun Activity.getDisplayText(value: String?): String {
+    return this.getDisplayText(value = value)
+}
+
+
+/**
+ * Returns a properly formatted display text from the given [value], or a default string resource
+ * if the input is `null`, blank, or empty.
+ *
+ * Each word in the input is capitalized to improve display consistency.
+ *
+ * @param value The original string (e.g., a name or label), which may be null, blank, or improperly formatted.
+ * @param default A string resource to use as fallback when [value] is null or blank.
+ * @return A formatted string with each word capitalized, or the fallback string.
+ *
+ * Example usage:
+ * ```
+ * /* ActivityClass */
+ *
+ * val rawInput: String? = "   john doe"
+ * val displayText = getDisplayText(rawInput, R.string.label_text_unknown)
+ * // Result: "John Doe"
+ *
+ * val emptyInput: String? = null
+ * val displayText = getDisplayText(emptyInput, R.string.label_text_example)
+ * // Result: "Example"
+ * ```
+ * @since 2.2.8
+ */
+fun Activity.getDisplayText(value: String?, @StringRes default: Int): String {
+    return this.getDisplayText(value = value, default = default)
+}
+
+
+/**
+ * Returns a properly formatted display text from the given [value], or a default string resource
+ * if the input is `null`, blank, or empty.
+ *
+ * Each word in the input is capitalized to improve display consistency.
+ *
+ * @param value The original string (e.g., a name or label), which may be null, blank, or improperly formatted.
+ * @param default A string to use as fallback when [value] is null or blank. Use `com.github.leodan11.k_extensions.core.R.string.label_text_unknown` for the default fallback string if [default] is empty.
+ * @return A formatted string with each word capitalized, or the fallback string.
+ *
+ * Example usage:
+ * ```
+ * /* ActivityClass */
+ *
+ * val rawInput: String? = "   john doe"
+ * val displayText = getDisplayText(rawInput, "")
+ * // Result: "John Doe"
+ *
+ * val emptyInput: String? = null
+ * val displayText = getDisplayText(emptyInput, "")
+ * // Result: "Unknown"
+ * ```
+ * @see [com.github.leodan11.k_extensions.core.R.string.label_text_unknown]
+ * @since 2.2.8
+ */
+fun Activity.getDisplayText(value: String?, default: String): String {
+    return this.getDisplayText(value = value, default = default)
 }
 
 
@@ -423,24 +514,51 @@ fun Activity.calculateSpanCount(itemWidthDp: Int): Int {
 
 
 /**
+ * Enables icon visibility in the menu and applies horizontal margins to icons for better alignment.
+ *
+ * This method uses reflection to invoke the internal `setOptionalIconsVisible(true)` method
+ * on the menu implementation, which is typically a `MenuBuilder` instance in AndroidX.
+ * If successful, it adds horizontal padding around each menu item's icon to improve appearance,
+ * especially on devices running Lollipop and above.
+ *
+ * @receiver The [Activity] used to convert density-independent pixels (dp) to pixels.
+ * @param menu The [Menu] instance on which to enable icon visibility and apply margins.
+ * @param marginDp The horizontal margin in dp to apply around icons. Default is 16dp.
+ * @return `true` if icon visibility was successfully enabled and margins applied, `false` otherwise.
+ *
+ * @throws ReflectiveOperationException if the internal method cannot be accessed or invoked.
+ * @since 2.2.8
+ */
+fun Activity.enableIconsWithMargin(menu: Menu, marginDp: Int = 16): Result<Boolean> {
+    return menu.enableIconsWithMargin(this, marginDp = marginDp)
+}
+
+
+/**
  * Transforms a list of objects into a list of pairs consisting of the original object and its display name.
- * The display name is extracted using the provided [nameProvider] lambda and processed by [Context.getDisplayText]
- * to ensure a standardized, non-null, and user-friendly format based on the app's resources.
  *
- * This is useful when binding lists to UI components like [AutoCompleteTextView] or [Spinner],
- * where a readable display name is required for selection while retaining access to the original model.
+ * The display name is extracted using the provided [nameProvider] lambda and processed by
+ * [Context.getDisplayText] to ensure a standardized, non-null, and user-friendly format
+ * based on the app's string resources.
  *
+ * This is useful when binding lists to UI components such as [AutoCompleteTextView] or
+ * [Spinner], where a readable display name is required for selection while still
+ * retaining access to the original model.
+ *
+ * @receiver The [Activity] used to provide a valid [Context] for resolving string resources.
  * @param T The type of the original objects in the list.
- * @param context The [Activity] used to resolve string resources when the display name is null or empty.
- * @param nameProvider A lambda function that extracts a string (e.g., name, title, label) from each object of type [T].
+ * @param list The list of objects to be transformed into display pairs.
+ * @param nameProvider A lambda that extracts a displayable string (e.g., name, title, label)
+ * from each object of type [T].
  * @return A list of pairs where each pair contains the original object and its processed display name.
  *
  * @see Context.getDisplayText
+ * @see List.toDisplayPairList
  *
  * @since 2.2.8
  */
-fun <T> List<T>.toDisplayPairList(context: Activity, nameProvider: (T) -> String): List<Pair<T, String>> {
-    return this.toDisplayPairList(context.applicationContext, nameProvider)
+fun <T> Activity.toDisplayPairList(list: List<T>, nameProvider: (T) -> String): List<Pair<T, String>> {
+    return list.toDisplayPairList(context = this, nameProvider = nameProvider)
 }
 
 

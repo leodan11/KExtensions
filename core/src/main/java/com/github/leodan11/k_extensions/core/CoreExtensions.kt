@@ -180,7 +180,7 @@ fun ByteArray.toHexString(separator: String = ""): String = joinToString(separat
  * // Result: "Unknown"
  * ```
  *
- * @see R.string.label_text_unknown for the default fallback string resource.
+ * @see [R.string.label_text_unknown]
  * @since 2.2.8
  */
 fun Context.getDisplayText(value: String?): String {
@@ -206,7 +206,7 @@ fun Context.getDisplayText(value: String?): String {
  * // Result: "Jane Smith"
  * ```
  *
- * @see R.string.label_text_unknown for the fallback string resource.
+ * @see [R.string.label_text_unknown]
  * @since 2.2.1
  */
 fun Context.getDisplayText(value: String?, @StringRes default: Int): String {
@@ -233,7 +233,7 @@ fun Context.getDisplayText(value: String?, @StringRes default: Int): String {
  * // Result: "Bob Jones"
  * ```
  *
- * @see R.string.label_text_unknown for the default fallback string resource if [default] is empty.
+ * @see [R.string.label_text_unknown]
  * @since 2.2.1
  */
 fun Context.getDisplayText(value: String?, default: String): String {
