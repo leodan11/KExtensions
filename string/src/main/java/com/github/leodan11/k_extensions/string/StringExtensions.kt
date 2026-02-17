@@ -281,6 +281,52 @@ fun String.toBoolean(): Boolean {
 
 
 /**
+ * Converts a string containing HTML tags into a [Spanned].
+ *
+ * This function is safe to use on all Android versions from API 16 onward.
+ *
+ * ```kotlin
+ * // Typical usage:
+ * val spannedText = "<b>Hello World</b>".toHtml()
+ * textView.text = spannedText
+ * ```
+ *
+ * @receiver String The text containing HTML tags.
+ * @return Spanned Formatted text that can be assigned directly to a TextView.
+ * @since 2.2.8
+ */
+@Suppress("DEPRECATION")
+fun String.toSpannedFromHtml(): Spanned {
+    val htmlText = if (this.contains("<") && this.contains(">")) this else "<p>$this</p>"
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        htmlText.toHtml(flags = Html.FROM_HTML_MODE_COMPACT)
+    } else {
+        Html.fromHtml(this)
+    }
+}
+
+
+/**
+ * Converts a string containing HTML tags into a [Spanned].
+ *
+ * ```kotlin
+ * // Typical usage:
+ * val spannedText = "<b>Hello World</b>".toHtml(Html.FROM_HTML_MODE_COMPACT)
+ * textView.text = spannedText
+ * ```
+ *
+ * @receiver String The text containing HTML tags.
+ * @return Spanned Formatted text that can be assigned directly to a TextView.
+ * @since 2.2.8
+ */
+@RequiresApi(Build.VERSION_CODES.N)
+fun String.toHtml(flags: Int): Spanned {
+    val htmlText = if (this.contains("<") && this.contains(">")) this else "<p>$this</p>"
+    return Html.fromHtml(htmlText, flags)
+}
+
+
+/**
  * Extension function to format a name string into a "Name Lastname" format.
  *
  * This function takes a nullable string and returns a formatted string with
