@@ -1,7 +1,11 @@
 package com.github.leodan11.k_extensions.string
 
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
 import android.util.Base64
 import androidx.annotation.ColorInt
+import androidx.annotation.RequiresApi
 import com.github.leodan11.k_extensions.base.components.ShapeTextDrawable
 import com.github.leodan11.k_extensions.string.content.HashAlgorithm
 import com.github.leodan11.k_extensions.string.content.HashFormat
@@ -81,7 +85,10 @@ val String.isNotAlphanumeric: Boolean
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatar(@ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+fun String.asAvatar(
+    @ColorInt color: Int,
+    config: ShapeTextDrawable.Builder.() -> Unit = {}
+): ShapeTextDrawable {
     return ShapeTextDrawable.build(this, color, config)
 }
 
@@ -97,7 +104,10 @@ fun String.asAvatar(@ColorInt color: Int, config: ShapeTextDrawable.Builder.() -
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatarRect(@ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+fun String.asAvatarRect(
+    @ColorInt color: Int,
+    config: ShapeTextDrawable.Builder.() -> Unit = {}
+): ShapeTextDrawable {
     return ShapeTextDrawable.buildRect(this, color, config)
 }
 
@@ -113,7 +123,10 @@ fun String.asAvatarRect(@ColorInt color: Int, config: ShapeTextDrawable.Builder.
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatarRound(@ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+fun String.asAvatarRound(
+    @ColorInt color: Int,
+    config: ShapeTextDrawable.Builder.() -> Unit = {}
+): ShapeTextDrawable {
     return ShapeTextDrawable.buildRound(this, color, config)
 }
 
@@ -130,7 +143,11 @@ fun String.asAvatarRound(@ColorInt color: Int, config: ShapeTextDrawable.Builder
  * @return [ShapeTextDrawable]
  *
  */
-fun String.asAvatarRoundRect(radius: Int, @ColorInt color: Int, config: ShapeTextDrawable.Builder.() -> Unit = {}): ShapeTextDrawable {
+fun String.asAvatarRoundRect(
+    radius: Int,
+    @ColorInt color: Int,
+    config: ShapeTextDrawable.Builder.() -> Unit = {}
+): ShapeTextDrawable {
     return ShapeTextDrawable.buildRoundRect(this, color, radius, config)
 }
 
@@ -150,7 +167,8 @@ fun String.asAvatarRoundRect(radius: Int, @ColorInt color: Int, config: ShapeTex
  * @param paddingChar The character to pad with. Default is `'0'`.
  * @return A new string padded to the specified [length] using [paddingChar] on the left.
  */
-fun String.toFixedLengthCode(length: Int = 5, paddingChar: Char = '0'): String = this.padStart(length, paddingChar)
+fun String.toFixedLengthCode(length: Int = 5, paddingChar: Char = '0'): String =
+    this.padStart(length, paddingChar)
 
 
 /**
@@ -202,11 +220,19 @@ fun String.hashHex(algorithm: HashAlgorithm): String {
  *
  * @throws IllegalArgumentException if the algorithm is not supported.
  */
-fun String.hash(algorithm: HashAlgorithm, format: HashFormat = HashFormat.HEX, charset: Charset = Charsets.UTF_8, base64Flags: Int = Base64.NO_WRAP): String {
+fun String.hash(
+    algorithm: HashAlgorithm,
+    format: HashFormat = HashFormat.HEX,
+    charset: Charset = Charsets.UTF_8,
+    base64Flags: Int = Base64.NO_WRAP
+): String {
     val digest = runCatching {
         MessageDigest.getInstance(algorithm.value)
     }.getOrElse {
-        throw IllegalArgumentException("Invalid hash algorithm: '${algorithm.value}'. Make sure it is supported by MessageDigest.", it)
+        throw IllegalArgumentException(
+            "Invalid hash algorithm: '${algorithm.value}'. Make sure it is supported by MessageDigest.",
+            it
+        )
     }
     val hashBytes = digest.digest(this.toByteArray(charset))
     return when (format) {
@@ -397,6 +423,7 @@ fun String.extractMainNameComponents(preferLastSurname: Boolean = false): String
             "${parts[0]} ${parts[2]}"
         else
             "${parts[0]} ${parts[1]}"
+
         else -> if (preferLastSurname)
             "${parts[0]} ${parts.last()}"
         else
@@ -435,7 +462,11 @@ fun String.extractMainNameComponents(preferLastSurname: Boolean = false): String
  *
  * @return A [String] of uppercase initials or letters with optional separator.
  */
-fun String.initials(wordLimit: Int? = 2, separator: String = "", containLastName: Boolean = false): String {
+fun String.initials(
+    wordLimit: Int? = 2,
+    separator: String = "",
+    containLastName: Boolean = false
+): String {
     val trimmed = trim()
     if (trimmed.isEmpty()) return ""
 
@@ -443,17 +474,24 @@ fun String.initials(wordLimit: Int? = 2, separator: String = "", containLastName
 
     return when {
         parts.size == 1 -> {
-            val letters = parts.first().take(wordLimit ?: parts.first().length).map { it.uppercase() }
+            val letters =
+                parts.first().take(wordLimit ?: parts.first().length).map { it.uppercase() }
             letters.joinToString(separator)
         }
 
-        wordLimit == null || wordLimit >= parts.size -> parts.mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(separator)
+        wordLimit == null || wordLimit >= parts.size -> parts.mapNotNull {
+            it.firstOrNull()?.uppercase()
+        }.joinToString(separator)
 
         wordLimit == 1 -> parts.first().first().uppercase()
 
-        wordLimit == 2 && containLastName && parts.size >= 2 -> listOf(parts.first(), parts.last()).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(separator)
+        wordLimit == 2 && containLastName && parts.size >= 2 -> listOf(
+            parts.first(),
+            parts.last()
+        ).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(separator)
 
-        else -> parts.take(wordLimit).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(separator)
+        else -> parts.take(wordLimit).mapNotNull { it.firstOrNull()?.uppercase() }
+            .joinToString(separator)
     }
 }
 
@@ -510,8 +548,8 @@ fun String.toCapitalize(locale: Locale): String {
  */
 fun String.toCapitalizedPerWord(): String {
     return trim().split("\\s+".toRegex()).joinToString(" ") { word ->
-            word.lowercase().replaceFirstChar { it.titlecaseChar() }
-        }
+        word.lowercase().replaceFirstChar { it.titlecaseChar() }
+    }
 }
 
 
@@ -648,8 +686,17 @@ fun String.gzip(charset: Charset = Charsets.UTF_8): Result<ByteArray> =
  *
  * @since 2.2.8
  */
-fun String.generateOfflineDevCode(dateFormat: String = "yyyyMMddHH", hashLength: Int = 6, uppercase: Boolean = true): String {
-    return generateOfflineDevCode(dateFormat = dateFormat, hashLength = hashLength, uppercase = uppercase, locale = Locale.getDefault())
+fun String.generateOfflineDevCode(
+    dateFormat: String = "yyyyMMddHH",
+    hashLength: Int = 6,
+    uppercase: Boolean = true
+): String {
+    return generateOfflineDevCode(
+        dateFormat = dateFormat,
+        hashLength = hashLength,
+        uppercase = uppercase,
+        locale = Locale.getDefault()
+    )
 }
 
 
@@ -681,7 +728,12 @@ fun String.generateOfflineDevCode(dateFormat: String = "yyyyMMddHH", hashLength:
  *
  * @since 2.2.8
  */
-fun String.generateOfflineDevCode(locale: Locale, dateFormat: String = "yyyyMMddHH", hashLength: Int = 6, uppercase: Boolean = true): String {
+fun String.generateOfflineDevCode(
+    locale: Locale,
+    dateFormat: String = "yyyyMMddHH",
+    hashLength: Int = 6,
+    uppercase: Boolean = true
+): String {
     require(hashLength > 0) { "hashLength must be greater than 0" }
     val currentDateTime = Date().toFormat(pattern = dateFormat, locale = locale)
     val rawInput = currentDateTime + this
