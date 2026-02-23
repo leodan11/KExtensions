@@ -41,5 +41,4 @@ can update their projects safely and efficiently.
 
 ### 🔧 Maintenance
 - Updated dependencies in `libs.versions.toml`
-- Bumped library version to 3.0.0
 - Updated `@Since` annotations for new and renamed functions
