@@ -319,7 +319,7 @@ fun String.toBoolean(): Boolean {
  *
  * @receiver String The text containing HTML tags.
  * @return Spanned Formatted text that can be assigned directly to a TextView.
- * @since 2.2.8
+ * @since 3.0.0
  */
 @Suppress("DEPRECATION")
 fun String.toSpannedFromHtml(): Spanned {
@@ -343,7 +343,7 @@ fun String.toSpannedFromHtml(): Spanned {
  *
  * @receiver String The text containing HTML tags.
  * @return Spanned Formatted text that can be assigned directly to a TextView.
- * @since 2.2.8
+ * @since 3.0.0
  */
 @RequiresApi(Build.VERSION_CODES.N)
 fun String.toHtml(flags: Int): Spanned {
@@ -645,7 +645,7 @@ fun String.uniquifyWords(): String {
  * @return A [Result] containing the GZIP-compressed [ByteArray] if successful,
  * or a [Result.failure] wrapping the encountered exception.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun String.gzip(charset: Charset = Charsets.UTF_8): Result<ByteArray> =
     runCatching {
@@ -684,7 +684,7 @@ fun String.gzip(charset: Charset = Charsets.UTF_8): Result<ByteArray> =
  *
  * @throws IllegalArgumentException if [hashLength] is less than 1.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun String.generateOfflineDevCode(
     dateFormat: String = "yyyyMMddHH",
@@ -726,7 +726,7 @@ fun String.generateOfflineDevCode(
  *
  * @throws IllegalArgumentException if [hashLength] is less than 1.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun String.generateOfflineDevCode(
     locale: Locale,

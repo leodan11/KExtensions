@@ -212,7 +212,7 @@ fun Fragment.calculateSpanCount(itemWidthDp: Int): Int {
  * @return `true` if icon visibility was successfully enabled and margins applied, `false` otherwise.
  *
  * @throws ReflectiveOperationException if the internal method cannot be accessed or invoked.
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Fragment.enableIconsWithMargin(menu: Menu, marginDp: Int = 16): Result<Boolean> {
     return menu.enableIconsWithMargin(context = requireActivity(), marginDp = marginDp)
@@ -252,7 +252,7 @@ fun Fragment.hideSoftKeyboard() {
  * // Result: "Unknown"
  * ```
  * @see [com.github.leodan11.k_extensions.core.R.string.label_text_unknown]
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Fragment.getDisplayText(value: String?): String {
     return requireActivity().getDisplayText(value = value)
@@ -281,7 +281,7 @@ fun Fragment.getDisplayText(value: String?): String {
  * val displayText = getDisplayText(emptyInput, R.string.label_text_example)
  * // Result: "Example"
  * ```
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Fragment.getDisplayText(value: String?, @StringRes default: Int): String {
     return requireActivity().getDisplayText(value = value, default = default)
@@ -311,7 +311,7 @@ fun Fragment.getDisplayText(value: String?, @StringRes default: Int): String {
  * // Result: "Unknown"
  * ```
  * @see [com.github.leodan11.k_extensions.core.R.string.label_text_unknown]
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Fragment.getDisplayText(value: String?, default: String): String {
     return requireActivity().getDisplayText(value = value, default = default)
@@ -414,7 +414,7 @@ fun Fragment.startNewPage(
  * @see Context.getDisplayText
  * @see List.toDisplayPairList
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun <T> Fragment.toDisplayPairList(list: List<T>, nameProvider: (T) -> String): List<Pair<T, String>> {
     return list.toDisplayPairList(context = requireActivity(), nameProvider = nameProvider)

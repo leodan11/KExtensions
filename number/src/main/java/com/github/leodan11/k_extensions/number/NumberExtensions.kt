@@ -359,7 +359,7 @@ fun Number.toNumberFormatInt(locale: Locale): String =
  *
  * @return A localized percentage string. Returns `"0.00 %"` if formatting fails.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Number?.toPercentNormalized(minDigits: Int = 2, maxDigits: Int = 2): String {
     return this.toPercentNormalized(locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
@@ -385,7 +385,7 @@ fun Number?.toPercentNormalized(minDigits: Int = 2, maxDigits: Int = 2): String 
  *
  * @throws IllegalArgumentException if `minDigits > maxDigits`.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Number?.toPercentNormalized(locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String = runCatching {
         require(minDigits <= maxDigits) { "minDigits must be less than or equal to maxDigits" }
@@ -412,7 +412,7 @@ fun Number?.toPercentNormalized(locale: Locale, minDigits: Int = 2, maxDigits: I
  *
  * @return A localized percentage string. Returns `"0.00 %"` if formatting fails.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Number?.toPercentFromValue(minDigits: Int = 2, maxDigits: Int = 2): String {
     return this.toPercentFromValue(locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
@@ -439,7 +439,7 @@ fun Number?.toPercentFromValue(minDigits: Int = 2, maxDigits: Int = 2): String {
  *
  * @throws IllegalArgumentException if `minDigits > maxDigits`.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Number?.toPercentFromValue(locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String = runCatching {
     require(minDigits <= maxDigits) { "minDigits must be less than or equal to maxDigits" }
@@ -466,7 +466,7 @@ fun Number?.toPercentFromValue(locale: Locale, minDigits: Int = 2, maxDigits: In
  *
  * @return A localized percentage string. Returns `"0.00 %"` if calculation fails.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Number?.percentageOf(total: Number?, minDigits: Int = 2, maxDigits: Int = 2): String {
     return this.percentageOf(total = total, locale = Locale.getDefault(), minDigits = minDigits, maxDigits = maxDigits)
@@ -491,7 +491,7 @@ fun Number?.percentageOf(total: Number?, minDigits: Int = 2, maxDigits: Int = 2)
  *
  * @throws IllegalArgumentException if `total` is zero or `minDigits > maxDigits`.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Number?.percentageOf(total: Number?, locale: Locale, minDigits: Int = 2, maxDigits: Int = 2): String = runCatching {
     require(minDigits <= maxDigits) { "minDigits must be less than or equal to maxDigits" }

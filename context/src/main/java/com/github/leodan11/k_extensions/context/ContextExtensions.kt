@@ -342,7 +342,7 @@ fun Context.onLayoutInflater(): LayoutInflater =
  *
  * @see ConnectivityManager
  * @see NetworkCapabilities
- * @since 2.2.8
+ * @since 3.0.0
  */
 @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
 fun Context.internetCapabilitiesCallback() = callbackFlow {
@@ -377,7 +377,7 @@ fun Context.internetCapabilitiesCallback() = callbackFlow {
  * @param timeOut [Int] timeout for the ping
  * @return Flow<Boolean>
  *
- * @since 2.2.8
+ * @since 3.0.0
  *
  */
 fun Context.internetDetection(

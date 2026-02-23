@@ -48,7 +48,7 @@ import kotlin.math.abs
  * @return A new [Bitmap] containing the watermark, or `null` if the bitmap
  * could not be copied.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Bitmap.addWatermark(watermarkText: String, options: WatermarkOptions = WatermarkOptions()): Bitmap? {
     val config = config ?: Bitmap.Config.ARGB_8888
@@ -97,7 +97,7 @@ fun Bitmap.addWatermark(watermarkText: String, options: WatermarkOptions = Water
  * @return A new [Bitmap] containing the watermark, or `null` if the bitmap
  * could not be copied.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 @JvmOverloads
 fun addWatermarkToBitmap(bitmap: Bitmap, watermarkText: String, options: WatermarkOptions = WatermarkOptions()): Bitmap? = bitmap.addWatermark(watermarkText, options)
@@ -120,7 +120,7 @@ fun addWatermarkToBitmap(bitmap: Bitmap, watermarkText: String, options: Waterma
  * @param alpha Alpha value (transparency) for the receiver bitmap. Range 0 (transparent) to 255 (opaque). Defaults to 255.
  * @return A new [Bitmap] combining both bitmaps.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Bitmap.mergeBitmaps(baseBitmap: Bitmap, offsetX: Float = (baseBitmap.width - this.width) / 2f, offsetY: Float = (baseBitmap.height - this.height) / 2f, alpha: Int = 255): Bitmap {
     val combined = createBitmap(
@@ -158,7 +158,7 @@ fun Bitmap.mergeBitmaps(baseBitmap: Bitmap, offsetX: Float = (baseBitmap.width -
  * @param alpha Alpha value (transparency) for the receiver bitmap. Range 0 (transparent) to 255 (opaque). Defaults to 255.
  * @return A new [Bitmap] combining both bitmaps with the blend mode applied.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Bitmap.mergeWithBlendMode(baseBitmap: Bitmap, blendMode: Mode = Mode.SRC_OVER, offsetX: Float = (baseBitmap.width - this.width) / 2f, offsetY: Float = (baseBitmap.height - this.height) / 2f, alpha: Int = 255): Bitmap {
     val combined = createBitmap(
@@ -207,7 +207,7 @@ fun Bitmap.mergeWithBlendMode(baseBitmap: Bitmap, blendMode: Mode = Mode.SRC_OVE
  * @param alpha Alpha value (transparency) for the receiver bitmap. Range 0 (transparent) to 255 (opaque). Defaults to 255.
  * @return A new [Bitmap] combining both bitmaps with the blend mode applied.
  *
- * @since 2.2.8
+ * @since 3.0.0
  *
  */
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -246,7 +246,7 @@ fun Bitmap.mergeWithModernBlendMode(baseBitmap: Bitmap, blendMode: BlendMode = B
  *
  * @see Color.TRANSPARENT
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Bitmap.removeBackground(colorToRemove: Int, tolerance: Int = 10): Bitmap {
     val output = copy(Bitmap.Config.ARGB_8888, true)
@@ -275,7 +275,7 @@ fun Bitmap.removeBackground(colorToRemove: Int, tolerance: Int = 10): Bitmap {
  *
  * @throws IllegalStateException if the bitmap is recycled.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Bitmap.tintWithColor(@ColorInt color: Int): Bitmap {
     check(!isRecycled) { "Cannot tint a recycled Bitmap." }

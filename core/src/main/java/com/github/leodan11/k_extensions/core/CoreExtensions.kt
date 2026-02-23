@@ -101,7 +101,7 @@ inline fun <reified T : Serializable> Bundle.serializable(key: String): T? = whe
  * @return A [Result] containing the decompressed [String] if successful,
  * or a [Result.failure] wrapping the encountered exception.
  *
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun ByteArray.gunzip(charset: Charset = Charsets.UTF_8): Result<String> =
     runCatching {
@@ -181,7 +181,7 @@ fun ByteArray.toHexString(separator: String = ""): String = joinToString(separat
  * ```
  *
  * @see [R.string.label_text_unknown]
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Context.getDisplayText(value: String?): String {
     val def = this.getString(R.string.label_text_unknown)

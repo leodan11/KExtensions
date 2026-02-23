@@ -37,7 +37,7 @@ import java.net.URL
  *
  * @see URL
  * @see HttpURLConnection
- * @since 2.2.8
+ * @since 3.0.0
  */
 fun Context.isURLReachable(serverUrl: String, timeOut: Int = 10 * 1000): Boolean {
     if (isOnline) {
@@ -87,7 +87,7 @@ fun Context.isURLReachable(serverUrl: String, timeOut: Int = 10 * 1000): Boolean
  * @see ConnectivityManager
  * @see NetworkCapabilities
  * @see Context.isURLReachable
- * @since 2.2.8
+ * @since 3.0.0
  */
 val Context.isOnline: Boolean
     get() {
