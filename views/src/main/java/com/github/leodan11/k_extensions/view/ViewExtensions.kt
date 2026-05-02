@@ -17,6 +17,7 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.animation.ArgbEvaluatorCompat
 import com.google.android.material.color.MaterialColors
 import kotlin.math.max
+import androidx.core.graphics.createBitmap
 
 
 /**
@@ -227,27 +228,32 @@ val View.colorOnSurfaceVariant: Int
 
 
 /**
- * Creates a `Bitmap` representation of the current `View`. This method captures the visual content of
- * the `View` as a `Bitmap`, which can then be used for image manipulation, caching, or sharing purposes.
+ * Creates a bitmap representation of this [View].
  *
- * The resulting bitmap will have the same width and height as the view, and the drawing will be done
- * using the ARGB_8888 configuration for high-quality image representation.
+ * If [forceMeasure] is true, the view will be measured and laid out
+ * before rendering. Otherwise, it uses the current layout size.
  *
- * ```kotlin
- * val viewBitmap = view.createBitmap()
- * imageView.setImageBitmap(viewBitmap)
- * ```
+ * @param forceMeasure Whether to force measurement and layout before rendering.
+ * @return A bitmap representing the view content.
  *
- * @return A `Bitmap` object representing the visual content of the view.
+ * @since 3.0.1
  */
-fun View.createBitmap(): Bitmap {
-    val bitmap = Bitmap.createBitmap(
-        this.layoutParams.width,
-        this.layoutParams.height,
-        Bitmap.Config.ARGB_8888
-    )
+fun View.toBitmap(forceMeasure: Boolean = false): Bitmap {
+    if (forceMeasure) {
+        measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        layout(0, 0, measuredWidth, measuredHeight)
+    }
+
+    val width = if (forceMeasure) measuredWidth else width
+    val height = if (forceMeasure) measuredHeight else height
+
+    val bitmap = createBitmap(width, height)
     val canvas = Canvas(bitmap)
-    this.draw(canvas)
+    draw(canvas)
+
     return bitmap
 }
 

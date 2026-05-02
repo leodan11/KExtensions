@@ -83,7 +83,7 @@ val Long.formatHumanReadable: String
  *
  * This function delegates to [to2Decimal] with the default locale.
  *
- * @return A string representing the number formatted with two decimals and thousand separators.
+ * @return A string representing the number formatted with two decimals and a thousand separators.
  */
 fun Number.to2Decimal(): String {
     return this.to2Decimal(Locale.getDefault())
@@ -97,7 +97,7 @@ fun Number.to2Decimal(): String {
  * regardless of locale for consistency.
  *
  * @param locale The locale used to obtain formatting symbols (e.g., grouping separator).
- * @return A string representing the number formatted with two decimals and thousand separators.
+ * @return A string representing the number formatted with two decimals and a thousand separators.
  *
  * @throws IllegalArgumentException if [locale] is null.
  */
@@ -119,7 +119,7 @@ fun Number.to2Decimal(locale: Locale): String {
  *
  * This function delegates to [to3Decimal] with the default locale.
  *
- * @return A string representing the number formatted with three decimals and thousand separators.
+ * @return A string representing the number formatted with three decimals and a thousand separators.
  */
 fun Number.to3Decimal(): String {
     return this.to3Decimal(Locale.getDefault())
@@ -132,7 +132,7 @@ fun Number.to3Decimal(): String {
  * regardless of locale's usual separators.
  *
  * @param locale The locale to retrieve formatting symbols for grouping separator.
- * @return A string representing the number formatted with three decimals and thousand separators.
+ * @return A string representing the number formatted with three decimals and a thousand separators.
  *
  * @throws IllegalArgumentException if [locale] is null.
  */
@@ -154,7 +154,7 @@ fun Number.to3Decimal(locale: Locale): String {
  *
  * Delegates to [to4Decimal] specifying the default locale.
  *
- * @return A string representing the number formatted with four decimals and thousand separators.
+ * @return A string representing the number formatted with four decimals and a thousand separators.
  */
 fun Number.to4Decimal(): String {
     return this.to4Decimal(Locale.getDefault())
@@ -167,7 +167,7 @@ fun Number.to4Decimal(): String {
  * maintain a consistent output format regardless of the locale's default separators.
  *
  * @param locale The locale for formatting symbols.
- * @return A string representation of the number with four decimal places and thousand separators.
+ * @return A string representation of the number with four decimal places and a thousand separators.
  *
  * @throws IllegalArgumentException if [locale] is null.
  */

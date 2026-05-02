@@ -1,11 +1,13 @@
 package com.github.leodan11.k_extensions.string
 
+import android.content.Context
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
 import android.util.Base64
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import com.github.leodan11.k_extensions.base.components.ShapeTextDrawable
 import com.github.leodan11.k_extensions.string.content.HashAlgorithm
 import com.github.leodan11.k_extensions.string.content.HashFormat
@@ -153,6 +155,45 @@ fun String.asAvatarRoundRect(
 
 
 /**
+ * Returns the string itself if it is not null or blank, otherwise returns the provided fallback string.
+ *
+ * This extension is useful for safely displaying nullable strings in the UI without null checks.
+ *
+ * @param fallback the string to use when the receiver is null.
+ * @return the original string if not null, otherwise the fallback.
+ *
+ * ```kotlin
+ * val text = myString.orFallback("No data available")
+ * ```
+ * 
+ * @since 3.0.0
+ */
+fun String?.orFallback(fallback: String): String {
+    return this ?: fallback
+}
+
+
+/**
+ * Returns the string itself if it is not null, otherwise returns a fallback string from resources.
+ *
+ * This version requires a [Context] to resolve the string resource.
+ *
+ * @param context Android context used to resolve the fallback resource.
+ * @param fallbackRes string resource used when the receiver is null.
+ * @return the original string if not null, otherwise the resolved fallback string.
+ *
+ * ```kotlin
+ * val text = myString.orFallback(context, R.string.no_data)
+ * ```
+ * 
+ * @since 3.0.0
+ */
+fun String?.orFallback(context: Context, @StringRes fallbackRes: Int): String {
+    return this ?: context.getString(fallbackRes)
+}
+
+
+/**
  * Pads this [String] on the left with the specified [paddingChar] until it reaches the desired [length].
  *
  * Commonly used for formatting numeric codes or identifiers to a fixed length.
@@ -260,7 +301,7 @@ fun String?.isOneOf(vararg conditions: String): Boolean {
 /**
  * Computes the SHA-256 hash of this string and returns it as a hexadecimal string.
  *
- * This extension uses the `MessageDigest` class to generate a SHA-256 hash,
+ * This extension uses the `MessageDigest` class to generate an SHA-256 hash,
  * which is a cryptographic hash function that produces a 256-bit (32-byte) hash value.
  * The resulting hash bytes are converted to a lowercase hexadecimal string.
  *
@@ -745,6 +786,72 @@ fun String.generateOfflineDevCode(
     }
     return if (uppercase) code.uppercase(locale) else code.lowercase(locale)
 }
+
+
+/**
+ * Converts a [String] into an SQL LIKE pattern.
+ *
+ * This function ensures that if the string is blank (empty or only whitespace),
+ * it returns `"%"`, which matches all records in a SQL query.
+ *
+ * **Usage expectation:**
+ * - Ideal for searches where an empty string means "no filter".
+ * - Works seamlessly with Room or other SQL-based queries.
+ *
+ * **Example:**
+ * ```kotlin
+ * val searchText = "apple"
+ * val query = searchText.toLike() // "%apple%"
+ *
+ * // DAO usage
+ * @Query("SELECT * FROM products WHERE name LIKE :query")
+ * fun searchProducts(query: String): List<Product>
+ *
+ * dao.searchProducts(query)
+ * ```
+ *
+ * @return a [String] with the pattern `"%text%"`, or `"%"` if the original string is blank.
+ *
+ * @since 3.0.1
+ */
+@JvmName("toLikeString")
+fun String.toLike(): String =
+    if (this.isBlank()) "%" else "%$this%"
+
+
+/**
+ * Converts a [String] into an SQL LIKE pattern, or returns null if the string is blank.
+ *
+ * This function allows `null` to indicate "no filtering" in SQL queries,
+ * which can help optimize queries by avoiding unnecessary `LIKE '%'` scans.
+ *
+ * **Usage expectation:**
+ * - If the string is `null` or blank, the filter can be ignored in the SQL query.
+ * - If the string has content, returns `"%text%"` ready for Room or SQL queries.
+ *
+ * **Example:**
+ * ```kotlin
+ * val searchText = ""
+ * val query = searchText.toLikeOrNull() // null
+ *
+ * // DAO usage
+ * @Query("""
+ *   SELECT * FROM products
+ *   WHERE (:query IS NULL OR name LIKE :query)
+ * """)
+ * fun searchProducts(query: String?): List<Product>
+ *
+ * dao.searchProducts(query)
+ * ```
+ *
+ * @return a [String] with the pattern `"%text%"` if the original string is not blank, or `null` if it is blank.
+ *
+ * @since 3.0.1
+ */
+@JvmName("toLikeStringOrNull")
+fun String.toLikeOrNull(): String? =
+    this.takeIf { it.isNotBlank() }?.let { "%$it%" }
+
 
 
 private fun Date.toFormat(pattern: String, locale: Locale): String =
