@@ -7,6 +7,33 @@ can update their projects safely and efficiently.
 
 ---
 
+## [3.0.1] - 2026-05-05
+
+### ✨ Added
+- New extensions to improve overall functionality:
+  - `StringExtension`
+  - `BitmapExtension`
+  - `ContextExtension`
+  - `FragmentExtension`
+- New System Settings extensions
+- Fluent extensions for PermissionManager:
+  - Support for camera and location permissions
+- DSL-style helpers in PermissionResult for improved usability
+
+### 🔄 Changed
+- Improved permissions API:
+  - Added permissions module
+  - Renamed permissions() to permissionManager()
+- Unified bitmap handling:
+  - Replaced createBitmap and toBitmapUnsafe with toBitmap(forceMeasure)
+- Improved overall KDoc consistency across the API
+- Updated dependencies in libs.versions.toml
+- Maintained compatibility with API 21
+
+### 🧱 Structure
+- Modular reorganization for better separation of concerns (core, permissions, extensions, etc.)
+
+
 ## [3.0.0] - 2026-02-23
 
 ### ⚠️ Breaking Changes
