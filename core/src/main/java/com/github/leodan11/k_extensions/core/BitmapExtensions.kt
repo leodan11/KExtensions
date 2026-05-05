@@ -17,6 +17,8 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.os.Build
+import android.util.Base64
+import android.util.Base64.NO_WRAP
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.createBitmap
@@ -24,6 +26,7 @@ import androidx.core.graphics.get
 import androidx.core.graphics.set
 import com.github.leodan11.k_extensions.core.content.Corner
 import com.github.leodan11.k_extensions.core.content.WatermarkOptions
+import java.io.ByteArrayOutputStream
 import kotlin.math.abs
 
 
@@ -292,7 +295,25 @@ fun Bitmap.tintWithColor(@ColorInt color: Int): Bitmap {
 }
 
 
-
+/**
+ * Converts the [Bitmap] to a Base64-encoded string in PNG format.
+ *
+ * ```kotlin
+ * val base64 = bitmap.toBase64()
+ * ```
+ *
+ * @param format Specifies the known formats a bitmap can be compressed into (default: [Bitmap.CompressFormat.PNG]).
+ * @param quality Compression quality (0–100), where 100 is the best quality.
+ * @param flags Optional [Base64] flags (default: [Base64.NO_WRAP]).
+ * @return A Base64 string representing the image.
+ * @since 3.0.1
+ */
+fun Bitmap.toBase64(format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100, flags: Int = NO_WRAP): String {
+    val outputStream = ByteArrayOutputStream()
+    this.compress(format, quality, outputStream)
+    val byteArray = outputStream.toByteArray()
+    return Base64.encodeToString(byteArray, flags)
+}
 
 
 

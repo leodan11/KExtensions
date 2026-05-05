@@ -46,7 +46,7 @@ val String.isAlphabetic: Boolean
  * @see isAlphabetic
  */
 val String.isNotAlphabetic: Boolean
-    get() = !isAlphabetic
+    get() = !ALPHABETIC_REGEX.matches(this)
 
 
 /**
@@ -73,7 +73,7 @@ val String.isAlphanumeric: Boolean
  * @see isAlphanumeric
  */
 val String.isNotAlphanumeric: Boolean
-    get() = !isAlphanumeric
+    get() = !ALPHANUMERIC_REGEX.matches(this)
 
 
 /**
