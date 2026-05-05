@@ -3,6 +3,8 @@ package com.github.leodan11.k_extensions.context
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.util.DisplayMetrics
 import android.view.Menu
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
@@ -16,6 +18,8 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.leodan11.k_extensions.core.content.UnitType
 import com.github.leodan11.k_extensions.core.enableIconsWithMargin
 import com.github.leodan11.k_extensions.core.getDisplayText
@@ -174,7 +178,7 @@ fun Fragment.customColorResource(@AttrRes idAttrRes: Int, fallbackColor: Int = 0
 /**
  * Calculates the optimal number of spans (columns) for a grid layout based on the item width in density-independent pixels (dp).
  *
- * This is useful when using a [androidx.recyclerview.widget.RecyclerView] with a [androidx.recyclerview.widget.GridLayoutManager] and you want items to have a consistent width
+ * This is useful when using a [RecyclerView] with a [GridLayoutManager] and you want items to have a consistent width
  * across different screen sizes and densities.
  *
  * The calculation uses the screen width in dp and divides it by the provided [itemWidthDp]. The minimum number of
@@ -187,7 +191,7 @@ fun Fragment.customColorResource(@AttrRes idAttrRes: Int, fallbackColor: Int = 0
  * recyclerView.layoutManager = layoutManager
  * ```
  *
- * @receiver [Fragment] Used to access [android.content.res.Resources] and [android.util.DisplayMetrics].
+ * @receiver [Fragment] Used to access [Resources] and [DisplayMetrics].
  * @param itemWidthDp The desired width of each item in dp (density-independent pixels).
  * @return The calculated number of spans (columns) as an [Int], with a minimum of 2.
  *
@@ -365,6 +369,54 @@ fun Fragment.getVersionName(pkgName: String = requireActivity().packageName): St
 suspend fun Fragment.internetOn(coroutineScope: CoroutineScope? = null): Boolean {
     return requireActivity().internetOn(coroutineScope = coroutineScope)
 }
+
+
+/**
+ * Opens the system "App Info" screen for the current application.
+ *
+ * This screen allows the user to manage app-specific settings such as:
+ * - Permissions
+ * - Notifications
+ * - Storage usage
+ * - Battery optimization
+ *
+ * @receiver Fragment used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Fragment.openAppSettings() { requireActivity().openAppSettings() }
+
+
+/**
+ * Opens the system Bluetooth settings screen.
+ *
+ * Allows the user to enable/disable Bluetooth and manage paired devices.
+ *
+ * @receiver Fragment used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Fragment.openBluetoothSettings() { requireActivity().openBluetoothSettings() }
+
+
+/**
+ * Opens the system Location settings screen.
+ *
+ * Allows the user to enable/disable location services and manage precision settings.
+ *
+ * @receiver Fragment used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Fragment.openLocationSettings() { requireActivity().openLocationSettings() }
+
+
+/**
+ * Opens the system Wi-Fi settings screen.
+ *
+ * Allows the user to enable/disable Wi-Fi and manage networks.
+ *
+ * @receiver Fragment used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Fragment.openWifiSettings() { requireActivity().openWifiSettings() }
 
 
 /**

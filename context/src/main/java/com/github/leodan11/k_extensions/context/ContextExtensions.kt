@@ -27,6 +27,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -41,6 +42,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.net.toUri
 import com.github.leodan11.k_extensions.core.content.InternetDetector
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CancellationException
@@ -437,6 +439,76 @@ inline fun <reified T : Service> Context.isServiceRunning(): Boolean {
     }
     return false
 }
+
+
+/**
+ * Opens the system "App Info" screen for the current application.
+ *
+ * This screen allows the user to manage app-specific settings such as:
+ * - Permissions
+ * - Notifications
+ * - Storage usage
+ * - Battery optimization
+ *
+ * @receiver Context used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Context.openAppSettings() {
+    val intent: Intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = "package:$packageName".toUri()
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    startActivity(intent)
+}
+
+
+/**
+ * Opens the system Bluetooth settings screen.
+ *
+ * Allows the user to enable/disable Bluetooth and manage paired devices.
+ *
+ * @receiver Context used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Context.openBluetoothSettings() {
+    val intent: Intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    startActivity(intent)
+}
+
+
+/**
+ * Opens the system Location settings screen.
+ *
+ * Allows the user to enable/disable location services and manage precision settings.
+ *
+ * @receiver Context used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Context.openLocationSettings() {
+    val intent: Intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    startActivity(intent)
+}
+
+
+/**
+ * Opens the system Wi-Fi settings screen.
+ *
+ * Allows the user to enable/disable Wi-Fi and manage networks.
+ *
+ * @receiver Context used to launch the settings screen.
+ * @since 3.0.1
+ */
+fun Context.openWifiSettings() {
+    val intent: Intent = Intent(Settings.ACTION_WIFI_SETTINGS).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    startActivity(intent)
+}
+
 
 /**
  * Reboots the application by restarting the specified activity or the main launcher activity by default.
