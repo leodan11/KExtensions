@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.TypedValue
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.AutoCompleteTextView
 import android.widget.Spinner
 import androidx.annotation.StringRes
@@ -26,6 +27,7 @@ import java.io.ByteArrayInputStream
 import java.io.Serializable
 import java.nio.charset.Charset
 import java.util.zip.GZIPInputStream
+import androidx.core.view.get
 
 
 /**
@@ -161,6 +163,57 @@ fun ByteArray.toBase64Encode(flags: Int = Base64.DEFAULT): String = Base64.encod
  * @return The hexadecimal string representation of this byte array.
  */
 fun ByteArray.toHexString(separator: String = ""): String = joinToString(separator) { "%02x".format(it) }
+
+
+/**
+ * Returns the first available error from a [CombinedLoadStates] instance.
+ *
+ * Checks errors in the following order:
+ * - refresh
+ * - append
+ * - prepend
+ *
+ * Useful for centralized error handling in Paging 3.
+ *
+ * @return the first found [Throwable], or null if no errors exist.
+ *
+ * ```kotlin
+ * val error = state.getError()
+ * ```
+ *
+ * @since 3.0.1
+ */
+fun CombinedLoadStates.getError(): Throwable? {
+    return refresh.toError()
+        ?: append.toError()
+        ?: prepend.toError()
+}
+
+
+/**
+ * Converts [CombinedLoadStates] into a UI-friendly state model.
+ *
+ * Centralizes Paging 3 state mapping including:
+ * - loading state
+ * - empty state
+ * - error handling
+ *
+ * @param itemCount current number of items in the adapter
+ * @return a [PagingUiState] representing the UI state
+ *
+ * ```kotlin
+ * val uiState = state.toUiState(adapter.itemCount)
+ * ```
+ *
+ * @since 3.0.1
+ */
+fun CombinedLoadStates.toUiState(itemCount: Int): PagingUiState {
+    return PagingUiState(
+        isLoading = refresh is LoadState.Loading,
+        isEmpty = refresh is LoadState.NotLoading && itemCount == 0,
+        error = getError()
+    )
+}
 
 
 /**
@@ -363,6 +416,27 @@ fun <T> List<T>.toDisplayPairList(context: Context, nameProvider: (T) -> String)
 
 
 /**
+ * Converts a [LoadState] into a [Throwable] if it represents an error state.
+ *
+ * This extension simplifies error handling in Paging 3 by avoiding repeated casts.
+ *
+ * @return the [Throwable] if this is a [LoadState.Error], or null otherwise.
+ *
+ * ```kotlin
+ * val error = state.refresh.toError()
+ * ```
+ *
+ * @since 3.0.1
+ */
+fun LoadState.toError(): Throwable? {
+    return when (this) {
+        is LoadState.Error -> this.error
+        else -> null
+    }
+}
+
+
+/**
  * Enables icon visibility in a [Menu] if possible.
  *
  * This is useful when using [MenuBuilder], which supports showing icons
@@ -429,6 +503,52 @@ fun Menu.enableIconsWithMargin(context: Context, marginDp: Int = 16): Result<Boo
 
 
 /**
+ * Recursively searches for a [MenuItem] within this [Menu] and all its nested submenus.
+ *
+ * This is useful when working with deeply nested menu structures where
+ * [Menu.findItem] is not sufficient because it only searches at the current level.
+ *
+ * ```kotlin
+ * val item = menu.findItemRecursively(R.id.settings)
+ *
+ * if (item != null) {
+ *     item.isVisible = true
+ * } else {
+ *     println("Item not found")
+ * }
+ * ```
+ *
+ * @param id The unique identifier of the [MenuItem] to find.
+ *
+ * @return The matching [MenuItem] if found, or `null` otherwise.
+ *
+ * @throws IllegalArgumentException If the provided id is less than or equal to 0.
+ *
+ * @receiver The [Menu] instance on which the search is performed.
+ *
+ * @see MenuItem
+ * @since 3.0.1
+ */
+@Throws(IllegalArgumentException::class)
+fun Menu.findItemRecursively(id: Int): MenuItem? {
+    require(id > 0) { "MenuItem id must be greater than 0" }
+
+    for (i in 0 until this.size) {
+        val item = this[i]
+
+        if (item.itemId == id) return item
+
+        val subMenu = item.subMenu
+        if (subMenu != null) {
+            val found = subMenu.findItemRecursively(id)
+            if (found != null) return found
+        }
+    }
+    return null
+}
+
+
+/**
  * Returns the simple class name of the receiver object, or `"Unknown"` if the class name is not available.
  *
  * Useful for logging or tagging where a non-null identifier of the object's class is needed.
@@ -442,76 +562,3 @@ fun Menu.enableIconsWithMargin(context: Context, marginDp: Int = 16): Result<Boo
  * @return The simple name of the object's class, or `"Unknown"` if unavailable.
  */
 fun <T : Any> T.tag(): String = this::class.simpleName ?: "Unknown"
-
-
-/**
- * Returns the first available error from a [CombinedLoadStates] instance.
- *
- * Checks errors in the following order:
- * - refresh
- * - append
- * - prepend
- *
- * Useful for centralized error handling in Paging 3.
- *
- * @return the first found [Throwable], or null if no errors exist.
- *
- * ```kotlin
- * val error = state.getError()
- * ```
- *
- * @since 3.0.1
- */
-fun CombinedLoadStates.getError(): Throwable? {
-    return refresh.toError()
-        ?: append.toError()
-        ?: prepend.toError()
-}
-
-
-/**
- * Converts [CombinedLoadStates] into a UI-friendly state model.
- *
- * Centralizes Paging 3 state mapping including:
- * - loading state
- * - empty state
- * - error handling
- *
- * @param itemCount current number of items in the adapter
- * @return a [PagingUiState] representing the UI state
- *
- * ```kotlin
- * val uiState = state.toUiState(adapter.itemCount)
- * ```
- *
- * @since 3.0.1
- */
-fun CombinedLoadStates.toUiState(itemCount: Int): PagingUiState {
-    return PagingUiState(
-        isLoading = refresh is LoadState.Loading,
-        isEmpty = refresh is LoadState.NotLoading && itemCount == 0,
-        error = getError()
-    )
-}
-
-
-/**
- * Converts a [LoadState] into a [Throwable] if it represents an error state.
- *
- * This extension simplifies error handling in Paging 3 by avoiding repeated casts.
- *
- * @return the [Throwable] if this is a [LoadState.Error], or null otherwise.
- *
- * ```kotlin
- * val error = state.refresh.toError()
- * ```
- *
- * @since 3.0.1
- */
-fun LoadState.toError(): Throwable? {
-    return when (this) {
-        is LoadState.Error -> this.error
-        else -> null
-    }
-}
-
