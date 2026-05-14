@@ -1,6 +1,7 @@
 package com.github.leodan11.k_extensions.string
 
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.zip.GZIPOutputStream
+import androidx.core.net.toUri
 
 private val ALPHABETIC_REGEX = Regex("^[a-zA-Z]*$")
 private val ALPHANUMERIC_REGEX = Regex("^[a-zA-Z0-9]*$")
@@ -852,6 +854,49 @@ fun String.toLike(): String =
 fun String.toLikeOrNull(): String? =
     this.takeIf { it.isNotBlank() }?.let { "%$it%" }
 
+
+/**
+ * Returns whether the receiver is a structurally valid HTTP or HTTPS URL.
+ *
+ * This extension validates that:
+ * - The string is not blank
+ * - The URI contains a valid scheme
+ * - The URI contains a non-empty host
+ * - The scheme is either `http` or `https`
+ *
+ * This validation is intentionally lightweight and only verifies
+ * the structural integrity of the URL. It does not guarantee:
+ * - Network reachability
+ * - Domain existence
+ * - SSL validity
+ * - DNS resolution
+ * - URL security or trustworthiness
+ *
+ * Valid examples:
+ * - `https://example.com`
+ * - `http://google.com`
+ * - `https://sub.domain.com/path`
+ *
+ * Invalid examples:
+ * - `example.com`
+ * - `ftp://server.com`
+ * - `https:/invalid`
+ * - `""`
+ *
+ * This function is useful for lightweight URL validation in
+ * forms, deep links, APIs, and general network-related checks.
+ *
+ * @receiver The string to validate as an HTTP/HTTPS URL.
+ *
+ * @return `true` if the string represents a structurally valid. HTTP or HTTPS URL, otherwise `false`.
+ * @since 3.0.2
+ */
+@JvmName("isValidHttpUrl")
+fun String.isValidHttpUrl(): Boolean {
+    if (isBlank()) return false
+    val uri: Uri = this.toUri()
+    return uri.scheme in setOf("http", "https") && !uri.host.isNullOrBlank()
+}
 
 
 private fun Date.toFormat(pattern: String, locale: Locale): String =
