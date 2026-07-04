@@ -566,7 +566,7 @@ fun Long.convertBytesToHumanReadableForm(si: Boolean = false): String =
  * @param locale the [Locale] to format the output string
  * @return human-readable string representation of the byte count, e.g., "1.5 MiB"
  */
-fun Long.convertBytesToHumanReadableForm(si: Boolean = false, locale: Locale): String =
+fun Long.convertBytesToHumanReadableForm(locale: Locale, si: Boolean = false): String =
     runCatching {
         val unit = if (si) 1000 else 1024
         if (this < unit) return "$this B"
@@ -576,4 +576,25 @@ fun Long.convertBytesToHumanReadableForm(si: Boolean = false, locale: Locale): S
     }.getOrElse {
         this.toString()
     }
+
+
+
+fun Number.toNormalized(decimal: Int): Double {
+    val doubleValue = this.toDouble()
+    if (doubleValue.isNaN() || doubleValue.isInfinite()) {
+        return doubleValue
+    }
+    return BigDecimal(doubleValue).setScale(decimal, RoundingMode.HALF_UP).toDouble()
+}
+
+
+fun Number.toNormalizedString(decimal: Int): String {
+    return String.format(Locale.getDefault(), "%.${decimal}f", this.toDouble())
+}
+
+
+fun Number.toNormalizedString(decimal: Int, locale: Locale): String {
+    return String.format(locale, "%.${decimal}f", this.toDouble())
+}
+
 

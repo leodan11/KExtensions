@@ -3,56 +3,77 @@ package com.github.leodan11.k_extensions.lifecycle.components
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 
+
 /**
- * A [MediatorLiveData] that combines two source [LiveData] objects into one.
+ * A [MediatorLiveData] that combines the latest values from two source
+ * [LiveData] instances into a single observable result.
  *
- * By default, it emits a [Pair] of the last values from both sources, but
- * you can provide a custom [combine] lambda to produce any type [R].
+ * Whenever either source emits a new value, the provided [combine] function
+ * is invoked with the latest values from both sources and its result is
+ * emitted to observers.
  *
- * It only emits when both sources have values unless [emitIfNull] is set to true.
+ * By default, emissions start only after both sources have emitted at least
+ * once. This behavior can be changed by setting [requireBothSources] to `false`.
  *
- * @param A Type of the first LiveData
- * @param B Type of the second LiveData
- * @param R Type of the output LiveData
- * @param a The first LiveData source
- * @param b The second LiveData source
- * @param emitIfNull If true, emits values even if one of the sources is null (default: false)
- * @param combine Function that takes the last values of A and B and returns R
+ * This implementation correctly distinguishes between:
+ * - A source that has not emitted yet.
+ * - A source that has emitted a `null` value.
  *
+ * Duplicate emissions are ignored when the newly combined value is equal
+ * to the current value.
+ *
+ * @param A Type of the first source LiveData.
+ * @param B Type of the second source LiveData.
+ * @param R Type of the emitted result.
+ * @param sourceA First LiveData source.
+ * @param sourceB Second LiveData source.
+ * @param requireBothSources If `true`, no value is emitted until both
+ * sources have emitted at least once. Default is `true`.
+ * @param combine Function used to combine the latest values from both
+ * sources into a result of type [R].
+ *
+ * Example:
  * ```kotlin
- *
- * fun exampleUsage(a: LiveData<Int>, b: LiveData<String>): DoubleTriggerMediatorLiveData<Int, String, Pair<Int?, String?>> {
- *     return DoubleTriggerMediatorLiveData(a, b) { first, second -> first to second }
+ * val userState = DoubleTriggerMediatorLiveData(
+ *     sourceA = userLiveData,
+ *     sourceB = settingsLiveData
+ * ) { user, settings ->
+ *     UserUiState(user = user, settings = settings)
  * }
- *
  * ```
  * @since 2.2.1
  */
-class DoubleTriggerMediatorLiveData<A, B, R>(
-    a: LiveData<A>,
-    b: LiveData<B>,
-    private val emitIfNull: Boolean = false,
-    private val combine: (A?, B?) -> R
-) : MediatorLiveData<R>() {
+class DoubleTriggerMediatorLiveData<A, B, R>(sourceA: LiveData<A>, sourceB: LiveData<B>, private val requireBothSources: Boolean = true, private val combine: (A?, B?) -> R) : MediatorLiveData<R>() {
 
-    private var lastA: A? = null
-    private var lastB: B? = null
+    private var latestA: A? = null
+    private var latestB: B? = null
+
+    private var hasSourceAEmitted = false
+    private var hasSourceBEmitted = false
 
     init {
-        addSource(a) {
-            lastA = it
-            emitIfNeeded()
+        addSource(sourceA) { valueA ->
+            latestA = valueA
+            hasSourceAEmitted = true
+            emitCombinedValue()
         }
-        addSource(b) {
-            lastB = it
-            emitIfNeeded()
+
+        addSource(sourceB) { valueB ->
+            latestB = valueB
+            hasSourceBEmitted = true
+            emitCombinedValue()
         }
     }
 
-    private fun emitIfNeeded() {
-        if (emitIfNull || (lastA != null && lastB != null)) {
-            value = combine(lastA, lastB)
+    private fun emitCombinedValue() {
+        if (requireBothSources && (!hasSourceAEmitted || !hasSourceBEmitted) ) {
+            return
+        }
+
+        val combinedValue = combine(latestA, latestB)
+
+        if (value != combinedValue) {
+            value = combinedValue
         }
     }
-
 }

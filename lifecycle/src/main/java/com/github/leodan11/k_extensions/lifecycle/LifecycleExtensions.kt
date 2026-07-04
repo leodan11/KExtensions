@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.github.leodan11.k_extensions.lifecycle.components.DoubleTriggerMediatorLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -172,3 +174,41 @@ inline val Lifecycle.isAtLeastStarted get() = currentState.isAtLeast(Lifecycle.S
  */
 @get:CheckResult
 inline val Lifecycle.isResumed get() = currentState === Lifecycle.State.RESUMED
+
+
+/**
+ * Combines this [LiveData] with another [LiveData] and emits a value
+ * produced by the provided [combine] function whenever either source changes.
+ *
+ * By default, emissions start only after both sources have emitted at least
+ * once. This behavior can be changed by setting [requireBothSources] to `false`.
+ *
+ * The latest value from each source is retained and passed to [combine]
+ * every time one of the sources emits.
+ *
+ * @param B Type of the second LiveData source.
+ * @param R Type of the emitted result.
+ * @param other The second LiveData source to combine with.
+ * @param requireBothSources If `true`, no value is emitted until both
+ * sources have emitted at least once. Default is `true`.
+ * @param combine Function that combines the latest values from both
+ * sources into a result of type [R].
+ *
+ * @return A [LiveData] emitting values produced by [combine].
+ *
+ * Example:
+ * ```kotlin
+ * val uiState = userLiveData.combineWith(settingsLiveData) { user, settings ->
+ *     UserUiState(
+ *         user = user,
+ *         settings = settings
+ *     )
+ * }
+ * ```
+ * @since 3.0.2
+ */
+fun <A, B, R> LiveData<A>.combineWith(
+    other: LiveData<B>,
+    requireBothSources: Boolean = true,
+    combine: (A?, B?) -> R
+): LiveData<R> = DoubleTriggerMediatorLiveData(sourceA = this, sourceB = other, requireBothSources = requireBothSources, combine = combine)
